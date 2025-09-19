@@ -1,0 +1,13 @@
+server:
+  port: 8080
+
+spring:
+  datasource:
+    url: "jdbc:mysql://localhost:3306/internship?useSSL=false&serverTimezone=Asia/Ho_Chi_Minh"
+    username: root
+    password:
+  jpa:
+    hibernate:
+      ddl-auto: create
+    show-sql: true
+
