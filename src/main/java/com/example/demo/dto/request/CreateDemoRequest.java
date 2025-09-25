@@ -13,7 +13,7 @@ public class CreateDemoRequest {
     @NotBlank(message = "NAME_NOT_EMPTY")
     private String hoTen;
     @NotBlank(message = "EMAIL_NOT_EMPTY")
-    @Email(message = "EMAIL_INVALID")
+    @Email(message = "INVALID_EMAIL")
     private String email;
     private LocalDate ngaySinh;
     @NotBlank(message = "GENDER_NOT_EMPTY")

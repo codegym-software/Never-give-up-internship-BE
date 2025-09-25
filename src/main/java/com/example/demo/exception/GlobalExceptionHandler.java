@@ -11,9 +11,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(value = AppException.class)
     ResponseEntity<ApiResponse> handlingAppException(AppException exception){
         ErrorCode errorCode = exception.getErrorCode();
-        ApiResponse apiResponse = new ApiResponse();
-        apiResponse.setCode(errorCode.getCode());
-        apiResponse.setMessage(errorCode.getMessage());
+        ApiResponse apiResponse = new ApiResponse(errorCode.getCode(),errorCode.getMessage());
         return ResponseEntity.badRequest().body(apiResponse);
     }
 
@@ -21,9 +19,7 @@ public class GlobalExceptionHandler {
     ResponseEntity<ApiResponse> handlingValidation(MethodArgumentNotValidException exception){
         String enumKey = exception.getFieldError().getDefaultMessage();
         ErrorCode errorCode= ErrorCode.valueOf(enumKey);
-        ApiResponse apiResponse = new ApiResponse();
-        apiResponse.setCode(errorCode.getCode());
-        apiResponse.setMessage(errorCode.getMessage());
+        ApiResponse apiResponse = new ApiResponse(errorCode.getCode(),errorCode.getMessage());
         return ResponseEntity.badRequest().body(apiResponse);
     }
 }
