@@ -7,10 +7,12 @@ import com.example.demo.dto.response.ApiResponse;
 import com.example.demo.dto.response.GetAllMentorResponse;
 import com.example.demo.dto.response.GetAllUserResponse;
 import com.example.demo.dto.response.PagedResponse;
+import com.example.demo.entity.User;
 import com.example.demo.service.UserService;
 import jakarta.validation.Valid;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -36,6 +38,11 @@ public class UserController {
         userService.updateActiveStatus(id);
         return new ApiResponse();
     }
+
+//    @GetMapping
+//    public ResponseEntity<User> getAllUser(){
+//        return ResponseEntity.ok(user);
+//    }
 
     @GetMapping("/GetAllHr")
     public ApiResponse<PagedResponse<GetAllUserResponse>> GetAllHr(GetAllUserRequest request){

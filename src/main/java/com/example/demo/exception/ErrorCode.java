@@ -37,7 +37,8 @@ public enum ErrorCode {
     VERIFY_FAILED(400, "Xác thực thất bại"),
     //ACCESS_DENIED
     LOGIN_FAILED(403, "Đăng nhập thất bại"),
-    ACCOUNT_DISABLED(403, "Tài khoản đã bị vô hiệu hóa"), ROLE_NOT_FOUND(1012,"Không tìm thấy vai trò");
+    ACCOUNT_DISABLED(403, "Tài khoản đã bị vô hiệu hóa"),
+    ROLE_NOT_FOUND(1012,"Không tìm thấy vai trò");
 
 
     ErrorCode(int code, String message) {
