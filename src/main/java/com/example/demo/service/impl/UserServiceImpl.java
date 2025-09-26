@@ -7,6 +7,7 @@ import com.example.demo.dto.response.GetAllMentorResponse;
 import com.example.demo.dto.response.GetAllUserResponse;
 import com.example.demo.dto.response.PagedResponse;
 import com.example.demo.entity.InternshipProgram;
+import com.example.demo.entity.Role;
 import com.example.demo.entity.User;
 import com.example.demo.exception.AppException;
 import com.example.demo.exception.ErrorCode;
@@ -36,7 +37,9 @@ public class UserServiceImpl implements UserService {
         User user = modelMapper.map(request,User.class);
         user.setUsername(username);
         user.setPassword(password);
-        user.setRole(roleRepository.findByRoleName(request.getRole()));
+        Role userRole = roleRepository.findByRoleName(request.getRole())
+                .orElseThrow(() -> new RuntimeException("Error: Role not found - " + request.getRole()));
+        user.setRole(userRole);
     }
 
     @Override

@@ -51,10 +51,10 @@ public class AuthServiceImpl implements AuthService {
             user.setLastLogin(LocalDateTime.now());
             userRepository.save(user);
 
-            String jwtAccessToken = jwtUtil.generateAccessToken(username);
-            String jwtRefreshToken = jwtUtil.generateRefreshToken(username,role);
+            String accessToken = jwtUtil.generateAccessToken(userDetails);
+            String refreshToken = jwtUtil.generateRefreshToken(userDetails.getUsername());
 
-            return new LoginResponse(jwtAccessToken, jwtRefreshToken);
+            return new LoginResponse(accessToken, refreshToken);
         }catch (BadCredentialsException ex){
             throw new AppException(ErrorCode.LOGIN_FAILED);
         }catch (DisabledException ex){
@@ -79,8 +79,7 @@ public class AuthServiceImpl implements AuthService {
         emailtoken.setExpiryDate(LocalDateTime.now().plusMinutes(20));
         emailTokenRepository.save(emailtoken);
 
-        String verifyLink = "http://localhost:8080/api/email/verify?token=" + token;
+        String verifyLink = "http://localhost:8081/api/email/verify?token=" + token;
         emailService.sendVerification(request.getEmail(),verifyLink);
     }
-
 }

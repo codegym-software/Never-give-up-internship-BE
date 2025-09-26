@@ -16,10 +16,13 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Collection;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -79,7 +82,9 @@ public class EmailServiceImpl implements EmailService {
             user.setUsername(emailToken.getUsername());
             user.setPassword(emailToken.getPassword());
             user.setFullName(emailToken.getFullName());
-            user.setRole(roleRepository.findByRoleName("USER"));
+            Role userRole = roleRepository.findByRoleName("USER")
+                    .orElseThrow(() -> new AppException(ErrorCode.ROLE_NOT_FOUND)); // Ném ra lỗi nếu không tìm thấy Role
+            user.setRole(userRole);
             userRepository.save(user);
         }catch (Exception e){
             throw new AppException(ErrorCode.VERIFY_FAILED);
