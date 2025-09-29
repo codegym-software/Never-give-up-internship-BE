@@ -18,6 +18,10 @@ public class Intern {
     private User user;
 
     @ManyToOne
+    @JoinColumn(name = "major_id", nullable = false)
+    private Major major;
+
+    @ManyToOne
     @JoinColumn(name = "school_id")
     private University university;
 
