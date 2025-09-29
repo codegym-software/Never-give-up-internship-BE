@@ -1,0 +1,44 @@
+package com.example.InternShip.entity;
+
+import com.example.InternShip.entity.enums.Role;
+import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
+
+import java.time.LocalDateTime;
+
+@Entity
+@Getter
+@Setter
+public class User {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Integer id;
+
+    @Column(unique = true, nullable = false)
+    private String username;
+
+    @Column(unique = true, nullable = false)
+    private String email;
+
+    private String password;
+
+    @Column(nullable = false)
+    private String fullName;
+
+    private String phone;
+
+    private String address;
+
+    private String avatarUrl;
+
+    private boolean isActive = true;
+
+    private LocalDateTime createdAt = LocalDateTime.now();
+
+    private LocalDateTime updatedAt = LocalDateTime.now();
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private Role role;
+}
