@@ -1,7 +1,14 @@
 package com.example.InternShip.entity;
 
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
 
+import java.util.List;
+
+@Entity
+@Getter
+@Setter
 public class University {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -11,5 +18,5 @@ public class University {
     private String name;
 
     @OneToMany(mappedBy = "university")
-    private Intern intern;
+    private List<Intern> intern;
 }

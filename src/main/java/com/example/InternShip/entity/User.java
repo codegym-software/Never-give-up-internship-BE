@@ -26,6 +26,9 @@ public class User {
     @Column(nullable = false)
     private String fullName;
 
+    @OneToOne(mappedBy = "user")
+    private Intern intern;
+
     private String phone;
 
     private String address;
