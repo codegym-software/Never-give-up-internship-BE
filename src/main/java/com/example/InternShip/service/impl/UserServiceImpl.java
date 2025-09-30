@@ -88,6 +88,4 @@ public class UserServiceImpl implements UserService {
         userRepository.save(user);
         return modelMapper.map(user,GetUserResponse.class);
     }
-
-
 }
