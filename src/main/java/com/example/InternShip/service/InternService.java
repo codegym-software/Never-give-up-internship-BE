@@ -1,5 +1,8 @@
 package com.example.InternShip.service;
 
-public interface InternService {
+import com.example.InternShip.dto.request.CreateInternRequest;
+import com.example.InternShip.dto.response.InternResponse;
 
+public interface InternService {
+    InternResponse createIntern(CreateInternRequest request);
 }

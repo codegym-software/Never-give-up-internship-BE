@@ -69,8 +69,7 @@ public class SecurityConfig {
 
         return new CorsFilter(source);
     }
-
-
+    
     @Bean
     JwtDecoder jwtDecoder(){
         SecretKeySpec spec = new SecretKeySpec(singerKey.getBytes(),"HS512");
