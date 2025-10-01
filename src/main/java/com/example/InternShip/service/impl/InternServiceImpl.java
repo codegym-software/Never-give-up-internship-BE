@@ -43,7 +43,6 @@ public class InternServiceImpl implements InternService {
                 .orElseThrow(()-> new RuntimeException(ErrorCode.MAJOR_NOT_EXISTED.getMessage()));
 
         User user = modelMapper.map(request, User.class);
-        user.setFullName(request.getFullName());
         user.setUsername(request.getEmail());
         user.setPassword(passwordEncoder.encode("123456@Abc"));
         user.setRole(Role.INTERN);
