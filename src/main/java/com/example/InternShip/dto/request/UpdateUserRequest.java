@@ -9,3 +9,6 @@ public class UpdateUserRequest {
     @NotBlank(message = "ROLE_INVALID")
     private String role;
 }
+
+
+
