@@ -32,5 +32,4 @@ public class UniversityController {
                 .toList();
         return ResponseEntity.ok(result);
     }
-
 }

@@ -1,9 +1,8 @@
 package com.example.InternShip.repository;
 
+import com.example.InternShip.entity.University;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import com.example.InternShip.entity.University;
+public interface UniversityRepository extends JpaRepository<University,Integer> {
 
-public interface UniversityRepository extends JpaRepository<University, Integer> {
-    
 }
