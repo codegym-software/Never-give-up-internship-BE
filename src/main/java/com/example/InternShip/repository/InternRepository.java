@@ -11,27 +11,27 @@ import org.springframework.data.repository.query.Param;
 
 public interface InternRepository extends JpaRepository<Intern, Integer> {
   Optional<Intern> findAllById(Integer id);
-  
-    @Query("""
-        SELECT i 
-        FROM Intern i
-        JOIN i.user u
-        JOIN i.major m
-        JOIN i.university uni
-        WHERE (:majorId IS NULL OR m.id = :majorId)
-          AND (:universityId IS NULL OR uni.id = :universityId)
-          AND (
-                :keyword IS NULL 
-                OR LOWER(u.fullName) LIKE LOWER(CONCAT('%', :keyword, '%'))
-                OR LOWER(u.email) LIKE LOWER(CONCAT('%', :keyword, '%'))
-                OR u.phone LIKE CONCAT('%', :keyword, '%')
-              )
-    """)
-    Page<Intern> searchInterns(
-            @Param("majorId") Integer majorId,
-            @Param("universityId") Integer universityId,
-            @Param("keyword") String keyword,
-            Pageable pageable
-    );
-           
 
+  @Query("""
+              SELECT i 
+              FROM Intern i
+              JOIN i.user u
+              JOIN i.major m
+              JOIN i.university uni
+              WHERE (:majorId IS NULL OR m.id = :majorId)
+                AND (:universityId IS NULL OR uni.id = :universityId)
+                AND (
+                      :keyword IS NULL 
+                      OR LOWER(u.fullName) LIKE LOWER(CONCAT('%', :keyword, '%'))
+                      OR LOWER(u.email) LIKE LOWER(CONCAT('%', :keyword, '%'))
+                      OR u.phone LIKE CONCAT('%', :keyword, '%')
+                    )
+          """)
+  Page<Intern> searchInterns(
+          @Param("majorId") Integer majorId,
+          @Param("universityId") Integer universityId,
+          @Param("keyword") String keyword,
+          Pageable pageable
+  );
+
+}

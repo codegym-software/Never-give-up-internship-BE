@@ -1,6 +1,5 @@
 package com.example.InternShip.service.impl;
 
-import com.example.InternShip.dto.request.UpdateInfoRequest;
 import com.example.InternShip.dto.request.UpdateInternRequest;
 import com.example.InternShip.dto.request.CreateInternRequest;
 import com.example.InternShip.dto.response.InternResponse;
@@ -48,8 +47,6 @@ public class InternServiceImpl implements InternService {
     private final UniversityRepository universityRepository;
     private final MajorRepository majorRepository;
     private final ModelMapper modelMapper;
-    private final InternRepository internRepository;
-
 
 
     @Override
@@ -66,7 +63,7 @@ public class InternServiceImpl implements InternService {
 
         if (updateInternRequest.getMajorId() != null) {
             Major major = majorRepository.findAllById(updateInternRequest.getMajorId())
-                    .orElseThrow(() -> new RuntimeException(ErrorCode.MAJOR_NOTE_EXITED.getMessage()));
+                    .orElseThrow(() -> new RuntimeException(ErrorCode.MAJOR_NOT_EXISTED.getMessage()));
             intern.setMajor(major);
         }
 
@@ -83,18 +80,19 @@ public class InternServiceImpl implements InternService {
 
     }
 
-  
+
     BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+
     @Override
     @Transactional
     public InternResponse createIntern(CreateInternRequest request) {
-        if(userRepository.existsByEmail(request.getEmail())) {
+        if (userRepository.existsByEmail(request.getEmail())) {
             throw new RuntimeException(ErrorCode.EMAIL_EXISTED.getMessage());
         }
         University university = universityRepository.findById(request.getUniversityId())
-                .orElseThrow(()-> new RuntimeException(ErrorCode.UNIVERSITY_NOT_EXISTED.getMessage()));
+                .orElseThrow(() -> new RuntimeException(ErrorCode.UNIVERSITY_NOT_EXISTED.getMessage()));
         Major major = majorRepository.findById(request.getMajorId())
-                .orElseThrow(()-> new RuntimeException(ErrorCode.MAJOR_NOT_EXISTED.getMessage()));
+                .orElseThrow(() -> new RuntimeException(ErrorCode.MAJOR_NOT_EXISTED.getMessage()));
 
         User user = modelMapper.map(request, User.class);
         user.setUsername(request.getEmail());
@@ -117,9 +115,7 @@ public class InternServiceImpl implements InternService {
 
         return internResponse;
     }
-}
 
-   
 
     public PagedResponse<GetInternResponse> getAllIntern (GetAllInternRequest request){
         int page = Math.max(0, request.getPage() - 1);

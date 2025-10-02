@@ -54,12 +54,12 @@ public class InternController {
 
 
     @PostMapping
-    public ResponseEntity<InternResponse> createIntern(@Valid @RequestBody CreateInternRequest request){
+    public ResponseEntity<InternResponse> createIntern(@Valid @RequestBody CreateInternRequest request) {
         return ResponseEntity.ok(internService.createIntern(request));
+    }
 
     @GetMapping
     public ResponseEntity<PagedResponse<GetInternResponse>> getAllIntern (GetAllInternRequest request){
         return ResponseEntity.ok(internService.getAllIntern(request));
-
     }
 }
