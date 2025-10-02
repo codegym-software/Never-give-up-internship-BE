@@ -1,5 +1,6 @@
 package com.example.InternShip.repository;
 
+import java.util.Optional;
 import com.example.InternShip.entity.Intern;
 
 import org.springframework.data.domain.Page;
@@ -9,6 +10,8 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 public interface InternRepository extends JpaRepository<Intern, Integer> {
+  Optional<Intern> findAllById(Integer id);
+  
     @Query("""
         SELECT i 
         FROM Intern i
@@ -30,4 +33,5 @@ public interface InternRepository extends JpaRepository<Intern, Integer> {
             @Param("keyword") String keyword,
             Pageable pageable
     );
-}
+           
+

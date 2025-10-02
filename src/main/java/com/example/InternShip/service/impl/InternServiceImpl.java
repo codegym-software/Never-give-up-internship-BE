@@ -1,6 +1,7 @@
 package com.example.InternShip.service.impl;
 
-
+import com.example.InternShip.dto.request.UpdateInfoRequest;
+import com.example.InternShip.dto.request.UpdateInternRequest;
 import com.example.InternShip.dto.request.CreateInternRequest;
 import com.example.InternShip.dto.response.InternResponse;
 import com.example.InternShip.entity.Intern;
@@ -20,6 +21,10 @@ import com.example.InternShip.dto.response.PagedResponse;
 import com.example.InternShip.service.InternService;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+
+import java.io.ObjectInputFilter.Status;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.modelmapper.ModelMapper;
 
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -38,13 +43,46 @@ import java.util.List;
 @RequiredArgsConstructor
 public class InternServiceImpl implements InternService {
 
-
     private final UserRepository userRepository;
     private final InternRepository internRepository;
     private final UniversityRepository universityRepository;
     private final MajorRepository majorRepository;
     private final ModelMapper modelMapper;
     private final InternRepository internRepository;
+
+
+
+    @Override
+    public void updateIntern(Integer id, UpdateInternRequest updateInternRequest) {
+        Intern intern = internRepository.findAllById(id)
+                .orElseThrow(() -> new RuntimeException(ErrorCode.INTERN_NOT_EXISTED.getMessage()));
+
+        if (updateInternRequest.getUniversityId() != null) {
+            University university = universityRepository.findAllById(updateInternRequest.getUniversityId())
+                    .orElseThrow(() -> new RuntimeException(ErrorCode.UNIVERSITY_NOT_EXISTED.getMessage()));
+
+            intern.setUniversity(university);
+        }
+
+        if (updateInternRequest.getMajorId() != null) {
+            Major major = majorRepository.findAllById(updateInternRequest.getMajorId())
+                    .orElseThrow(() -> new RuntimeException(ErrorCode.MAJOR_NOTE_EXITED.getMessage()));
+            intern.setMajor(major);
+        }
+
+        try {
+            if (updateInternRequest.getStatus() != null) {
+                intern.setStatus(Intern.Status.valueOf(updateInternRequest.getStatus().toUpperCase()));
+            }
+        } catch (Exception e) {
+            throw new RuntimeException(ErrorCode.STATUS_INVALID.getMessage());
+
+        }
+
+        internRepository.save(intern);
+
+    }
+
   
     BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
     @Override

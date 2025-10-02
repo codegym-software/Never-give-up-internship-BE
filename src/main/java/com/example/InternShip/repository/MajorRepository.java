@@ -1,8 +1,13 @@
 package com.example.InternShip.repository;
 
-import com.example.InternShip.entity.Major;
+import java.util.Optional;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface MajorRepository extends JpaRepository<Major,Integer> {
+import com.example.InternShip.entity.Major;
+
+public interface MajorRepository extends JpaRepository<Major, Integer> {
+
+   Optional< Major> findAllById(Integer majorId);
 
 }
