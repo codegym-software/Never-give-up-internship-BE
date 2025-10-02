@@ -2,6 +2,7 @@ package com.example.InternShip.service.impl;
 
 import com.example.InternShip.dto.request.UpdateInternRequest;
 import com.example.InternShip.dto.request.CreateInternRequest;
+import com.example.InternShip.dto.response.GetUserResponse;
 import com.example.InternShip.dto.response.InternResponse;
 import com.example.InternShip.entity.Intern;
 import com.example.InternShip.entity.Major;
@@ -18,17 +19,10 @@ import com.example.InternShip.dto.response.GetInternResponse;
 import com.example.InternShip.dto.response.PagedResponse;
 
 import com.example.InternShip.service.InternService;
-import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
-
-import java.io.ObjectInputFilter.Status;
-
-import org.springframework.beans.factory.annotation.Autowired;
 import org.modelmapper.ModelMapper;
 
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
-
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -50,34 +44,31 @@ public class InternServiceImpl implements InternService {
 
 
     @Override
-    public void updateIntern(Integer id, UpdateInternRequest updateInternRequest) {
-        Intern intern = internRepository.findAllById(id)
+    public GetInternResponse updateIntern(Integer id, UpdateInternRequest updateInternRequest) {
+        University university = universityRepository.findById(updateInternRequest.getUniversityId())
+                .orElseThrow(() -> new RuntimeException(ErrorCode.UNIVERSITY_NOT_EXISTED.getMessage()));
+
+        Major major = majorRepository.findById(updateInternRequest.getMajorId())
+                .orElseThrow(() -> new RuntimeException(ErrorCode.MAJOR_NOT_EXISTED.getMessage()));
+
+        Intern intern = internRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException(ErrorCode.INTERN_NOT_EXISTED.getMessage()));
 
-        if (updateInternRequest.getUniversityId() != null) {
-            University university = universityRepository.findAllById(updateInternRequest.getUniversityId())
-                    .orElseThrow(() -> new RuntimeException(ErrorCode.UNIVERSITY_NOT_EXISTED.getMessage()));
-
-            intern.setUniversity(university);
-        }
-
-        if (updateInternRequest.getMajorId() != null) {
-            Major major = majorRepository.findAllById(updateInternRequest.getMajorId())
-                    .orElseThrow(() -> new RuntimeException(ErrorCode.MAJOR_NOT_EXISTED.getMessage()));
-            intern.setMajor(major);
-        }
-
         try {
-            if (updateInternRequest.getStatus() != null) {
-                intern.setStatus(Intern.Status.valueOf(updateInternRequest.getStatus().toUpperCase()));
-            }
+            intern.setStatus(Intern.Status.valueOf(updateInternRequest.getStatus().toUpperCase()));
         } catch (Exception e) {
             throw new RuntimeException(ErrorCode.STATUS_INVALID.getMessage());
-
         }
-
+        intern.setUniversity(university);
+        intern.setMajor(major);
         internRepository.save(intern);
 
+        GetInternResponse response = modelMapper.map(intern.getUser(),GetInternResponse.class);
+        response.setId(intern.getId());
+        response.setUniversity(university.getName());
+        response.setMajor(major.getName());
+        response.setStatus(intern.getStatus());
+        return response;
     }
 
 
@@ -85,7 +76,7 @@ public class InternServiceImpl implements InternService {
 
     @Override
     @Transactional
-    public InternResponse createIntern(CreateInternRequest request) {
+    public GetInternResponse createIntern(CreateInternRequest request) {
         if (userRepository.existsByEmail(request.getEmail())) {
             throw new RuntimeException(ErrorCode.EMAIL_EXISTED.getMessage());
         }
@@ -107,10 +98,10 @@ public class InternServiceImpl implements InternService {
         intern.setUniversity(university);
         Intern savedIntern = internRepository.save(intern);
 
-        InternResponse internResponse = modelMapper.map(savedUser, InternResponse.class);
-        internResponse.setInternId(savedIntern.getId());
-        internResponse.setMajorName(savedIntern.getMajor().getName());
-        internResponse.setUniversityName(savedIntern.getUniversity().getName());
+        GetInternResponse internResponse = modelMapper.map(savedUser, GetInternResponse.class);
+        internResponse.setId(savedIntern.getId());
+        internResponse.setMajor(savedIntern.getMajor().getName());
+        internResponse.setUniversity(savedIntern.getUniversity().getName());
         internResponse.setStatus(savedIntern.getStatus());
 
         return internResponse;

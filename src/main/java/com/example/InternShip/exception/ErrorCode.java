@@ -29,6 +29,10 @@ public enum ErrorCode {
     INTERN_NOT_EXISTED("Thực tập sinh không tồn tại."),
     UNIVERSITY_NOT_EXISTED ("Trường học không tồn tại"),
     MAJOR_NOT_EXISTED ("Ngành học không tồn tại"),
+    //NOT_NULL
+    UNIVERSITY_NOT_NULL ("Trường học không được để trống"),
+    MAJOR_NOT_NULL ("Ngành học không được để trống"),
+    STATUS_NOT_BLANK("Trạng thái không được để trống"),
     //FAILED
     VERIFICATION_FAILED("Xác thực thất bại"),
     VERIFICATION_CODE_SEND_FAILED("Gửi mã xác thực thất bại"),

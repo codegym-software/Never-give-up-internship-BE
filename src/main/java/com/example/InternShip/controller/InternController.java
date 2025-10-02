@@ -39,22 +39,14 @@ public class InternController {
     private final InternRepository internRepository;
 
     @PreAuthorize(" hasAuthority('SCOPE_HR')")
-    @PutMapping("/updateIntern/{id}")
-    public ResponseEntity<ApiResponse> UpdateInternById(@PathVariable Integer id,
-            @RequestBody UpdateInternRequest updateInternRequest) {
-
-        Intern intern = internRepository.findAllById(id)
-                .orElseThrow(() -> new RuntimeException(ErrorCode.INTERN_NOT_EXISTED.getMessage()));
-
-        internService.updateIntern(id, updateInternRequest);
-
-        return ResponseEntity.ok()
-                .body(new ApiResponse<>(200, "cap nhat Intern co id: " + id + " thanh cong ", intern));
+    @PutMapping("/{id}")
+    public ResponseEntity<GetInternResponse> UpdateInternById(@PathVariable Integer id, @RequestBody @Valid UpdateInternRequest updateInternRequest) {
+        return ResponseEntity.ok(internService.updateIntern(id, updateInternRequest));
     }
 
 
     @PostMapping
-    public ResponseEntity<InternResponse> createIntern(@Valid @RequestBody CreateInternRequest request) {
+    public ResponseEntity<GetInternResponse> createIntern(@Valid @RequestBody CreateInternRequest request) {
         return ResponseEntity.ok(internService.createIntern(request));
     }
 

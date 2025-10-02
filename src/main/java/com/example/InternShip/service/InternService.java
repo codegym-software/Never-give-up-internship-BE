@@ -9,7 +9,7 @@ import com.example.InternShip.dto.response.PagedResponse;
 
 public interface InternService {
     PagedResponse<GetInternResponse> getAllIntern (GetAllInternRequest request);
-    InternResponse createIntern(CreateInternRequest request);
-    void updateIntern(Integer id,UpdateInternRequest updateInternRequest);
+    GetInternResponse createIntern(CreateInternRequest request);
+    GetInternResponse updateIntern(Integer id,UpdateInternRequest updateInternRequest);
 }
 
