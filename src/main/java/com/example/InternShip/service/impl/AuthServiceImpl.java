@@ -42,24 +42,24 @@ public class AuthServiceImpl implements AuthService {
     @Value("${jwt.singerKey}")
     private String singerKey;
 
-    public void register(RegisterRequest request){
-        if (userRepository.existsByUsername(request.getUsername())){
+    public void register(RegisterRequest request) {
+        if (userRepository.existsByUsername(request.getUsername())) {
             throw new RuntimeException(ErrorCode.USERNAME_EXISTED.getMessage());
         }
-        if (userRepository.existsByEmail(request.getEmail())){
+        if (userRepository.existsByEmail(request.getEmail())) {
             throw new RuntimeException(ErrorCode.EMAIL_EXISTED.getMessage());
         }
 
         String token = UUID.randomUUID().toString();
         BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
-        PendingUser pendingUser =modelMapper.map(request,PendingUser.class);
+        PendingUser pendingUser = modelMapper.map(request, PendingUser.class);
         pendingUser.setPassword(encoder.encode(request.getPassword()));
         pendingUser.setToken(token);
         pendingUser.setExpiryDate(LocalDateTime.now().plusMinutes(20));
         pendingUserRepository.save(pendingUser);
 
-        String verifyLink = "http://localhost:8080/api/v1/pendingUser/verify?token=" + token;
-        pendingUserService.sendVerification(request.getEmail(),verifyLink);
+        String verifyLink = "http://localhost:8082/api/v1/pendingUser/verify?token=" + token;
+        pendingUserService.sendVerification(request.getEmail(), verifyLink);
     }
 
     public TokenResponse login(LoginRequest request) throws JOSEException {
@@ -67,17 +67,22 @@ public class AuthServiceImpl implements AuthService {
                 .orElseThrow(() -> new RuntimeException(ErrorCode.UNAUTHENTICATED.getMessage()));
 
         PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
-        boolean auth = passwordEncoder.matches(request.getPassword(),user.getPassword());
+        boolean auth = passwordEncoder.matches(request.getPassword(), user.getPassword());
 
-        if (!auth){
+        if (!auth) {
             throw new RuntimeException(ErrorCode.UNAUTHENTICATED.getMessage());
         }
+
+        if (user.isActive() == false) {
+            throw new RuntimeException(ErrorCode.USER_INACTIVE.getMessage());
+        }
+
         String accessToken = generateAccessToken(user);
         String refreshToken = generateRefreshToken(user);
-        return new TokenResponse(accessToken,refreshToken);
+        return new TokenResponse(accessToken, refreshToken);
     }
 
-    public User getUserLogin(){
+    public User getUserLogin() {
         SecurityContext context = SecurityContextHolder.getContext();
         String username = context.getAuthentication().getName();
         return userRepository.findByUsername(username)
@@ -91,9 +96,9 @@ public class AuthServiceImpl implements AuthService {
                 .subject(user.getUsername())
                 .issuer("codegym")
                 .issueTime(new Date())
-                .claim("scope",user.getRole())
-                .claim("isActive",user.isActive())
-                .claim("isRefreshToken",false)
+                .claim("scope", user.getRole())
+                .claim("isActive", user.isActive())
+                .claim("isRefreshToken", false)
                 .expirationTime(Date.from(Instant.now().plus(100, ChronoUnit.MINUTES)))
                 .build();
 
@@ -111,7 +116,7 @@ public class AuthServiceImpl implements AuthService {
                 .subject(user.getUsername())
                 .issuer("codegym")
                 .issueTime(new Date())
-                .claim("isRefreshToken",true)
+                .claim("isRefreshToken", true)
                 .expirationTime(Date.from(Instant.now().plus(7, ChronoUnit.DAYS)))
                 .build();
 
@@ -141,6 +146,6 @@ public class AuthServiceImpl implements AuthService {
 
         String accessToken = generateAccessToken(user);
         String refreshToken = generateRefreshToken(user);
-        return new TokenResponse(accessToken,refreshToken);
+        return new TokenResponse(accessToken, refreshToken);
     }
 }
