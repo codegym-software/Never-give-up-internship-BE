@@ -29,12 +29,12 @@ public class Intern {
     @Column(nullable = false)
     private Status status;
 
+    //
     @Getter
-    @RequiredArgsConstructor
     public enum Status{
-        ACTIVE,
-        SUSPENDED,
-        COMPLETED,
-        DROPPED;
+        ACTIVE, // đang thực tập
+        SUSPENDED, // tạm dừng thực tập
+        COMPLETED, // hoành thành thực tập
+        DROPPED; // dừng thực tập
     }
 }

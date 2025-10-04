@@ -1,5 +1,6 @@
 package com.example.InternShip.exception;
 
+import ch.qos.logback.classic.spi.ILoggingEvent;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -15,12 +16,23 @@ public enum ErrorCode {
     FULL_NAME_INVALID("Họ tên không hợp lệ"),
     PHONE_INVALID("Số điện thoại không hợp lệ"),
     VERIFICATION_CODE_INVALID("Mã xác thực không hợp lệ"),
+    STATUS_INVALID("trạng thái không hợp lệ "),
+    MAJOR_INVALID ("Chuyên ngành không hợp lệ"),
+    UNIVERSITY_INVALID ("Trường học không hợp lệ"),
+
     //EXISTED
     USERNAME_EXISTED("Tên đăng nhập đã tồn tại."),
     EMAIL_EXISTED("Email đã tồn tại."),
     //NOT_EXISTED
     USER_NOT_EXISTED("Người dùng không tồn tại."),
     VERIFICATION_CODE_NOT_EXISTED("Mã xác thực không tồn tại."),
+    INTERN_NOT_EXISTED("Thực tập sinh không tồn tại."),
+    UNIVERSITY_NOT_EXISTED ("Trường học không tồn tại"),
+    MAJOR_NOT_EXISTED ("Ngành học không tồn tại"),
+    //NOT_NULL
+    UNIVERSITY_NOT_NULL ("Trường học không được để trống"),
+    MAJOR_NOT_NULL ("Ngành học không được để trống"),
+    STATUS_NOT_BLANK("Trạng thái không được để trống"),
     //FAILED
     VERIFICATION_FAILED("Xác thực thất bại"),
     VERIFICATION_CODE_SEND_FAILED("Gửi mã xác thực thất bại"),
