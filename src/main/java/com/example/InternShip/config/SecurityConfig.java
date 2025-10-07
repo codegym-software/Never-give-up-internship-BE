@@ -46,7 +46,6 @@ public class SecurityConfig {
                         .requestMatchers("/api/v1/pendingUser/**").permitAll()
                         .requestMatchers("/swagger-ui/**").permitAll()
                         .requestMatchers("/v3/api-docs/**").permitAll()
-                        
                         .anyRequest().authenticated()
                 );
 
@@ -95,3 +94,43 @@ public class SecurityConfig {
         return jwtDecoder;
     }
 }
+
+/*
+ *  @Bean
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+        http
+                .authenticationProvider(authenticationProvider())
+                .authenticationProvider(new DaoAuthenticationProvider() {
+                    {
+                        setUserDetailsService(superAdminDetailsService());
+                        setPasswordEncoder(passwordEncoder());
+                    }
+                })
+                .csrf(csrf -> csrf.disable())
+                .authorizeHttpRequests((requests) -> requests
+                .requestMatchers("/register", "/login", "/css/**").permitAll()
+                // USER: chỉ xem danh sách
+                .requestMatchers("/users").hasAnyRole("USER", "ADMIN", "SUPER_ADMIN")
+                // ADMIN: CRUD users
+                .requestMatchers("/users/create", "/users/{id}/edit", "/users/{id}/update").hasRole("ADMIN")
+                .requestMatchers("/users/{id}").hasRole("ADMIN") // DELETE
+                .requestMatchers("/users").hasRole("ADMIN") // POST (create)
+                // SUPER_ADMIN: quản lý accounts
+                .requestMatchers("/admin/accounts/**").hasRole("SUPER_ADMIN")
+                .requestMatchers("/admin/dashboard").hasRole("SUPER_ADMIN")
+                .anyRequest().authenticated()
+                )
+                .formLogin((form) -> form
+                .loginPage("/login")
+                .defaultSuccessUrl("/users", true)
+                .permitAll()
+                )
+                .logout((logout) -> logout
+                .logoutSuccessUrl("/login")
+                .permitAll());
+
+        return http.build();
+    }
+ * 
+ * 
+ */
