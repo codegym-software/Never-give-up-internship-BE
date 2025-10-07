@@ -16,6 +16,10 @@ import com.example.InternShip.dto.response.PagedResponse;
 import com.example.InternShip.service.InternService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+
+import java.util.List;
+
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 
 import org.springframework.web.bind.annotation.PostMapping;
@@ -24,11 +28,14 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.GetMapping;
 
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.PathVariable;
 
 @RestController
@@ -54,4 +61,17 @@ public class InternController {
     public ResponseEntity<PagedResponse<GetInternResponse>> getAllIntern (GetAllInternRequest request){
         return ResponseEntity.ok(internService.getAllIntern(request));
     }
+
+
+    // @GetMapping
+    //   public ResponseEntity<?> getAllIntern (
+    //     @RequestParam(required = false, defaultValue = "") String keyword,
+    //     @RequestParam(required = false) List<Integer> universityId,
+    //     @AuthenticationPrincipal Jwt jwt,
+    //     Pageable pageable
+
+    //   ){
+    //     return ResponseEntity.success(internService.getAllIntern(keyword, universityId, jwt, pageable));
+    // }
+
 }
