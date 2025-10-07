@@ -29,7 +29,6 @@ public class Intern {
     @Column(nullable = false)
     private Status status;
 
-    //
     @Getter
     public enum Status{
         ACTIVE, // đang thực tập
