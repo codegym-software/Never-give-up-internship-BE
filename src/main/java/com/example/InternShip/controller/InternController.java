@@ -14,6 +14,8 @@ import com.example.InternShip.dto.response.GetInternResponse;
 import com.example.InternShip.dto.response.PagedResponse;
 
 import com.example.InternShip.service.InternService;
+
+import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
@@ -58,6 +60,7 @@ public class InternController {
     }
 
     @GetMapping
+    @Operation(summary = "Get all intern", description = "show a list paginated of all intern")
     public ResponseEntity<PagedResponse<GetInternResponse>> getAllIntern (GetAllInternRequest request){
         return ResponseEntity.ok(internService.getAllIntern(request));
     }
