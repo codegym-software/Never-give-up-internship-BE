@@ -1,10 +1,12 @@
 package com.example.InternShip.controller;
 
+import com.example.InternShip.dto.request.ForgetpassRequest;
 import com.example.InternShip.dto.request.LoginRequest;
 import com.example.InternShip.dto.request.RefreshTokenRequest;
 import com.example.InternShip.dto.request.RegisterRequest;
 import com.example.InternShip.dto.response.TokenResponse;
 import com.example.InternShip.service.AuthService;
+import com.example.InternShip.service.UserService;
 import com.nimbusds.jose.JOSEException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -21,6 +23,7 @@ import java.text.ParseException;
 @RequiredArgsConstructor
 public class AuthController {
     private final AuthService authService;
+    private final UserService userService;
 
     @PostMapping("/register")
     public ResponseEntity<Void> register(@RequestBody @Valid RegisterRequest request) {
@@ -29,12 +32,20 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    private ResponseEntity<TokenResponse> login(@RequestBody @Valid LoginRequest request) throws JOSEException {
+    public ResponseEntity<TokenResponse> login(@RequestBody @Valid LoginRequest request) throws JOSEException {
         return ResponseEntity.ok(authService.login(request));
     }
 
     @PostMapping("/refresh")
-    private ResponseEntity<TokenResponse> refreshToken(@RequestBody RefreshTokenRequest request) throws JOSEException, ParseException {
+    public ResponseEntity<TokenResponse> refreshToken(@RequestBody RefreshTokenRequest request)
+            throws JOSEException, ParseException {
         return ResponseEntity.ok(authService.refreshToken(request));
     }
+
+    @PostMapping("/forgetPassword")
+    public ResponseEntity<String> forgetPassword(@RequestBody ForgetpassRequest request) {
+            userService.forgetPassword(request);
+            return ResponseEntity.ok().body("Verification code has been sent");
+    }
+
 }

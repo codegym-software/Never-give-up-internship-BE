@@ -2,7 +2,6 @@ package com.example.InternShip.repository;
 
 import com.example.InternShip.entity.User;
 import com.example.InternShip.entity.enums.Role;
-import jakarta.validation.constraints.NotBlank;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;

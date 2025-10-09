@@ -1,6 +1,7 @@
 package com.example.InternShip.service;
 
 import com.example.InternShip.dto.request.CreateUserRequest;
+import com.example.InternShip.dto.request.ForgetpassRequest;
 import com.example.InternShip.dto.request.GetAllUserRequest;
 import com.example.InternShip.dto.request.UpdateInfoRequest;
 import com.example.InternShip.dto.request.UpdateUserRequest;
@@ -13,4 +14,5 @@ public interface UserService {
     GetUserResponse creatUser(CreateUserRequest request);
     GetUserResponse updateUser(UpdateUserRequest request, int id);
     GetUserResponse updateUserInfo(UpdateInfoRequest request);
+    void forgetPassword(ForgetpassRequest request);
 }

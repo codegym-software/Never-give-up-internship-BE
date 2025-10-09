@@ -8,7 +8,6 @@ import com.example.InternShip.exception.ErrorCode;
 import com.example.InternShip.repository.UserRepository;
 import com.example.InternShip.service.AdminService;
 
-import io.swagger.v3.oas.annotations.servers.Server;
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -20,7 +19,6 @@ public class AdminServiceImpl implements AdminService {
 
     @Override
     public void UnBanUser(int id) {
-        // TODO Auto-generated method stub
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException(ErrorCode.USER_NOT_EXISTED.getMessage()));
         user.setActive(true);

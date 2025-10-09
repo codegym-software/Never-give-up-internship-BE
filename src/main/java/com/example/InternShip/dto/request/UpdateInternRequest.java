@@ -1,8 +1,7 @@
 package com.example.InternShip.dto.request;
 
 
-import java.io.ObjectInputFilter.Status;
-
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -14,10 +13,10 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 public class UpdateInternRequest {
-
+    @NotNull(message = "MAJOR_NOT_NULL")
     private Integer majorId;
-
+    @NotNull(message = "UNIVERSITY_NOT_NULL")
     private Integer universityId;
-
+    @NotBlank(message = "STATUS_NOT_BLANK")
     private String status; 
 }

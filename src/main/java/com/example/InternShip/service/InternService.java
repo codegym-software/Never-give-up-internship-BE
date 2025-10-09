@@ -1,9 +1,14 @@
 package com.example.InternShip.service;
-
+  
+import com.example.InternShip.dto.request.CreateInternRequest;
 import com.example.InternShip.dto.request.UpdateInternRequest;
+import com.example.InternShip.dto.request.GetAllInternRequest;
+import com.example.InternShip.dto.response.GetInternResponse;
+import com.example.InternShip.dto.response.PagedResponse;
 
 public interface InternService {
-
-        void updateIntern(Integer id,UpdateInternRequest updateInternRequest);
-
+    PagedResponse<GetInternResponse> getAllIntern (GetAllInternRequest request);
+    GetInternResponse createIntern(CreateInternRequest request);
+    GetInternResponse updateIntern(Integer id,UpdateInternRequest updateInternRequest);
 }
+
