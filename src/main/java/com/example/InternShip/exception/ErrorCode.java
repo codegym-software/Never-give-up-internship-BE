@@ -1,6 +1,5 @@
 package com.example.InternShip.exception;
 
-import ch.qos.logback.classic.spi.ILoggingEvent;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 

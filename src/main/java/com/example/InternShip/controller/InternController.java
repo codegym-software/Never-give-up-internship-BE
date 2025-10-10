@@ -1,13 +1,8 @@
 package com.example.InternShip.controller;
 
 import com.example.InternShip.dto.request.UpdateInternRequest;
-import com.example.InternShip.dto.response.ApiResponse;
-import com.example.InternShip.exception.ErrorCode;
 
 import com.example.InternShip.dto.request.CreateInternRequest;
-import com.example.InternShip.dto.response.InternResponse;
-import com.example.InternShip.entity.Intern;
-import com.example.InternShip.repository.InternRepository;
 import com.example.InternShip.dto.request.GetAllInternRequest;
 import com.example.InternShip.dto.response.GetInternResponse;
 import com.example.InternShip.dto.response.PagedResponse;

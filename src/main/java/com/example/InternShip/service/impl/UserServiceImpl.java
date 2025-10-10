@@ -99,8 +99,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void forgetPassword(ForgetpassRequest request) {
-        // TODO Auto-generated method stub
-        User user = userRepository.findByUsernameOrEmail(request.getEmail())
+        userRepository.findByUsernameOrEmail(request.getEmail())
                 .orElseThrow(() -> new RuntimeException(ErrorCode.EMAIL_INVALID.getMessage()));
         String token = UUID.randomUUID().toString();
         BCryptPasswordEncoder encoder =new BCryptPasswordEncoder();

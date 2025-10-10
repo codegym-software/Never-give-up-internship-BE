@@ -1,6 +1,5 @@
 package com.example.InternShip.dto.request;
 
-import java.io.ObjectInputFilter.Status;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
