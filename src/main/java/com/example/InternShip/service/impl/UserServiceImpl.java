@@ -37,7 +37,7 @@ public class UserServiceImpl implements UserService {
 
     public PagedResponse<GetUserResponse> getAllUser(GetAllUserRequest request) {
         int page = Math.max(0, request.getPage() - 1);
-        int size = 15;
+        int size = 10;
         Role role = parseRole(request.getRole());
         PageRequest pageable = PageRequest.of(page, size, Sort.by("updatedAt").descending());
         Page<User> users = userRepository.searchUsers(role, request.getKeyword(), pageable);
@@ -86,6 +86,7 @@ public class UserServiceImpl implements UserService {
                 .orElseThrow(() -> new RuntimeException(ErrorCode.USER_NOT_EXISTED.getMessage()));
         modelMapper.map(request, user);
         user.setRole(parseRole(request.getRole()));
+        user.setUpdatedAt(LocalDateTime.now());
         userRepository.save(user);
         return modelMapper.map(user, GetUserResponse.class);
     }
