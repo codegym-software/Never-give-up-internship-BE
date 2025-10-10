@@ -1,5 +1,6 @@
 package com.example.InternShip.exception;
 
+import ch.qos.logback.classic.spi.ILoggingEvent;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -30,6 +31,7 @@ public enum ErrorCode {
     UNIVERSITY_NOT_EXISTED ("Trường học không tồn tại"),
     MAJOR_NOT_EXISTED ("Ngành học không tồn tại"),
     INTERNSHIPTERM_NOT_EXISTED ("Kì thực tập không tồn tại"),
+
     //NOT_NULL
     UNIVERSITY_NOT_NULL ("Trường học không được để trống"),
     MAJOR_NOT_NULL ("Ngành học không được để trống"),

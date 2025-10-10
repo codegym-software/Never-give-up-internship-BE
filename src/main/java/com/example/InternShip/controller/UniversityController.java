@@ -3,6 +3,7 @@ package com.example.InternShip.controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.InternShip.dto.response.GetUserResponse;
 import com.example.InternShip.dto.response.UniversityGetAllResponse;
 import com.example.InternShip.entity.University;
 import com.example.InternShip.repository.UniversityRepository;
