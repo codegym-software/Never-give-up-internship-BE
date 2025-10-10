@@ -6,7 +6,6 @@ import com.example.InternShip.dto.request.RegisterRequest;
 import com.example.InternShip.dto.response.TokenResponse;
 import com.example.InternShip.entity.PendingUser;
 import com.example.InternShip.entity.User;
-import com.example.InternShip.entity.enums.Role;
 import com.example.InternShip.exception.ErrorCode;
 import com.example.InternShip.repository.PendingUserRepository;
 import com.example.InternShip.repository.UserRepository;

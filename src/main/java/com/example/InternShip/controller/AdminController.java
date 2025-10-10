@@ -5,12 +5,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.example.InternShip.dto.response.ApiResponse;
 import com.example.InternShip.service.AdminService;
-import com.example.InternShip.service.impl.AdminServiceImpl;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -24,20 +21,16 @@ public class AdminController {
     private final AdminService adminService;
 
     @PutMapping("/BanUser/{id}")
-    public ResponseEntity<ApiResponse> BanUser(@PathVariable int id) {
-        // TODO: process PUT request
+    public ResponseEntity<ApiResponse<String>> BanUser(@PathVariable int id) {
 
         adminService.BanUser(id);
-        ApiResponse adApiResponse = new ApiResponse<>(200, "ban người dùng có id " + id + " thành công", null);
-        return ResponseEntity.ok().body(adApiResponse);
+        return ResponseEntity.ok().body(new ApiResponse<>(200, "ban người dùng có id " + id + " thành công", null));
     }
 
     @PutMapping("/UnBanUser/{id}")
-    public ResponseEntity<ApiResponse> UnBanUser(@PathVariable int id) {
-        // TODO: process PUT request
+    public ResponseEntity<ApiResponse<String>> UnBanUser(@PathVariable int id) {
         adminService.UnBanUser(id);
-        ApiResponse adApiResponse = new ApiResponse<>(200, "UnBan người dùng có id " + id + "thành công", null);
-        return ResponseEntity.ok().body(adApiResponse);
+        return ResponseEntity.ok().body(new ApiResponse<>(200, "UnBan người dùng có id " + id + "thành công", null));
     }
 
 }

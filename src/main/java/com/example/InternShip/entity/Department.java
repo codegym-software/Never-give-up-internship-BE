@@ -1,0 +1,28 @@
+package com.example.InternShip.entity;
+
+import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
+
+import java.util.List;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
+@Entity
+@Getter
+@Setter
+@Table(name = "department")
+public class Department {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Integer id;
+
+    private String name;
+
+    @Column(columnDefinition = "TEXT")
+    private String description;
+
+    @OneToMany(mappedBy = "department")
+    @JsonIgnore
+    private List<InternshipProgram> internshipPrograms;
+}

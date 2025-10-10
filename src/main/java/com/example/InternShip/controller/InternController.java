@@ -8,17 +8,15 @@ import com.example.InternShip.dto.request.CreateInternRequest;
 import com.example.InternShip.dto.response.InternResponse;
 import com.example.InternShip.entity.Intern;
 import com.example.InternShip.repository.InternRepository;
-
 import com.example.InternShip.dto.request.GetAllInternRequest;
 import com.example.InternShip.dto.response.GetInternResponse;
 import com.example.InternShip.dto.response.PagedResponse;
 
 import com.example.InternShip.service.InternService;
-
-import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
+import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.http.ResponseEntity;
 
 import org.springframework.web.bind.annotation.PostMapping;
@@ -30,6 +28,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.security.access.prepost.PreAuthorize;
+
 import org.springframework.web.bind.annotation.PathVariable;
 
 @RestController
@@ -44,7 +43,6 @@ public class InternController {
         return ResponseEntity.ok(internService.updateIntern(id, updateInternRequest));
     }
 
-
     @PostMapping
     public ResponseEntity<GetInternResponse> createIntern(@Valid @RequestBody CreateInternRequest request) {
         return ResponseEntity.ok(internService.createIntern(request));
@@ -56,7 +54,6 @@ public class InternController {
         return ResponseEntity.ok(internService.getAllIntern(request));
     }
 
-
     // @GetMapping
     //   public ResponseEntity<?> getAllIntern (
     //     @RequestParam(required = false, defaultValue = "") String keyword,
@@ -67,5 +64,4 @@ public class InternController {
     //   ){
     //     return ResponseEntity.success(internService.getAllIntern(keyword, universityId, jwt, pageable));
     // }
-
 }

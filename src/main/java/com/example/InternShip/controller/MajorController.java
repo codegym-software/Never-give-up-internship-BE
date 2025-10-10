@@ -7,6 +7,7 @@ import com.example.InternShip.dto.response.MajorGetAllResponse;
 import com.example.InternShip.entity.Major;
 import com.example.InternShip.repository.MajorRepository;
 
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 
 import java.util.List;
@@ -24,6 +25,7 @@ public class MajorController {
     private final ModelMapper modelMapper;
 
     @GetMapping // Không cần qua tầng service vì không xử lý gì nhiều
+    @Operation(summary = "GetAllMajor", description = "Show a List Majors")
     public ResponseEntity<List<MajorGetAllResponse>> getAllMajor() {
         List<Major> responses = majorRepository.findAll();
         List<MajorGetAllResponse> result = responses.stream()

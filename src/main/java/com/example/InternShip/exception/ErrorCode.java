@@ -23,12 +23,15 @@ public enum ErrorCode {
     //EXISTED
     USERNAME_EXISTED("Tên đăng nhập đã tồn tại."),
     EMAIL_EXISTED("Email đã tồn tại."),
+    APPLICATION_EXISTED("Hồ sơ đã tồn tại"),
     //NOT_EXISTED
     USER_NOT_EXISTED("Người dùng không tồn tại."),
     VERIFICATION_CODE_NOT_EXISTED("Mã xác thực không tồn tại."),
     INTERN_NOT_EXISTED("Thực tập sinh không tồn tại."),
     UNIVERSITY_NOT_EXISTED ("Trường học không tồn tại"),
     MAJOR_NOT_EXISTED ("Ngành học không tồn tại"),
+    INTERNSHIPTERM_NOT_EXISTED ("Kì thực tập không tồn tại"),
+
     //NOT_NULL
     UNIVERSITY_NOT_NULL ("Trường học không được để trống"),
     MAJOR_NOT_NULL ("Ngành học không được để trống"),

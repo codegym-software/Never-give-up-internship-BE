@@ -1,7 +1,6 @@
 package com.example.InternShip.config;
 
 import com.example.InternShip.exception.ErrorCode;
-import com.example.InternShip.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -19,6 +18,7 @@ import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.oauth2.jwt.JwtValidators;
 import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -34,8 +34,6 @@ import java.util.List;
 public class SecurityConfig {
     @Value("${jwt.singerKey}")
     private String singerKey;
-    private final UserRepository userRepository;
-
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
@@ -46,6 +44,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/v1/pendingUser/**").permitAll()
                         .requestMatchers("/swagger-ui/**").permitAll()
                         .requestMatchers("/v3/api-docs/**").permitAll()
+                        .requestMatchers("/api/v1/pendingUserForgetPassword/**").permitAll()
                         .anyRequest().authenticated()
                 );
 

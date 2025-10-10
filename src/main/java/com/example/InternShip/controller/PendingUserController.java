@@ -3,7 +3,6 @@ package com.example.InternShip.controller;
 import com.example.InternShip.service.PendingUserService;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -21,5 +20,10 @@ public class PendingUserController {
     public void verify(@RequestParam String token, HttpServletResponse response) throws IOException {
         pendingUserService.verify(token);
         //response.sendRedirect("http://localhost:5173/email-verified?status=success");
+    }
+     @GetMapping("/verifyForgetPassword")
+    public void verifyForgetPassword(@RequestParam String token, HttpServletResponse response) throws IOException {
+        pendingUserService.verify_ForgetPassword(token);
+        
     }
 }

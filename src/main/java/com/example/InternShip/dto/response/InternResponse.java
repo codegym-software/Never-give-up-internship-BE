@@ -1,7 +1,6 @@
 package com.example.InternShip.dto.response;
 
 import com.example.InternShip.entity.Intern;
-import com.example.InternShip.entity.enums.Role;
 import lombok.Data;
 
 @Data

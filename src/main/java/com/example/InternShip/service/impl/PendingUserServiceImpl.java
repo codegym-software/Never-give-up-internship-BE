@@ -30,7 +30,7 @@ public class PendingUserServiceImpl implements PendingUserService {
     @Value("${spring.mail.username}")
     private String fromMail;
 
-    public void verify(String token){
+    public void verify(String token) {
         try {
             PendingUser pendingUser = pendingUserRepository.findByToken(token)
                     .orElseThrow(() -> new RuntimeException(ErrorCode.VERIFICATION_CODE_NOT_EXISTED.getMessage()));
@@ -38,16 +38,34 @@ public class PendingUserServiceImpl implements PendingUserService {
                 throw new RuntimeException(ErrorCode.VERIFICATION_CODE_INVALID.getMessage());
             }
 
-            User user = modelMapper.map(pendingUser,User.class);
+            User user = modelMapper.map(pendingUser, User.class);
             user.setRole(Role.VISITOR);
             userRepository.save(user);
             pendingUserRepository.delete(pendingUser);
-        }catch (DataIntegrityViolationException e){
+        } catch (DataIntegrityViolationException e) {
             throw new RuntimeException(ErrorCode.VERIFICATION_FAILED.getMessage());
         }
     }
 
-    public  void sendVerification(String email, String verifyLink){
+    public void verify_ForgetPassword(String token) {
+        try {
+            PendingUser pendingUser = pendingUserRepository.findByToken(token)
+                    .orElseThrow(() -> new RuntimeException(ErrorCode.VERIFICATION_CODE_NOT_EXISTED.getMessage()));
+            if (pendingUser.getExpiryDate().isBefore(LocalDateTime.now())) {
+                throw new RuntimeException(ErrorCode.VERIFICATION_CODE_INVALID.getMessage());
+            }
+
+            User user = userRepository.findByUsernameOrEmail(pendingUser.getEmail())
+                    .orElseThrow(() -> new RuntimeException(ErrorCode.USER_NOT_EXISTED.getMessage()));
+            user.setPassword(pendingUser.getPassword());
+            userRepository.save(user);
+            pendingUserRepository.delete(pendingUser);
+        } catch (DataIntegrityViolationException e) {
+            throw new RuntimeException(ErrorCode.VERIFICATION_FAILED.getMessage());
+        }
+    }
+
+    public void sendVerification(String email, String verifyLink) {
         try {
             MimeMessage message = mailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
@@ -73,7 +91,7 @@ public class PendingUserServiceImpl implements PendingUserService {
             helper.setText(emailContent, true);
 
             mailSender.send(message);
-        }catch (Exception e){
+        } catch (Exception e) {
             throw new RuntimeException(ErrorCode.VERIFICATION_CODE_SEND_FAILED.getMessage());
         }
     }

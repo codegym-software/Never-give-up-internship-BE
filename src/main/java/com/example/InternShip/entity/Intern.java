@@ -2,7 +2,6 @@ package com.example.InternShip.entity;
 
 import jakarta.persistence.*;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
 @Setter
@@ -29,6 +28,10 @@ public class Intern {
     @Column(nullable = false)
     private Status status;
 
+    @Column(length = 512)
+    private String cvUrl;
+
+    //
     @Getter
     public enum Status{
         ACTIVE, // đang thực tập
