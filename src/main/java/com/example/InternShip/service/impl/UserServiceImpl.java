@@ -1,7 +1,7 @@
 package com.example.InternShip.service.impl;
 
 import com.example.InternShip.dto.request.CreateUserRequest;
-import com.example.InternShip.dto.request.ForgetpassRequest;
+import com.example.InternShip.dto.request.ForgetPasswordRequest;
 import com.example.InternShip.dto.request.GetAllUserRequest;
 import com.example.InternShip.dto.request.UpdateInfoRequest;
 import com.example.InternShip.dto.request.UpdateUserRequest;
@@ -98,7 +98,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void forgetPassword(ForgetpassRequest request) {
+    public void forgetPassword(ForgetPasswordRequest request) {
         userRepository.findByUsernameOrEmail(request.getEmail())
                 .orElseThrow(() -> new RuntimeException(ErrorCode.EMAIL_INVALID.getMessage()));
         String token = UUID.randomUUID().toString();

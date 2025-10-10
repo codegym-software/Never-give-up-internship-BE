@@ -13,6 +13,5 @@ public interface  AuthService {
     void register(RegisterRequest request);
     TokenResponse login(LoginRequest request) throws JOSEException;
     TokenResponse refreshToken(RefreshTokenRequest request) throws JOSEException, ParseException;
-
     User getUserLogin();
 }

@@ -13,23 +13,23 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PathVariable;
 
 @RestController
-@RequestMapping("/api/admin")
+@RequestMapping("/api/v1/admins")
 @RequiredArgsConstructor
 @PreAuthorize("hasAuthority('SCOPE_ADMIN') ")
 public class AdminController {
 
     private final AdminService adminService;
 
-    @PutMapping("/BanUser/{id}")
+    @PutMapping("/banUser/{id}")
     public ResponseEntity<ApiResponse<String>> BanUser(@PathVariable int id) {
 
-        adminService.BanUser(id);
-        return ResponseEntity.ok().body(new ApiResponse<>(200, "ban người dùng có id " + id + " thành công", null));
+        adminService.banUser(id);
+        return ResponseEntity.ok().body(new ApiResponse<>(200, "Ban người dùng có id " + id + " thành công", null));
     }
 
-    @PutMapping("/UnBanUser/{id}")
+    @PutMapping("/unBanUser/{id}")
     public ResponseEntity<ApiResponse<String>> UnBanUser(@PathVariable int id) {
-        adminService.UnBanUser(id);
+        adminService.unBanUser(id);
         return ResponseEntity.ok().body(new ApiResponse<>(200, "UnBan người dùng có id " + id + "thành công", null));
     }
 

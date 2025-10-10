@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.io.IOException;
 
 @RestController
-@RequestMapping("/api/v1/pendingUser")
+@RequestMapping("/api/v1/pendingUsers")
 @RequiredArgsConstructor
 public class PendingUserController {
     private final PendingUserService pendingUserService;
@@ -19,11 +19,11 @@ public class PendingUserController {
     @GetMapping("/verify")
     public void verify(@RequestParam String token, HttpServletResponse response) throws IOException {
         pendingUserService.verify(token);
-        //response.sendRedirect("http://localhost:5173/email-verified?status=success");
+        response.sendRedirect("http://localhost:5174/email-verified?status=success");
     }
      @GetMapping("/verifyForgetPassword")
     public void verifyForgetPassword(@RequestParam String token, HttpServletResponse response) throws IOException {
-        pendingUserService.verify_ForgetPassword(token);
+        pendingUserService.verifyForgetPassword(token);
         
     }
 }

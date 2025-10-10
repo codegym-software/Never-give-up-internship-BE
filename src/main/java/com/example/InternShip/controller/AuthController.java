@@ -1,6 +1,6 @@
 package com.example.InternShip.controller;
 
-import com.example.InternShip.dto.request.ForgetpassRequest;
+import com.example.InternShip.dto.request.ForgetPasswordRequest;
 import com.example.InternShip.dto.request.LoginRequest;
 import com.example.InternShip.dto.request.RefreshTokenRequest;
 import com.example.InternShip.dto.request.RegisterRequest;
@@ -43,7 +43,7 @@ public class AuthController {
     }
 
     @PostMapping("/forgetPassword")
-    public ResponseEntity<String> forgetPassword(@RequestBody ForgetpassRequest request) {
+    public ResponseEntity<String> forgetPassword(@RequestBody ForgetPasswordRequest request) {
             userService.forgetPassword(request);
             return ResponseEntity.ok().body("Verification code has been sent");
     }

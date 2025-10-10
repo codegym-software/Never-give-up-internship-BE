@@ -4,6 +4,7 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
 import lombok.Data;
 
 @Data
@@ -19,11 +20,12 @@ public class CreateInternRequest {
     @Pattern(regexp = "^$|0\\d{9}", message = "PHONE_INVALID")
     private String phone;
 
+    @Size(min = 5, max = 200, message = "Địa chỉ quá dài hoặc quá ngắn")
     private String address;
 
-    @NotNull(message = "MAJOR_INVALID")
-    private int majorId;
+    @NotNull(message = "MAJOR_NOTNULL")
+    private Integer majorId;
 
-    @NotNull(message = "UNIVERSITY_INVALID")
-    private int universityId;
+    @NotNull(message = "UNIVERSITY_NOTNULL")
+    private Integer universityId;
 }

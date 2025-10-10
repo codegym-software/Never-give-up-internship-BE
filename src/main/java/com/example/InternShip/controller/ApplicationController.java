@@ -24,14 +24,14 @@ public class ApplicationController {
     }
 
 
-@GetMapping("/me")
-@PreAuthorize("isAuthenticated()")
-public ResponseEntity<ApplicationResponse> getMyApplication() {
-    ApplicationResponse resp = applicationService.getMyApplication();
-    if (resp == null) {
-        return ResponseEntity.ok().build(); // 200 với body rỗng (frontend nhận null/undefined)
+    @GetMapping("/me")
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<ApplicationResponse> getMyApplication() {
+        ApplicationResponse resp = applicationService.getMyApplication();
+        if (resp == null) {
+            return ResponseEntity.ok().build(); // 200 với body rỗng (frontend nhận null/undefined)
+        }
+        return ResponseEntity.ok(resp);
     }
-    return ResponseEntity.ok(resp);
-}
 
 }

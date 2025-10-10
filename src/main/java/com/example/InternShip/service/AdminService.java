@@ -1,6 +1,6 @@
 package com.example.InternShip.service;
 
 public interface AdminService {
-    void BanUser(int id);
-    void UnBanUser(int id);
+    void banUser(int id);
+    void unBanUser(int id);
 }

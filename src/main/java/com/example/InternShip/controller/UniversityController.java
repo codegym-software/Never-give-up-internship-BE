@@ -16,7 +16,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 
 @RestController
-@RequestMapping("/api/v1/universitys")
+@RequestMapping("/api/v1/universities")
 @RequiredArgsConstructor
 public class UniversityController {
     private final UniversityRepository universityRepository;
