@@ -79,7 +79,7 @@ public class PendingUserServiceImpl implements PendingUserService {
             String formattedNow = now.format(formatter);
 
             String emailContent = """
-                    <html>
+                        <html>
                         <body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; margin: 0; padding: 0; background-color: #f4f4f4;">
                             <div style="max-width: 600px; margin: 20px auto; padding: 20px; background: #ffffff; border-radius: 8px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
 
@@ -104,8 +104,7 @@ public class PendingUserServiceImpl implements PendingUserService {
                             </div>
                         </body>
                     </html>
-                    """
-                    .formatted(verifyLink, formattedNow);
+                    """.formatted(formattedNow, verifyLink);
             helper.setText(emailContent, true);
 
             mailSender.send(message);

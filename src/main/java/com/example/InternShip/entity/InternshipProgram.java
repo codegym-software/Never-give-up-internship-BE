@@ -14,9 +14,11 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 @Setter
 @Table(name = "internship_program")
 public class InternshipProgram {
-    @Id
+   @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
+
+    private String name;
 
     private LocalDate timeStart;
     private LocalDate timeEnd;
@@ -35,6 +37,7 @@ public class InternshipProgram {
     public enum Status {
         DRAFT, // bản nháp
         PUBLISHED, // xuất bản
+        REVIEWING, // Đang trong quá trình xem xét
         ONGOING, // đang thực hiện
         COMPLETED, // hoàn thành
         CANCELLED // huỷ bỏ

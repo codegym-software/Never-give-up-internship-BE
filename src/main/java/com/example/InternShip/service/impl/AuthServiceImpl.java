@@ -1,15 +1,20 @@
 package com.example.InternShip.service.impl;
 
+import com.example.InternShip.dto.request.GoogleLoginRequest;
 import com.example.InternShip.dto.request.LoginRequest;
 import com.example.InternShip.dto.request.RefreshTokenRequest;
 import com.example.InternShip.dto.request.RegisterRequest;
 import com.example.InternShip.dto.response.TokenResponse;
 import com.example.InternShip.entity.PendingUser;
 import com.example.InternShip.entity.User;
+import com.example.InternShip.entity.enums.Role;
+import com.example.InternShip.exception.AccountConflictException;
 import com.example.InternShip.exception.ErrorCode;
 import com.example.InternShip.repository.PendingUserRepository;
 import com.example.InternShip.repository.UserRepository;
 import com.example.InternShip.service.AuthService;
+import com.example.InternShip.service.GoogleAuthService;
+import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
 import com.nimbusds.jose.*;
 import com.nimbusds.jose.crypto.MACSigner;
 import com.nimbusds.jose.crypto.MACVerifier;
@@ -23,12 +28,14 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.text.ParseException;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.Date;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -38,8 +45,64 @@ public class AuthServiceImpl implements AuthService {
     private final ModelMapper modelMapper;
     private final PendingUserRepository pendingUserRepository;
     private final PendingUserServiceImpl pendingUserService;
+    private final GoogleAuthService googleAuthService;
+
     @Value("${jwt.singerKey}")
     private String singerKey;
+
+    @Transactional
+    public TokenResponse loginWithGoogle(GoogleLoginRequest request) throws Exception, AccountConflictException {
+        // 1. Verify Google ID Token
+        GoogleIdToken.Payload payload = googleAuthService.verifyGoogleIdToken(request.getIdToken());
+
+        // 2. Process user login or registration
+        User user = processOAuthPostLogin(payload);
+
+        // 3. Generate system's JWT
+        String accessToken = generateAccessToken(user);
+        String refreshToken = generateRefreshToken(user);
+
+        return new TokenResponse(accessToken, refreshToken);
+    }
+
+    private User processOAuthPostLogin(GoogleIdToken.Payload payload) throws AccountConflictException {
+        Optional<User> userOptional = userRepository.findByEmail(payload.getEmail());
+
+        if (userOptional.isPresent()) {
+            User user = userOptional.get();
+            if (user.getGoogleId() == null || user.getGoogleId().isEmpty()) {
+               
+                throw new AccountConflictException("Account with this email already exists. Please log in with your password to link your Google account.");
+            }
+            return user;
+        } else {
+            User newUser = new User();
+            newUser.setGoogleId(payload.getSubject());
+            newUser.setEmail(payload.getEmail());
+            newUser.setFullName((String) payload.get("name"));
+            newUser.setAvatarUrl((String) payload.get("picture"));
+            newUser.setActive(true); 
+            newUser.setRole(Role.VISITOR); 
+
+            newUser.setPassword(null);
+            String username = generateUniqueUsername(payload.getEmail());
+            newUser.setUsername(username);
+
+            return userRepository.save(newUser);
+        }
+    }
+    
+    private String generateUniqueUsername(String email) {
+        String baseUsername = email.split("@")[0];
+        String username = baseUsername;
+        int counter = 1;
+        while (userRepository.existsByUsername(username)) {
+            username = baseUsername + counter;
+            counter++;
+        }
+        return username;
+    }
+    
 
     public void register(RegisterRequest request) {
         if (userRepository.existsByUsername(request.getUsername())) {
@@ -146,5 +209,26 @@ public class AuthServiceImpl implements AuthService {
         String accessToken = generateAccessToken(user);
         String refreshToken = generateRefreshToken(user);
         return new TokenResponse(accessToken, refreshToken);
+    }
+
+    @Override
+    @Transactional
+    public void linkGoogleAccount(GoogleLoginRequest request) throws Exception {
+        // Get the currently authenticated user (logged in with password)
+        User currentUser = getUserLogin();
+
+        // Verify the Google ID token
+        GoogleIdToken.Payload payload = googleAuthService.verifyGoogleIdToken(request.getIdToken());
+        String googleId = payload.getSubject();
+
+        // Check if another user has already linked this Google account
+        Optional<User> userWithGoogleId = userRepository.findByGoogleId(googleId);
+        if (userWithGoogleId.isPresent() && !userWithGoogleId.get().getId().equals(currentUser.getId())) {
+            throw new RuntimeException("This Google account is already linked to another user.");
+        }
+
+        // Link the Google ID to the current user
+        currentUser.setGoogleId(googleId);
+        userRepository.save(currentUser);
     }
 }

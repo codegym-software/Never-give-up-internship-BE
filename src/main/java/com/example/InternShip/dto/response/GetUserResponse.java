@@ -1,8 +1,9 @@
 package com.example.InternShip.dto.response;
 
 import com.example.InternShip.entity.enums.Role;
-import lombok.Data;
 import com.fasterxml.jackson.annotation.JsonFormat;
+
+import lombok.Data;
 
 import java.time.LocalDateTime;
 
@@ -16,6 +17,6 @@ public class GetUserResponse {
     private String address;
     private boolean isActive;
     private Role role;
-    @JsonFormat(pattern="dd-MM-yyyy HH:mm:ss")
+    @JsonFormat(pattern = "dd-MM-yyyy HH:mm:ss")
     private LocalDateTime updatedAt;
 }

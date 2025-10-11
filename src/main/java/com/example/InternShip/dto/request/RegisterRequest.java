@@ -14,7 +14,7 @@ import lombok.NoArgsConstructor;
 @Builder
 public class RegisterRequest {
     @NotBlank(message = "USERNAME_INVALID")
-    @Size(min = 4, max = 50, message = "USERNAME_INVALID")
+    @Size(max = 50, message = "USERNAME_INVALID")
     private String username;
 
     @Email(message = "EMAIL_INVALID")

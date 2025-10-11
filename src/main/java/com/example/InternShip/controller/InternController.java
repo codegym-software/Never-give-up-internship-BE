@@ -3,6 +3,7 @@ package com.example.InternShip.controller;
 import com.example.InternShip.dto.request.UpdateInternRequest;
 
 import com.example.InternShip.dto.request.CreateInternRequest;
+
 import com.example.InternShip.dto.request.GetAllInternRequest;
 import com.example.InternShip.dto.response.GetInternResponse;
 import com.example.InternShip.dto.response.PagedResponse;
@@ -11,7 +12,7 @@ import com.example.InternShip.service.InternService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
-import io.swagger.v3.oas.annotations.Operation;
+
 import org.springframework.http.ResponseEntity;
 
 import org.springframework.web.bind.annotation.PostMapping;
@@ -44,19 +45,9 @@ public class InternController {
     }
 
     @GetMapping
-    @Operation(summary = "Get all intern", description = "show a list paginated of all intern")
     public ResponseEntity<PagedResponse<GetInternResponse>> getAllIntern (GetAllInternRequest request){
         return ResponseEntity.ok(internService.getAllIntern(request));
     }
 
-    // @GetMapping
-    //   public ResponseEntity<?> getAllIntern (
-    //     @RequestParam(required = false, defaultValue = "") String keyword,
-    //     @RequestParam(required = false) List<Integer> universityId,
-    //     @AuthenticationPrincipal Jwt jwt,
-    //     Pageable pageable
-
-    //   ){
-    //     return ResponseEntity.success(internService.getAllIntern(keyword, universityId, jwt, pageable));
-    // }
+      
 }

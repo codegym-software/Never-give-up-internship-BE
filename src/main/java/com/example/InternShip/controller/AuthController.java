@@ -1,6 +1,8 @@
 package com.example.InternShip.controller;
 
 import com.example.InternShip.dto.request.ForgetPasswordRequest;
+import com.example.InternShip.exception.AccountConflictException;
+import com.example.InternShip.dto.request.GoogleLoginRequest;
 import com.example.InternShip.dto.request.LoginRequest;
 import com.example.InternShip.dto.request.RefreshTokenRequest;
 import com.example.InternShip.dto.request.RegisterRequest;
@@ -10,6 +12,7 @@ import com.example.InternShip.service.UserService;
 import com.nimbusds.jose.JOSEException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -36,6 +39,18 @@ public class AuthController {
         return ResponseEntity.ok(authService.login(request));
     }
 
+    @PostMapping("/google-login")
+    public ResponseEntity<?> googleLogin(@RequestBody GoogleLoginRequest request) {
+        try {
+            TokenResponse tokenResponse = authService.loginWithGoogle(request);
+            return ResponseEntity.ok(tokenResponse);
+        } catch (AccountConflictException e) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Authentication failed: " + e.getMessage());
+        }
+    }
+
     @PostMapping("/refresh")
     public ResponseEntity<TokenResponse> refreshToken(@RequestBody RefreshTokenRequest request)
             throws JOSEException, ParseException {
@@ -46,6 +61,12 @@ public class AuthController {
     public ResponseEntity<String> forgetPassword(@RequestBody ForgetPasswordRequest request) {
             userService.forgetPassword(request);
             return ResponseEntity.ok().body("Verification code has been sent");
+    }
+
+    @PostMapping("/link-google")
+    public ResponseEntity<Void> linkGoogleAccount(@RequestBody GoogleLoginRequest request) throws Exception {
+        authService.linkGoogleAccount(request);
+        return ResponseEntity.ok().build();
     }
 
 }

@@ -8,6 +8,6 @@ import com.example.InternShip.entity.Major;
 
 public interface MajorRepository extends JpaRepository<Major, Integer> {
 
-   Optional<Major> findAllById(Integer majorId);
+   Optional< Major> findAllById(Integer majorId);
 
 }

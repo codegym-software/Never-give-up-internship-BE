@@ -14,7 +14,6 @@ public class ForgetPasswordRequest {
     @Email
     @NotBlank(message = "EMAIL_INVALID")
     private String email;
-
     @NotBlank(message = "PASSWORD_INVALID")
     @Size(min = 8, max = 30, message = "PASSWORD_INVALID")
     private String password;

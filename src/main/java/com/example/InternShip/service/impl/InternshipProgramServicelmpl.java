@@ -17,11 +17,12 @@ public class InternshipProgramServicelmpl implements InternshipProgramService{
     private final InternshipProgramRepository internshipProgramRepository;
 
     @Override
-    public List<InternshipProgram> getAllPrograms() {
-        List<InternshipProgram> result = internshipProgramRepository.findAll();
-        return result.stream()
-                .filter(program -> program.getStatus() == InternshipProgram.Status.PUBLISHED)
-                .toList();
-    }
+public List<InternshipProgram> getAllPrograms() {
+    List<InternshipProgram> result = internshipProgramRepository.findAll();
+    return result.stream()
+            .filter(program -> program.getStatus() == InternshipProgram.Status.PUBLISHED)
+            .toList();
+}
+
     
 }

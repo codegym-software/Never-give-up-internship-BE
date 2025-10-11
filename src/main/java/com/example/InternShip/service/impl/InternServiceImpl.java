@@ -2,7 +2,6 @@ package com.example.InternShip.service.impl;
 
 import com.example.InternShip.dto.request.UpdateInternRequest;
 import com.example.InternShip.dto.request.CreateInternRequest;
-
 import com.example.InternShip.entity.Intern;
 import com.example.InternShip.entity.Major;
 import com.example.InternShip.entity.University;

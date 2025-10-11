@@ -6,7 +6,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 @Data
 public class ApplicationRequest {
-    @NotNull(message = "INTERNSHIP_TERM_NOTNULL")
+    @NotNull(message = "INTERNSHIP_TERM_INVALID")
     private Integer internshipTermId;
 
     @NotNull(message = "UNIVERSITY_NOTNULL")
@@ -17,4 +17,7 @@ public class ApplicationRequest {
 
     @NotNull(message = "FILE_NOTNULL")
     private MultipartFile cvFile;
+
+    @NotNull(message = "FILE_NOTNULL")
+    private MultipartFile internApplicationFile;
 }

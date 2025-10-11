@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -18,7 +19,9 @@ import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.oauth2.jwt.JwtValidators;
 import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.HttpStatusEntryPoint;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
@@ -37,23 +40,22 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(AbstractHttpConfigurer::disable)
-                .cors(withDefaults -> {})
+                .cors(Customizer.withDefaults())
                 .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers("/api/v1/auth/**").permitAll()
-                        .requestMatchers("/api/v1/pendingUser/**").permitAll()
-                        .requestMatchers("/swagger-ui/**").permitAll()
-                        .requestMatchers("/v3/api-docs/**").permitAll()
-                        .requestMatchers("/api/v1/pendingUserForgetPassword/**").permitAll()
+                        .requestMatchers("/api/v1/auth/**", "/api/v1/pendingUser/**", "/swagger-ui/**", "/v3/api-docs/**", "/api/v1/pendingUserForgetPassword/**").permitAll()
                         .anyRequest().authenticated()
+                )
+                .oauth2ResourceServer(oauth2 ->
+                        oauth2.jwt(jwtConfigurer -> jwtConfigurer.decoder(jwtDecoder()))
+                )
+                .exceptionHandling(exceptionHandling ->
+                        exceptionHandling.authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED))
                 );
 
-
-        http.oauth2ResourceServer(oauth2 ->
-                oauth2.jwt(jwtConfigurer -> jwtConfigurer.decoder(jwtDecoder()))
-                );
         return http.build();
     }
 
+ 
     @Bean
     public CorsFilter corsFilter() {
         CorsConfiguration config = new CorsConfiguration();
@@ -92,43 +94,3 @@ public class SecurityConfig {
         return jwtDecoder;
     }
 }
-
-/*
- *  @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http
-                .authenticationProvider(authenticationProvider())
-                .authenticationProvider(new DaoAuthenticationProvider() {
-                    {
-                        setUserDetailsService(superAdminDetailsService());
-                        setPasswordEncoder(passwordEncoder());
-                    }
-                })
-                .csrf(csrf -> csrf.disable())
-                .authorizeHttpRequests((requests) -> requests
-                .requestMatchers("/register", "/login", "/css/**").permitAll()
-                // USER: chỉ xem danh sách
-                .requestMatchers("/users").hasAnyRole("USER", "ADMIN", "SUPER_ADMIN")
-                // ADMIN: CRUD users
-                .requestMatchers("/users/create", "/users/{id}/edit", "/users/{id}/update").hasRole("ADMIN")
-                .requestMatchers("/users/{id}").hasRole("ADMIN") // DELETE
-                .requestMatchers("/users").hasRole("ADMIN") // POST (create)
-                // SUPER_ADMIN: quản lý accounts
-                .requestMatchers("/admin/accounts/**").hasRole("SUPER_ADMIN")
-                .requestMatchers("/admin/dashboard").hasRole("SUPER_ADMIN")
-                .anyRequest().authenticated()
-                )
-                .formLogin((form) -> form
-                .loginPage("/login")
-                .defaultSuccessUrl("/users", true)
-                .permitAll()
-                )
-                .logout((logout) -> logout
-                .logoutSuccessUrl("/login")
-                .permitAll());
-
-        return http.build();
-    }
- * 
- * 
- */

@@ -14,7 +14,7 @@ import java.time.LocalDateTime;
 @Table(name = "internship_application")
 public class InternshipApplication {
 
-    @Id
+      @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
@@ -37,6 +37,12 @@ public class InternshipApplication {
     @Column(length = 512)
     private String cvUrl;
 
+    @Column(length = 512)
+    private String internshipContractUrl;
+
+    @Column(length = 512)
+    private String internshipApplicationtUrl;
+
     private BigDecimal score;
 
     @Enumerated(EnumType.STRING)
@@ -50,6 +56,7 @@ public class InternshipApplication {
         SUBMITTED, // đã nộp
         UNDER_REVIEW, // đang xem xét
         APPROVED, // đã duyệt
+        CONFIRM, // đã xác nhận hợp đồng thực tập
         REJECTED, // bị từ chối
         WITHDRAWN // rút lại
     }

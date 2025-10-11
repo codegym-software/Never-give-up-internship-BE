@@ -8,7 +8,6 @@ import lombok.Data;
 public class LoginRequest {
     @NotBlank(message = "USERNAME_INVALID")
     private String identifier;
-
     @NotBlank(message = "PASSWORD_INVALID")
     @Size(min = 8, max = 30, message = "PASSWORD_INVALID")
     private String password;

@@ -30,8 +30,7 @@ public class CloudinaryServiceImpl implements CloudinaryService {
                                                             // sau
     private static final long MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
 
-    @SuppressWarnings("rawtypes")
-    public FileResponse uploadFile(MultipartFile file) {
+    public FileResponse uploadFile(MultipartFile file,String folder) {
         User user = authService.getUserLogin();
         try {
             validateFile(file);
@@ -57,9 +56,9 @@ public class CloudinaryServiceImpl implements CloudinaryService {
             Map uploadResult = cloudinary.uploader().upload(file.getBytes(),
                     ObjectUtils.asMap(
                             "resource_type", resourceType,
-                            "folder", "documents",
+                            "folder", folder,
                             "public_id", fileName, 
-                            "overwrite", false, // Ghi đè nếu trùng
+                            "overwrite", true, // Ghi đè nếu trùng
                             "unique_filename", false // Thêm random string (tungaris.pdf -> tungaris_456.pdf)
                     ));
 
