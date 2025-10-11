@@ -19,3 +19,5 @@
    ![Cloudinary API Keys](https://github.com/user-attachments/assets/1607dec0-dd5a-40d8-a9a2-f588143d88a3)
 
 4. Thay thế các giá trị này vào file `.env`.  
+5. Setting cho phép hiển thị pdf
+<img width="1920" height="990" alt="image" src="https://github.com/user-attachments/assets/0b49cd54-9973-4dae-8fea-062c8baa1d68" />
