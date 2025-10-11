@@ -120,7 +120,7 @@ public class AuthServiceImpl implements AuthService {
         pendingUser.setExpiryDate(LocalDateTime.now().plusMinutes(20));
         pendingUserRepository.save(pendingUser);
 
-        String verifyLink = "http://localhost:8082/api/v1/pendingUser/verify?token=" + token;
+        String verifyLink = "http://localhost:8082/api/v1/pendingUsers/verify?token=" + token;
         pendingUserService.sendVerification(request.getEmail(), verifyLink);
     }
 
