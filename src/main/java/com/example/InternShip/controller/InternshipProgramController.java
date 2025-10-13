@@ -1,5 +1,6 @@
 package com.example.InternShip.controller;
 
+import com.example.InternShip.dto.response.GetAllInternProgram;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -23,7 +24,7 @@ public class InternshipProgramController {
 
     private final InternshipProgramService internshipProgramService;
     @GetMapping
-    public List<InternshipProgram> getAllPrograms() {
+    public List<GetAllInternProgram> getAllPrograms() {
         return internshipProgramService.getAllPrograms();
     }
 }

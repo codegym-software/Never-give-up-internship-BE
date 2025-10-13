@@ -1,6 +1,7 @@
 package com.example.InternShip.controller;
 
 import com.example.InternShip.dto.request.ApplicationRequest;
+import com.example.InternShip.dto.request.ApproveApplicationRequest;
 import com.example.InternShip.dto.request.SubmitApplicationContractRequest;
 import com.example.InternShip.dto.response.ApplicationResponse;
 import com.example.InternShip.service.ApplicationService;
@@ -60,5 +61,11 @@ public class ApplicationController {
                 status,
                 page)
         );
+    }
+
+    @PatchMapping("/approve")
+    public ResponseEntity<Void> approveApplication(@RequestBody @Valid ApproveApplicationRequest request) {
+        applicationService.approveApplication(request);
+        return ResponseEntity.ok(null);
     }
 }

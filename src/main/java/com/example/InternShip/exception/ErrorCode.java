@@ -19,8 +19,8 @@ public enum ErrorCode {
     MAJOR_INVALID ("Chuyên ngành không hợp lệ"),
     UNIVERSITY_INVALID ("Trường học không hợp lệ"),
     TIME_APPLY_INVALID("Đã quá hạn nộp đơn thực tập"),
-
-
+    LIST_APPLICATION_INVALID("Bạn phải chọn ít nhất 1 đơn thực tập"),
+    STATUS_APPLICATION_INVALID("Không thể duyệt đơn thực tập: "),
     //EXISTED
     USERNAME_EXISTED("Tên đăng nhập đã tồn tại."),
     EMAIL_EXISTED("Email đã tồn tại."),
@@ -31,7 +31,7 @@ public enum ErrorCode {
     INTERN_NOT_EXISTED("Thực tập sinh không tồn tại."),
     UNIVERSITY_NOT_EXISTED ("Trường học không tồn tại"),
     MAJOR_NOT_EXISTED ("Ngành học không tồn tại"),
-    INTERNSHIPPROGRAM_NOT_EXISTED ("Kỳ thực tập không tồn tại"),
+    INTERNSHIP_TERM_NOT_EXISTED("Kì thực tập không tồn tại"),
     INTERNSHIP_APPLICATION_NOT_EXISTED("Đơn đăng ký không tồn tại"),
 
     //NOT_NULL
@@ -45,8 +45,8 @@ public enum ErrorCode {
 
     //UNAUTHENTICATED
     UNAUTHENTICATED("Đăng nhập thất bại"),
-    USER_INACTIVE("Tài khoản đã bị vô hiệu hóa"), 
-    
+    USER_INACTIVE("Tài khoản đã bị vô hiệu hóa"),
+
     ;
     private final String message;
 }

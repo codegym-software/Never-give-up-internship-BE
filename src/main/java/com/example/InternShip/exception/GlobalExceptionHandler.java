@@ -27,7 +27,7 @@ public class GlobalExceptionHandler {
                 try {
                     message = ErrorCode.valueOf(enumKey).getMessage();
                 } catch (IllegalArgumentException e) {
-                    message = "Kiểm tra lại request đi";
+                    message = "Kiểm tra lại request đi" + e;
                 }
             }
 

@@ -1,6 +1,7 @@
 package com.example.InternShip.service.impl;
 
 import com.example.InternShip.dto.request.ApplicationRequest;
+import com.example.InternShip.dto.request.ApproveApplicationRequest;
 import com.example.InternShip.dto.request.SubmitApplicationContractRequest;
 import com.example.InternShip.dto.response.ApplicationResponse;
 import com.example.InternShip.dto.response.FileResponse;
@@ -17,6 +18,7 @@ import lombok.RequiredArgsConstructor;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -99,7 +101,7 @@ public class ApplicationServiceImpl implements ApplicationService {
     public PagedResponse<ApplicationResponse> getAllApplication(Integer internshipTerm, Integer university,
                                                                 Integer major, String keyword, String status, int page) {
         page = Math.min(0, page - 1);
-        PageRequest pageable = PageRequest.of(page, 10);
+        PageRequest pageable = PageRequest.of(page, 10, Sort.by("createdAt").descending());
         InternshipApplication.Status iStatus = parseInternshipApplicationStatus(status);
         Page<InternshipApplication> applications = applicationRepository.searchApplications(internshipTerm,
                 university, major, keyword, iStatus, pageable);
@@ -174,6 +176,18 @@ public class ApplicationServiceImpl implements ApplicationService {
         res.setUniversityName(app.getUniversity().getName());
         res.setMajorName(app.getMajor().getName());
         return res;
+    }
+
+    @Transactional //Duyệt đơn thực tập
+    public void approveApplication(ApproveApplicationRequest request) {
+        List<InternshipApplication> applications = applicationRepository.findAllById(request.getApplicationIds());
+        for (InternshipApplication app : applications) {
+            if (!app.getStatus().equals(InternshipApplication.Status.UNDER_REVIEW)) {
+                throw new IllegalArgumentException(ErrorCode.STATUS_APPLICATION_INVALID.getMessage() + app.getUser().getEmail());
+            }
+            app.setStatus(InternshipApplication.Status.APPROVED);
+        }
+        applicationRepository.saveAll(applications);
     }
 
 }
