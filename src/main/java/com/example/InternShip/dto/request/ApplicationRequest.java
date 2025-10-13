@@ -7,7 +7,7 @@ import org.springframework.web.multipart.MultipartFile;
 @Data
 public class ApplicationRequest {
     @NotNull(message = "INTERNSHIP_TERM_INVALID")
-    private Integer internshipTermId;
+    private Integer internshipProgramId;
 
     @NotNull(message = "UNIVERSITY_NOTNULL")
     private Integer universityId;

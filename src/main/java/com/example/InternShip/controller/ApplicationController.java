@@ -24,7 +24,7 @@ public class ApplicationController {
         return ResponseEntity.ok(applicationService.submitApplication(request));
     }
 
-    @PutMapping(consumes = "multipart/form-data" , value = "/submit-contract")
+    @PutMapping(consumes = "multipart/form-data", value = "/submit-contract")
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<String> submitApplicationContract(
             @ModelAttribute @Valid SubmitApplicationContractRequest request) {
@@ -32,22 +32,20 @@ public class ApplicationController {
         return ResponseEntity.ok("Success");
     }
 
-
-
-@GetMapping("/me")
-@PreAuthorize("isAuthenticated()")
-public ResponseEntity<ApplicationResponse> getMyApplication() {
-    ApplicationResponse resp = applicationService.getMyApplication();
-    if (resp == null) {
-        return ResponseEntity.ok().build(); // 200 với body rỗng (frontend nhận null/undefined)
+    @GetMapping("/me")
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<ApplicationResponse> getMyApplication() {
+        ApplicationResponse resp = applicationService.getMyApplication();
+        if (resp == null) {
+            return ResponseEntity.ok().build(); // 200 với body rỗng (frontend nhận null/undefined)
+        }
+        return ResponseEntity.ok(resp);
     }
-    return ResponseEntity.ok(resp);
-}
 
-@GetMapping // Hàm lấy ra danh sách đơn xin thực tập
+    @GetMapping // Hàm lấy ra danh sách đơn xin thực tập
     // @PreAuthorize("hasAuthority('SCOPE_HR', 'SCOPE_ADMIN')")
     public ResponseEntity<?> getAllApplication(
-        @RequestParam(required = false, defaultValue = "") Integer internshipTerm,
+            @RequestParam(required = false, defaultValue = "") Integer internshipTerm,
             @RequestParam(required = false, defaultValue = "") Integer university,
             @RequestParam(required = false, defaultValue = "") Integer major,
             @RequestParam(required = false, defaultValue = "") String keyword,
@@ -55,13 +53,12 @@ public ResponseEntity<ApplicationResponse> getMyApplication() {
             @RequestParam(required = false, defaultValue = "1") int page) {
 
         return ResponseEntity.ok(applicationService.getAllApplication(
-            internshipTerm,
-            university,
-            major,
-            keyword,
-            status,
-            page)
+                internshipTerm,
+                university,
+                major,
+                keyword,
+                status,
+                page)
         );
     }
-
 }
