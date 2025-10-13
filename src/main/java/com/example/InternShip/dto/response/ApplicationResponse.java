@@ -21,7 +21,7 @@ public class ApplicationResponse {
     private String internshipApplicationtUrl;
     private String internshipContractUrl;
     private String internshipApplicationStatus;
-    @JsonFormat(pattern="dd-MM-yyyy HH:mm:ss")
+    @JsonFormat(pattern="dd-MM-yyyy")
     private LocalDateTime createdAt;
 
     private String internshipProgram;

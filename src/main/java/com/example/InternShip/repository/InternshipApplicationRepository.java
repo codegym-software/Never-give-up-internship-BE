@@ -2,7 +2,9 @@ package com.example.InternShip.repository;
 
 import com.example.InternShip.entity.InternshipApplication;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
