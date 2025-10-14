@@ -15,6 +15,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Map;
 
 @Service
@@ -23,58 +24,40 @@ import java.util.Map;
 public class CloudinaryServiceImpl implements CloudinaryService {
 
     private final Cloudinary cloudinary;
-
     private final AuthService authService;
 
-    private static final String ALLOWED_EXTENSIONS = "pdf"; // Hiện tại sẽ chỉ upload cv trước sau này sẽ hỗ trợ excel
-                                                            // sau
     private static final long MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
 
-    public FileResponse uploadFile(MultipartFile file,String folder) {
+    @Override
+    public FileResponse uploadFile(MultipartFile file, String folder) {
         User user = authService.getUserLogin();
         try {
-            validateFile(file);
+            // Pass folder to validation method
+            validateFile(file, folder);
 
-            // Tên thật của file
             String originalFilename = file.getOriginalFilename();
-
-            // loại file
-            String extension = getFileExtension(originalFilename);
-
-            // Tạo tên file không có extension
             String fileName = removeEmailDomain(user.getEmail());
 
-            // XÁC ĐỊNH RESOURCE TYPE
-            String resourceType;
-            if ("pdf".equalsIgnoreCase(extension)) {
-                resourceType = "image"; // PDF upload như image theo docs
-            } else {
-                resourceType = "raw"; // Excel vẫn dùng raw
-            }
-
-            // Upload lên Cloudinary
+            // Let Cloudinary auto-detect the resource type
             Map uploadResult = cloudinary.uploader().upload(file.getBytes(),
                     ObjectUtils.asMap(
-                            "resource_type", resourceType,
+                            "resource_type", "auto",
                             "folder", folder,
-                            "public_id", fileName, 
-                            "overwrite", true, // Ghi đè nếu trùng
-                            "unique_filename", false // Thêm random string (tungaris.pdf -> tungaris_456.pdf)
+                            "public_id", fileName,
+                            "overwrite", true,
+                            "unique_filename", false
                     ));
 
-            // Cấu hình nó thể đừng hỏi nó là cái gì        
             String publicId = (String) uploadResult.get("public_id");
-            // Link xem pdf online (Cái này lưu vào csdl của bảng intern_program nhé)
             String secureUrl = (String) uploadResult.get("secure_url");
 
-            // Hiện tại return để test chứ nên return cái secureUrl
             return FileResponse.builder()
-                    .fileName(originalFilename) // Tên file gốc
-                    .fileUrl(secureUrl) // Url xem online
-                    .publicId(publicId) // Cak
-                    .fileSize(file.getSize()) // Kích thước file
-                    .fileType(file.getContentType()) // Loại file (pdf, xls, xlsx)
-                    .uploadDate(LocalDateTime.now()) // Thời gian upload
+                    .fileName(originalFilename)
+                    .fileUrl(secureUrl)
+                    .publicId(publicId)
+                    .fileSize(file.getSize())
+                    .fileType(file.getContentType())
+                    .uploadDate(LocalDateTime.now())
                     .message("Upload thành công!")
                     .build();
 
@@ -84,7 +67,7 @@ public class CloudinaryServiceImpl implements CloudinaryService {
         }
     }
 
-    private void validateFile(MultipartFile file) {
+    private void validateFile(MultipartFile file, String folder) {
         if (file.isEmpty()) {
             throw new FileStorageException("File trống!");
         }
@@ -93,11 +76,20 @@ public class CloudinaryServiceImpl implements CloudinaryService {
             throw new FileStorageException("File quá lớn! Kích thước tối đa: 10MB");
         }
 
-        String fileName = file.getOriginalFilename();
-        String extension = getFileExtension(fileName);
+        String extension = getFileExtension(file.getOriginalFilename()).toLowerCase();
 
-        if (!ALLOWED_EXTENSIONS.contains(extension.toLowerCase())) {
-            throw new FileStorageException("Chỉ chấp nhận file PDF!");
+        // Apply validation based on the folder
+        if ("avatars".equals(folder)) {
+            List<String> allowedImageExtensions = List.of("png", "jpg", "jpeg", "gif");
+            if (!allowedImageExtensions.contains(extension)) {
+                throw new FileStorageException("Chỉ chấp nhận file ảnh (PNG, JPG, GIF)!");
+            }
+        } else {
+            // Assuming other folders are for documents like CVs
+            List<String> allowedDocumentExtensions = List.of("pdf");
+            if (!allowedDocumentExtensions.contains(extension)) {
+                throw new FileStorageException("Chỉ chấp nhận file PDF!");
+            }
         }
     }
 

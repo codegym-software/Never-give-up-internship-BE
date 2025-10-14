@@ -65,4 +65,11 @@ public ResponseEntity<List<ApplicationResponse>> getMyApplication() {
         );
     }
 
+    @PutMapping("/withdraw/{applicationId}")
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<String> withdrawApplication(@PathVariable Integer applicationId) {
+        applicationService.withdrawApplication(applicationId);
+        return ResponseEntity.ok("Application withdrawn successfully");
+    }
+
 }

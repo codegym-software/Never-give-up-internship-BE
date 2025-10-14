@@ -42,10 +42,12 @@ public enum ErrorCode {
     VERIFICATION_FAILED("Xác thực thất bại"),
     VERIFICATION_CODE_SEND_FAILED("Gửi mã xác thực thất bại"),
     SUBMIT_FAILED("Gửi thất bại"),
+    WITHDRAWAL_FAILED("Rút đơn thất bại"),
 
     //UNAUTHENTICATED
     UNAUTHENTICATED("Đăng nhập thất bại"),
     USER_INACTIVE("Tài khoản đã bị vô hiệu hóa"), 
+    UNAUTHORIZED_ACTION("Hành động không được phép")
     
     ;
     private final String message;

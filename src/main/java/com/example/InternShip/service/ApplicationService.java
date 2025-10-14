@@ -14,5 +14,6 @@ public interface ApplicationService {
     List<ApplicationResponse> getMyApplication(); // <-- mới
    PagedResponse<ApplicationResponse> getAllApplication(Integer internshipTerm, Integer university, Integer major, String applicantName, String status, int page);
     void submitApplicationContract(SubmitApplicationContractRequest request);
+    void withdrawApplication(Integer applicationId);
 }
 

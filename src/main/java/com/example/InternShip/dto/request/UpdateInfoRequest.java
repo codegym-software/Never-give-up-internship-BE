@@ -2,6 +2,7 @@ package com.example.InternShip.dto.request;
 
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
+import org.springframework.web.multipart.MultipartFile;
 
 @Data
 public class UpdateInfoRequest {
@@ -9,5 +10,5 @@ public class UpdateInfoRequest {
     private String fullName;
     private String phone;
     private String address;
-    private String avatarUrl;
+    private MultipartFile avatarFile;
 }

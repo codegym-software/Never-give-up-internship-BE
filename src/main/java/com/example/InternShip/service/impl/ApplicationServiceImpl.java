@@ -174,4 +174,22 @@ public List<ApplicationResponse> getMyApplication() {
                 return res;
         }
 
+        @Override
+        public void withdrawApplication(Integer applicationId) { // rút đơn
+                 
+                try {
+                    User user = authService.getUserLogin();
+                InternshipApplication application = applicationRepository.findById(applicationId).orElseThrow(() -> new EntityNotFoundException(
+                                                ErrorCode.INTERNSHIP_APPLICATION_NOT_EXISTED.getMessage()));
+                   if (user.getId() != application.getUser().getId()) {
+                        throw new IllegalArgumentException(ErrorCode.UNAUTHORIZED_ACTION.getMessage());
+                   }
+                application.setStatus(InternshipApplication.Status.WITHDRAWN);
+                applicationRepository.save(application);      
+                } catch (Exception e) {
+                        // TODO: handle exception
+                        throw new RuntimeException(ErrorCode.WITHDRAWAL_FAILED.getMessage());
+                }
+        }
+
 }

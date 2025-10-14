@@ -15,6 +15,7 @@ public class GetUserResponse {
     private String email;
     private String phone;
     private String address;
+    private String avatarUrl; // Added this field
     private boolean isActive;
     private Role role;
     @JsonFormat(pattern = "dd-MM-yyyy HH:mm:ss")

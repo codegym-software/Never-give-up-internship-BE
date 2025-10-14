@@ -13,6 +13,8 @@ import com.example.InternShip.entity.enums.Role;
 import com.example.InternShip.exception.ErrorCode;
 import com.example.InternShip.repository.PendingUserRepository;
 import com.example.InternShip.repository.UserRepository;
+import com.example.InternShip.dto.response.FileResponse;
+import com.example.InternShip.service.CloudinaryService;
 import com.example.InternShip.service.UserService;
 import lombok.RequiredArgsConstructor;
 
@@ -35,6 +37,7 @@ public class UserServiceImpl implements UserService {
     private final AuthServiceImpl authService;
     private final PendingUserRepository pendingUserRepository;
     private final PendingUserServiceImpl pendingUserService;
+    private final CloudinaryService cloudinaryService;
 
     public PagedResponse<GetUserResponse> getAllUser(GetAllUserRequest request) {
         int page = Math.max(0, request.getPage() - 1);
@@ -94,7 +97,24 @@ public class UserServiceImpl implements UserService {
 
     public GetUserResponse updateUserInfo(UpdateInfoRequest request) {
         User user = authService.getUserLogin();
-        modelMapper.map(request, user);
+
+        if (request.getAvatarFile() != null && !request.getAvatarFile().isEmpty()) {
+            FileResponse fileResponse = cloudinaryService.uploadFile(request.getAvatarFile(), "avatars");
+            user.setAvatarUrl(fileResponse.getFileUrl());
+        }
+
+        if (request.getFullName() != null && !request.getFullName().isBlank()) {
+            user.setFullName(request.getFullName());
+        }
+
+        if (request.getPhone() != null) {
+            user.setPhone(request.getPhone());
+        }
+
+        if (request.getAddress() != null) {
+            user.setAddress(request.getAddress());
+        }
+
         userRepository.save(user);
         return modelMapper.map(user, GetUserResponse.class);
     }
