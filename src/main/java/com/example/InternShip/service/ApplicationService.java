@@ -2,6 +2,7 @@ package com.example.InternShip.service;
 
 import com.example.InternShip.dto.request.ApplicationRequest;
 import com.example.InternShip.dto.request.ApproveApplicationRequest;
+import com.example.InternShip.dto.request.UpdateApplicationStatusRequest;
 import com.example.InternShip.dto.response.ApplicationResponse;
 import com.example.InternShip.dto.response.PagedResponse;
 import com.example.InternShip.dto.request.SubmitApplicationContractRequest;
@@ -16,5 +17,7 @@ public interface ApplicationService {
     void submitApplicationContract(SubmitApplicationContractRequest request);
 
     void approveApplication(ApproveApplicationRequest request);
+
+    ApplicationResponse updateApplicationStatus(Integer applicationId, UpdateApplicationStatusRequest request);
 }
 

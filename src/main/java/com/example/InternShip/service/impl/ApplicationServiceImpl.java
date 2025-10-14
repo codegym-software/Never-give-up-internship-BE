@@ -3,6 +3,7 @@ package com.example.InternShip.service.impl;
 import com.example.InternShip.dto.request.ApplicationRequest;
 import com.example.InternShip.dto.request.ApproveApplicationRequest;
 import com.example.InternShip.dto.request.SubmitApplicationContractRequest;
+import com.example.InternShip.dto.request.UpdateApplicationStatusRequest;
 import com.example.InternShip.dto.response.ApplicationResponse;
 import com.example.InternShip.dto.response.FileResponse;
 import com.example.InternShip.dto.response.PagedResponse;
@@ -13,6 +14,7 @@ import com.example.InternShip.repository.*;
 import com.example.InternShip.service.ApplicationService;
 import com.example.InternShip.service.CloudinaryService;
 
+import com.example.InternShip.service.EmailService;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 
@@ -38,6 +40,7 @@ public class ApplicationServiceImpl implements ApplicationService {
     private final MajorRepository majorRepository;
     private final AuthServiceImpl authService;
     private final CloudinaryService cloudinaryService;
+    private final EmailService emailService;
 
     private final ModelMapper modelMapper;
 
@@ -190,4 +193,22 @@ public class ApplicationServiceImpl implements ApplicationService {
         applicationRepository.saveAll(applications);
     }
 
+    @Override
+    @Transactional
+    public ApplicationResponse updateApplicationStatus(Integer applicationId, UpdateApplicationStatusRequest request) {
+        InternshipApplication application = applicationRepository.findById(applicationId)
+                .orElseThrow(() -> new EntityNotFoundException(ErrorCode.INTERNSHIP_APPLICATION_NOT_EXISTED.getMessage()));
+
+        InternshipApplication.Status newStatus = request.getStatus();
+
+        application.setStatus(newStatus);
+        InternshipApplication updatedApplication = applicationRepository.save(application);
+
+        // Gửi email nếu trạng thái là APPROVED hoặc REJECTED
+        if (newStatus == InternshipApplication.Status.APPROVED || newStatus == InternshipApplication.Status.REJECTED) {
+            emailService.sendApplicationStatusEmail(updatedApplication);
+        }
+
+        return mapToApplicationResponse(updatedApplication);
+    }
 }

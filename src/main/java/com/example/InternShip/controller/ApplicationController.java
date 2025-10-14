@@ -3,6 +3,7 @@ package com.example.InternShip.controller;
 import com.example.InternShip.dto.request.ApplicationRequest;
 import com.example.InternShip.dto.request.ApproveApplicationRequest;
 import com.example.InternShip.dto.request.SubmitApplicationContractRequest;
+import com.example.InternShip.dto.request.UpdateApplicationStatusRequest;
 import com.example.InternShip.dto.response.ApplicationResponse;
 import com.example.InternShip.service.ApplicationService;
 import jakarta.validation.Valid;
@@ -67,5 +68,14 @@ public class ApplicationController {
     public ResponseEntity<Void> approveApplication(@RequestBody @Valid ApproveApplicationRequest request) {
         applicationService.approveApplication(request);
         return ResponseEntity.ok(null);
+    }
+
+    @PutMapping("/{id}/status")
+    //@PreAuthorize("hasAuthority('SCOPE_HR') or hasAuthority('SCOPE_ADMIN')")
+    public ResponseEntity<ApplicationResponse> updateApplicationStatus(
+            @PathVariable("id") Integer id,
+            @RequestBody @Valid UpdateApplicationStatusRequest request) {
+        ApplicationResponse response = applicationService.updateApplicationStatus(id, request);
+        return ResponseEntity.ok(response);
     }
 }
