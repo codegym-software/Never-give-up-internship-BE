@@ -79,32 +79,38 @@ public class PendingUserServiceImpl implements PendingUserService {
             String formattedNow = now.format(formatter);
 
             String emailContent = """
-                        <html>
-                        <body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; margin: 0; padding: 0; background-color: #f4f4f4;">
-                            <div style="max-width: 600px; margin: 20px auto; padding: 20px; background: #ffffff; border-radius: 8px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
+                    <html>
+                      <body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; margin: 0; padding: 0; background-color: #f4f4f4;">
+                        <div style="max-width: 600px; margin: 20px auto; padding: 20px; background: #ffffff; border-radius: 8px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
 
-                                <h2 style="color: #1a73e8; border-bottom: 2px solid #1a73e8; padding-bottom: 10px; margin-top: 0;">Xin chào!</h2>
+                          <h2 style="color: #1a73e8; border-bottom: 2px solid #1a73e8; padding-bottom: 10px; margin-top: 0;">
+                            Xin chào!
+                          </h2>
 
-                                <p>Bạn đang thực hiện hành động cần xác thực tài khoản Vui lòng hoàn tất xác thực email để xác thực tài khoản.</p>
+                          <p>Bạn đang thực hiện hành động cần xác thực tài khoản.
+                          Vui lòng nhấn vào nút bên dưới để xác thực email của bạn.</p>
 
-                                <p style="text-align: center; margin: 30px 0;">
-                                    <a href='%s'
-                                       style="display: inline-block; padding: 12px 25px; color: #ffffff; background-color: #1a73e8; border-radius: 5px; text-decoration: none; font-weight: b>
-                                        Xác thực ngay
-                                    </a>
-                                </p>
+                          <p style="text-align: center; margin: 30px 0;">
+                            <a href="%s"
+                               style="display: inline-block; padding: 12px 25px; color: #ffffff; background-color: #1a73e8; border-radius: 5px; text-decoration: none; font-weight: bold;">
+                              Xác thực ngay
+                            </a>
+                          </p>
 
-                                <p>Liên kết xác thực sẽ hết hạn sau 20 phút tính từ: %s</p>
+                          <p>Liên kết xác thực sẽ hết hạn sau 20 phút kể từ thời điểm: <b>%s</b></p>
 
-                                <p style="font-size: 12px; color: #777;">Nếu bạn không yêu cầu xác thực email này, vui lòng bỏ qua thư này.</p>
+                          <p style="font-size: 12px; color: #777;">
+                            Nếu bạn không yêu cầu xác thực email này, vui lòng bỏ qua thư này.
+                          </p>
 
-                            </div>
-                            <div style="text-align: center; padding: 10px 0; font-size: 12px; color: #aaa;">
-                                Bản quyền &copy; CodeGym 2023.
-                            </div>
-                        </body>
+                        </div>
+                        <div style="text-align: center; padding: 10px 0; font-size: 12px; color: #aaa;">
+                          Bản quyền &copy; CodeGym 2025.
+                        </div>
+                      </body>
                     </html>
-                    """.formatted( verifyLink,formattedNow);
+                                        """
+                    .formatted(verifyLink, formattedNow);
 
             helper.setText(emailContent, true);
 

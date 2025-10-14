@@ -25,6 +25,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import com.example.InternShip.dto.request.ChangeMyPasswordRequest;
 
 @Service
 @RequiredArgsConstructor
@@ -114,4 +115,17 @@ public class UserServiceImpl implements UserService {
         pendingUserService.sendVerification(request.getEmail(), verifyLink);
 
     }
+
+       @Override
+    public void changePassword(ChangeMyPasswordRequest request) {
+        // TODO Auto-generated method stub
+        User user = authService.getUserLogin();
+        BCryptPasswordEncoder bcrypt = new BCryptPasswordEncoder();
+        if (!bcrypt.matches(request.getOldPassword(), user.getPassword())) {
+            throw new RuntimeException(ErrorCode.PASSWORD_INVALID.getMessage());
+        }
+        user.setPassword(bcrypt.encode(request.getNewPassword()));
+        userRepository.save(user);
+    }
+
 }
