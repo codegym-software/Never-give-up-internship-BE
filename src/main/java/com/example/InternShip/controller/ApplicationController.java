@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/applications")
@@ -36,8 +37,8 @@ public class ApplicationController {
 
 @GetMapping("/me")
 @PreAuthorize("isAuthenticated()")
-public ResponseEntity<ApplicationResponse> getMyApplication() {
-    ApplicationResponse resp = applicationService.getMyApplication();
+public ResponseEntity<List<ApplicationResponse>> getMyApplication() {
+   List<ApplicationResponse>  resp = applicationService.getMyApplication();
     if (resp == null) {
         return ResponseEntity.ok().build(); // 200 với body rỗng (frontend nhận null/undefined)
     }

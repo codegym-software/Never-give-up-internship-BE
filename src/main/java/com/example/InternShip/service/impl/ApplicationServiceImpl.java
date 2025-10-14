@@ -40,10 +40,19 @@ public class ApplicationServiceImpl implements ApplicationService {
         @Transactional
         public ApplicationResponse submitApplication(ApplicationRequest request) { // Tài
                 User user = authService.getUserLogin();
+                List<InternshipApplication> liststatus = applicationRepository.findAllByUserId(user.getId());
+                boolean hasActiveApplication = liststatus.stream()
+                                .anyMatch(app -> app.getStatus().equals("SUBMITTED") ||
+                                                app.getStatus().equals("APPROVED") ||
+                                                app.getStatus().equals("CONFIRM"));
 
-                if (applicationRepository.existsByUserId(user.getId())) {
-                        throw new RuntimeException(ErrorCode.APPLICATION_EXISTED.getMessage());
+                if (hasActiveApplication) {
+                        throw new RuntimeException(
+                                        "Bạn đã có đơn ứng tuyển đang chờ xử lý hoặc đã được duyệt. Vui lòng không nộp đơn mới.");
                 }
+                // if (applicationRepository.existsByUserId(user.getId())) {
+                // throw new RuntimeException(ErrorCode.APPLICATION_EXISTED.getMessage());
+                // }
 
                 // Kiểm tra và lấy thông tin từ các ID trong request
                 InternshipProgram program = programRepository.findById(request.getInternshipTermId())
@@ -81,15 +90,20 @@ public class ApplicationServiceImpl implements ApplicationService {
         }
 
         // Nam
-        @Override
-        @Transactional(readOnly = true)
-        public ApplicationResponse getMyApplication() {
-                User user = authService.getUserLogin();
-                InternshipApplication internshipApplication = applicationRepository.findByUserId(user.getId())
-                                .orElseThrow(() -> new EntityNotFoundException(ErrorCode.INTERNSHIP_APPLICATION_NOT_EXISTED.getMessage()));
-                 ApplicationResponse applicationResponse =mapToApplicationResponse(internshipApplication);   
-                return applicationResponse;
-        }
+       @Override
+@Transactional(readOnly = true)
+public List<ApplicationResponse> getMyApplication() {
+    // Lấy user hiện tại (đã đăng nhập)
+    User user = authService.getUserLogin();
+
+    // Lấy tất cả đơn ứng tuyển của user đó
+    List<InternshipApplication> listApplication = applicationRepository.findAllByUserId(user.getId());
+
+    // Ánh xạ từng InternshipApplication sang ApplicationResponse DTO
+    return listApplication.stream()
+            .map(this::mapToApplicationResponse)
+            .toList();
+}
 
         @Override
         @Transactional(readOnly = true)
