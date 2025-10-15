@@ -19,6 +19,8 @@ public enum ErrorCode {
     MAJOR_INVALID ("Chuyên ngành không hợp lệ"),
     UNIVERSITY_INVALID ("Trường học không hợp lệ"),
     TIME_APPLY_INVALID("Đã quá hạn nộp đơn thực tập"),
+    STATUS_APPLICATION_INVALID("Trạng thái cập nhật không hợp lệ cho: "),
+    ACTION_INVALID("Hành động không hợp lệ"),
 
 
     //EXISTED
@@ -47,7 +49,7 @@ public enum ErrorCode {
     //UNAUTHENTICATED
     UNAUTHENTICATED("Đăng nhập thất bại"),
     USER_INACTIVE("Tài khoản đã bị vô hiệu hóa"), 
-    UNAUTHORIZED_ACTION("Hành động không được phép")
+    UNAUTHORIZED_ACTION("Hành động không được phép"),
     
     ;
     private final String message;

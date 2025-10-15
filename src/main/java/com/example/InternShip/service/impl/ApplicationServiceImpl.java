@@ -1,6 +1,7 @@
 package com.example.InternShip.service.impl;
 
 import com.example.InternShip.dto.request.ApplicationRequest;
+import com.example.InternShip.dto.request.HandleApplicationRequest;
 import com.example.InternShip.dto.request.SubmitApplicationContractRequest;
 import com.example.InternShip.dto.response.ApplicationResponse;
 import com.example.InternShip.dto.response.FileResponse;
@@ -10,7 +11,6 @@ import com.example.InternShip.exception.ErrorCode;
 import com.example.InternShip.repository.*;
 import com.example.InternShip.service.ApplicationService;
 import com.example.InternShip.service.CloudinaryService;
-import java.util.stream.Collectors;
 import com.example.InternShip.entity.enums.Role;
 
 import jakarta.persistence.EntityNotFoundException;
@@ -21,10 +21,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.example.InternShip.repository.UserRepository;
-
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.modelmapper.ModelMapper;
 
@@ -183,7 +180,7 @@ public class ApplicationServiceImpl implements ApplicationService {
                 ApplicationResponse res = modelMapper.map(user, ApplicationResponse.class);
                 modelMapper.map(app, res);
                 res.setInternshipApplicationStatus(app.getStatus().name());
-                res.setInternshipProgram(app.getInternshipProgram().getId().toString());
+                res.setInternshipProgram(app.getInternshipProgram().getName().toString());
                 res.setUniversityName(app.getUniversity().getName());
                 res.setMajorName(app.getMajor().getName());
                 return res;
@@ -203,9 +200,35 @@ public class ApplicationServiceImpl implements ApplicationService {
                         application.setStatus(InternshipApplication.Status.WITHDRAWN);
                         applicationRepository.save(application);
                 } catch (Exception e) {
-                        // TODO: handle exception
                         throw new RuntimeException(ErrorCode.WITHDRAWAL_FAILED.getMessage());
                 }
         }
 
+    @Transactional
+    public void handleApplicationAction(HandleApplicationRequest request) {
+        List<InternshipApplication> applications = applicationRepository.findAllById(request.getApplicationIds());
+
+        for (InternshipApplication app : applications) {
+            InternshipApplication.Status currentStatus = app.getStatus();
+
+            if (!(currentStatus == InternshipApplication.Status.UNDER_REVIEW || currentStatus == InternshipApplication.Status.APPROVED || currentStatus == InternshipApplication.Status.REJECTED)) {
+                throw new IllegalArgumentException(
+                        ErrorCode.STATUS_APPLICATION_INVALID.getMessage() + app.getUser().getEmail()
+                );
+            }
+
+            switch (request.getAction()) {
+                case "approve":
+                    app.setStatus(InternshipApplication.Status.APPROVED);
+                    break;
+                case "reject":
+                    app.setStatus(InternshipApplication.Status.REJECTED);
+                    break;
+                default:
+                    throw new IllegalArgumentException(ErrorCode.ACTION_INVALID.getMessage());
+            }
+        }
+
+        applicationRepository.saveAll(applications);
+    }
 }

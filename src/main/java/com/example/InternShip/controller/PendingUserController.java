@@ -19,11 +19,11 @@ public class PendingUserController {
     @GetMapping("/verify")
     public void verify(@RequestParam String token, HttpServletResponse response) throws IOException {
         pendingUserService.verify(token);
-        response.sendRedirect("http://localhost:5174/email-verified?status=success");
+        response.sendRedirect("http://localhost:3000");
     }
      @GetMapping("/verifyForgetPassword")
     public void verifyForgetPassword(@RequestParam String token, HttpServletResponse response) throws IOException {
         pendingUserService.verifyForgetPassword(token);
-        
+        response.sendRedirect("http://localhost:3000");
     }
 }

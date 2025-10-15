@@ -86,9 +86,9 @@ public class CloudinaryServiceImpl implements CloudinaryService {
             }
         } else {
             // Assuming other folders are for documents like CVs
-            List<String> allowedDocumentExtensions = List.of("pdf");
+            List<String> allowedDocumentExtensions = List.of("pdf", "docx", "doc");
             if (!allowedDocumentExtensions.contains(extension)) {
-                throw new FileStorageException("Chỉ chấp nhận file PDF!");
+                throw new FileStorageException("Chỉ chấp nhận file .pdf, .docx, .doc");
             }
         }
     }
