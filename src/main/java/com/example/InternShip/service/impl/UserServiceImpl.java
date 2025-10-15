@@ -71,7 +71,7 @@ public class UserServiceImpl implements UserService {
         return null;
     }
 
-    public GetUserResponse createUser (reateUserRequest request) {
+    public GetUserResponse createUser (CreateUserRequest request) {
         if (userRepository.existsByEmail(request.getEmail())) {
             throw new RuntimeException(ErrorCode.EMAIL_EXISTED.getMessage());
         }

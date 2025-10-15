@@ -32,7 +32,7 @@ public class UserController {
     @PostMapping
     @PreAuthorize("hasAuthority('SCOPE_ADMIN')")
     public ResponseEntity<GetUserResponse> createUser(@RequestBody @Valid CreateUserRequest request){
-        return ResponseEntity.ok(userService.creatUser(request));
+        return ResponseEntity.ok(userService.createUser(request));
     }
 
     @PutMapping("/{id}")
