@@ -101,7 +101,7 @@ public class ApplicationServiceImpl implements ApplicationService {
                 
                 // Ánh xạ từng InternshipApplication sang ApplicationResponse DTO
                 return listApplication.stream()
-                                .map(this::mapToApplicationResponse)
+                                .map(this::mapToApplicationResponse)  // lỗi về phiên bản jdk (không quan trọng)
                                 .toList();
         }
 
