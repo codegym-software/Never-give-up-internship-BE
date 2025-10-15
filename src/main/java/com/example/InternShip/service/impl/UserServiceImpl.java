@@ -71,7 +71,7 @@ public class UserServiceImpl implements UserService {
         return null;
     }
 
-    public GetUserResponse creatUser(CreateUserRequest request) {
+    public GetUserResponse createUser (reateUserRequest request) {
         if (userRepository.existsByEmail(request.getEmail())) {
             throw new RuntimeException(ErrorCode.EMAIL_EXISTED.getMessage());
         }
@@ -98,6 +98,8 @@ public class UserServiceImpl implements UserService {
     public GetUserResponse updateUserInfo(UpdateInfoRequest request) {
         User user = authService.getUserLogin();
 
+
+        
         if (request.getAvatarFile() != null && !request.getAvatarFile().isEmpty()) {
             FileResponse fileResponse = cloudinaryService.uploadFile(request.getAvatarFile(), "avatars");
             user.setAvatarUrl(fileResponse.getFileUrl());
