@@ -10,6 +10,8 @@ import com.example.InternShip.exception.ErrorCode;
 import com.example.InternShip.repository.*;
 import com.example.InternShip.service.ApplicationService;
 import com.example.InternShip.service.CloudinaryService;
+import java.util.stream.Collectors;
+
 
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -20,6 +22,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.modelmapper.ModelMapper;
 
@@ -82,28 +85,25 @@ public class ApplicationServiceImpl implements ApplicationService {
                 application.setMajor(major);
                 application.setCvUrl(cvFileRes.getFileUrl());
                 application.setInternshipApplicationtUrl(internApplicationFileRes.getFileUrl());
-                application.setStatus(InternshipApplication.Status.SUBMITTED);
-
                 applicationRepository.save(application);
-
                 return mapToApplicationResponse(application);
         }
 
         // Nam
-       @Override
-@Transactional(readOnly = true)
-public List<ApplicationResponse> getMyApplication() {
-    // Lấy user hiện tại (đã đăng nhập)
-    User user = authService.getUserLogin();
+        @Override
+        @Transactional(readOnly = true)
+        public List<ApplicationResponse> getMyApplication() {
+                // Lấy user hiện tại (đã đăng nhập)
+                User user = authService.getUserLogin();
 
-    // Lấy tất cả đơn ứng tuyển của user đó
-    List<InternshipApplication> listApplication = applicationRepository.findAllByUserId(user.getId());
-
-    // Ánh xạ từng InternshipApplication sang ApplicationResponse DTO
-    return listApplication.stream()
-            .map(this::mapToApplicationResponse)
-            .toList();
-}
+                // Lấy tất cả đơn ứng tuyển của user đó
+                List<InternshipApplication> listApplication = applicationRepository.findAllByUserId(user.getId());
+                
+                // Ánh xạ từng InternshipApplication sang ApplicationResponse DTO
+                return listApplication.stream()
+                                .map(this::mapToApplicationResponse)
+                                .toList();
+        }
 
         @Override
         @Transactional(readOnly = true)
@@ -176,16 +176,17 @@ public List<ApplicationResponse> getMyApplication() {
 
         @Override
         public void withdrawApplication(Integer applicationId) { // rút đơn
-                 
+
                 try {
-                    User user = authService.getUserLogin();
-                InternshipApplication application = applicationRepository.findById(applicationId).orElseThrow(() -> new EntityNotFoundException(
-                                                ErrorCode.INTERNSHIP_APPLICATION_NOT_EXISTED.getMessage()));
-                   if (user.getId() != application.getUser().getId()) {
-                        throw new IllegalArgumentException(ErrorCode.UNAUTHORIZED_ACTION.getMessage());
-                   }
-                application.setStatus(InternshipApplication.Status.WITHDRAWN);
-                applicationRepository.save(application);      
+                        User user = authService.getUserLogin();
+                        InternshipApplication application = applicationRepository.findById(applicationId)
+                                        .orElseThrow(() -> new EntityNotFoundException(
+                                                        ErrorCode.INTERNSHIP_APPLICATION_NOT_EXISTED.getMessage()));
+                        if (user.getId() != application.getUser().getId()) {
+                                throw new IllegalArgumentException(ErrorCode.UNAUTHORIZED_ACTION.getMessage());
+                        }
+                        application.setStatus(InternshipApplication.Status.WITHDRAWN);
+                        applicationRepository.save(application);
                 } catch (Exception e) {
                         // TODO: handle exception
                         throw new RuntimeException(ErrorCode.WITHDRAWAL_FAILED.getMessage());
