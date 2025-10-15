@@ -11,7 +11,7 @@ import com.example.InternShip.repository.*;
 import com.example.InternShip.service.ApplicationService;
 import com.example.InternShip.service.CloudinaryService;
 import java.util.stream.Collectors;
-
+import com.example.InternShip.entity.enums.Role;
 
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -20,6 +20,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import com.example.InternShip.repository.UserRepository;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -36,7 +38,8 @@ public class ApplicationServiceImpl implements ApplicationService {
         private final MajorRepository majorRepository;
         private final AuthServiceImpl authService;
         private final CloudinaryService cloudinaryService;
-
+        private final InternRepository internRepository;
+        private final UserRepository userRepository;
         private final ModelMapper modelMapper;
 
         @Override
@@ -98,10 +101,10 @@ public class ApplicationServiceImpl implements ApplicationService {
 
                 // Lấy tất cả đơn ứng tuyển của user đó
                 List<InternshipApplication> listApplication = applicationRepository.findAllByUserId(user.getId());
-                
+
                 // Ánh xạ từng InternshipApplication sang ApplicationResponse DTO
                 return listApplication.stream()
-                                .map(this::mapToApplicationResponse)  // lỗi về phiên bản jdk (không quan trọng)
+                                .map(this::mapToApplicationResponse) // lỗi về phiên bản jdk (không quan trọng)
                                 .toList();
         }
 
@@ -143,7 +146,8 @@ public class ApplicationServiceImpl implements ApplicationService {
         @Override
         public void submitApplicationContract(SubmitApplicationContractRequest request) { // Gửi hdtt
                 User user = authService.getUserLogin();
-                InternshipApplication application = applicationRepository.findByUserId(user.getId())
+                InternshipApplication application = applicationRepository.findByUserIdAndStatus(user.getId(),
+                                InternshipApplication.Status.APPROVED)
                                 .orElseThrow(() -> new EntityNotFoundException(
                                                 ErrorCode.INTERNSHIP_APPLICATION_NOT_EXISTED.getMessage()));
 
@@ -159,7 +163,18 @@ public class ApplicationServiceImpl implements ApplicationService {
                 // Chuyển trạng thái đơn xin thực tập
                 application.setStatus(InternshipApplication.Status.CONFIRM);
                 // Lưu vào csdl
+
                 applicationRepository.save(application);
+
+                Intern intern = new Intern();
+                intern.setUser(user);
+                intern.setMajor(application.getMajor());
+                intern.setUniversity(application.getUniversity());
+                intern.setStatus(Intern.Status.ACTIVE);
+                internRepository.save(intern);
+                // Cập nhật vai trò
+                user.setRole(Role.INTERN);
+                userRepository.save(user);
         }
 
         // Phương thức ánh xạ cho phương thức lấy thông tin đơn xin thực tập

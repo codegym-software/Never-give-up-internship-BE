@@ -13,7 +13,7 @@ import java.util.List;
 
 public interface InternshipApplicationRepository extends JpaRepository<InternshipApplication, Integer> {
     boolean existsByUserId(Integer userId);
-    Optional<InternshipApplication> findByUserId(Integer userId);
+    Optional<InternshipApplication> findByUserIdAndStatus(Integer userId, InternshipApplication.Status status);
     List<InternshipApplication> findAllByUserId(Integer userId);
 
      @Query("""
