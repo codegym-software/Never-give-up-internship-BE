@@ -71,7 +71,7 @@ public class UserServiceImpl implements UserService {
         return null;
     }
 
-    public GetUserResponse createUser (CreateUserRequest request) {
+    public GetUserResponse createUser(CreateUserRequest request) {
         if (userRepository.existsByEmail(request.getEmail())) {
             throw new RuntimeException(ErrorCode.EMAIL_EXISTED.getMessage());
         }
@@ -88,6 +88,9 @@ public class UserServiceImpl implements UserService {
     public GetUserResponse updateUser(UpdateUserRequest request, int id) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException(ErrorCode.USER_NOT_EXISTED.getMessage()));
+        if (user.getRole() == Role.ADMIN) {
+            throw new IllegalArgumentException(ErrorCode.EDIT_USER_INVALID.getMessage());
+        }
         modelMapper.map(request, user);
         user.setRole(parseRole(request.getRole()));
         user.setUpdatedAt(LocalDateTime.now());
@@ -97,26 +100,11 @@ public class UserServiceImpl implements UserService {
 
     public GetUserResponse updateUserInfo(UpdateInfoRequest request) {
         User user = authService.getUserLogin();
-
-
-        
+        modelMapper.map(request, user);
         if (request.getAvatarFile() != null && !request.getAvatarFile().isEmpty()) {
             FileResponse fileResponse = cloudinaryService.uploadFile(request.getAvatarFile(), "avatars");
             user.setAvatarUrl(fileResponse.getFileUrl());
         }
-
-        if (request.getFullName() != null && !request.getFullName().isBlank()) {
-            user.setFullName(request.getFullName());
-        }
-
-        if (request.getPhone() != null) {
-            user.setPhone(request.getPhone());
-        }
-
-        if (request.getAddress() != null) {
-            user.setAddress(request.getAddress());
-        }
-
         userRepository.save(user);
         return modelMapper.map(user, GetUserResponse.class);
     }
@@ -127,7 +115,7 @@ public class UserServiceImpl implements UserService {
         User user = userRepository.findByUsernameOrEmail(request.getEmail())
                 .orElseThrow(() -> new RuntimeException(ErrorCode.EMAIL_INVALID.getMessage()));
         String token = UUID.randomUUID().toString();
-        BCryptPasswordEncoder encoder =new BCryptPasswordEncoder();
+        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
         PendingUser pendingUser = modelMapper.map(request, PendingUser.class);
         pendingUser.setPassword(encoder.encode(request.getPassword()));
         pendingUser.setToken(token);
@@ -138,7 +126,7 @@ public class UserServiceImpl implements UserService {
 
     }
 
-       @Override
+    @Override
     public void changePassword(ChangeMyPasswordRequest request) {
         // TODO Auto-generated method stub
         User user = authService.getUserLogin();
