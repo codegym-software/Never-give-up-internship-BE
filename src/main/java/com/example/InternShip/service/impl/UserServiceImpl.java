@@ -13,6 +13,8 @@ import com.example.InternShip.entity.enums.Role;
 import com.example.InternShip.exception.ErrorCode;
 import com.example.InternShip.repository.PendingUserRepository;
 import com.example.InternShip.repository.UserRepository;
+import com.example.InternShip.dto.response.FileResponse;
+import com.example.InternShip.service.CloudinaryService;
 import com.example.InternShip.service.UserService;
 import lombok.RequiredArgsConstructor;
 
@@ -25,6 +27,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import com.example.InternShip.dto.request.ChangeMyPasswordRequest;
 
 @Service
 @RequiredArgsConstructor
@@ -34,6 +37,7 @@ public class UserServiceImpl implements UserService {
     private final AuthServiceImpl authService;
     private final PendingUserRepository pendingUserRepository;
     private final PendingUserServiceImpl pendingUserService;
+    private final CloudinaryService cloudinaryService;
 
     public PagedResponse<GetUserResponse> getAllUser(GetAllUserRequest request) {
         int page = Math.max(0, request.getPage() - 1);
@@ -67,7 +71,7 @@ public class UserServiceImpl implements UserService {
         return null;
     }
 
-    public GetUserResponse creatUser(CreateUserRequest request) {
+    public GetUserResponse createUser (CreateUserRequest request) {
         if (userRepository.existsByEmail(request.getEmail())) {
             throw new RuntimeException(ErrorCode.EMAIL_EXISTED.getMessage());
         }
@@ -93,7 +97,26 @@ public class UserServiceImpl implements UserService {
 
     public GetUserResponse updateUserInfo(UpdateInfoRequest request) {
         User user = authService.getUserLogin();
-        modelMapper.map(request, user);
+
+
+        
+        if (request.getAvatarFile() != null && !request.getAvatarFile().isEmpty()) {
+            FileResponse fileResponse = cloudinaryService.uploadFile(request.getAvatarFile(), "avatars");
+            user.setAvatarUrl(fileResponse.getFileUrl());
+        }
+
+        if (request.getFullName() != null && !request.getFullName().isBlank()) {
+            user.setFullName(request.getFullName());
+        }
+
+        if (request.getPhone() != null) {
+            user.setPhone(request.getPhone());
+        }
+
+        if (request.getAddress() != null) {
+            user.setAddress(request.getAddress());
+        }
+
         userRepository.save(user);
         return modelMapper.map(user, GetUserResponse.class);
     }
@@ -110,8 +133,21 @@ public class UserServiceImpl implements UserService {
         pendingUser.setToken(token);
         pendingUser.setExpiryDate(LocalDateTime.now().plusMinutes(20));
         pendingUserRepository.save(pendingUser);
-        String verifyLink = "http://localhost:8082/api/v1/pendingUsers/verifyForgetPassword?token=" + token;
+        String verifyLink = "http://localhost:8080/api/v1/pendingUsers/verifyForgetPassword?token=" + token;
         pendingUserService.sendVerification(request.getEmail(), verifyLink);
 
     }
+
+       @Override
+    public void changePassword(ChangeMyPasswordRequest request) {
+        // TODO Auto-generated method stub
+        User user = authService.getUserLogin();
+        BCryptPasswordEncoder bcrypt = new BCryptPasswordEncoder();
+        if (!bcrypt.matches(request.getOldPassword(), user.getPassword())) {
+            throw new RuntimeException(ErrorCode.PASSWORD_INVALID.getMessage());
+        }
+        user.setPassword(bcrypt.encode(request.getNewPassword()));
+        userRepository.save(user);
+    }
+
 }

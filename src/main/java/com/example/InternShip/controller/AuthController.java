@@ -12,12 +12,16 @@ import com.example.InternShip.service.UserService;
 import com.nimbusds.jose.JOSEException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import com.example.InternShip.dto.request.ChangeMyPasswordRequest;
 
 import java.text.ParseException;
 
@@ -67,6 +71,18 @@ public class AuthController {
     public ResponseEntity<Void> linkGoogleAccount(@RequestBody GoogleLoginRequest request) throws Exception {
         authService.linkGoogleAccount(request);
         return ResponseEntity.ok().build();
+    }
+    @PutMapping("/changePassword")
+    public ResponseEntity<String> changePassword(@RequestBody ChangeMyPasswordRequest request) {
+        try {
+            userService.changePassword(request);
+            return ResponseEntity.ok("Password changed successfully!");
+        } catch (UsernameNotFoundException | IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body(e.getMessage());
+        }
+
     }
 
 }
