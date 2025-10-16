@@ -21,7 +21,8 @@ public enum ErrorCode {
     TIME_APPLY_INVALID("Đã quá hạn nộp đơn thực tập"),
     STATUS_APPLICATION_INVALID("Trạng thái cập nhật không hợp lệ cho: "),
     ACTION_INVALID("Hành động không hợp lệ"),
-
+    EDIT_USER_INVALID("Không thể sửa thông tin admin"),
+    LIST_APPLICATION_INVALID("Phải chọn ít nhất 1 hồ sơ"),
 
     //EXISTED
     USERNAME_EXISTED("Tên đăng nhập đã tồn tại."),
