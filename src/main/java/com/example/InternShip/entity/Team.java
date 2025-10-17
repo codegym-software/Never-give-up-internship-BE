@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.List;
+
 @Entity
 @Getter
 @Setter
@@ -19,4 +21,7 @@ public class Team {
     @ManyToOne
     @JoinColumn(name = "mentor_id", nullable = false)
     private Mentor mentor;
+
+    @OneToMany(mappedBy = "team")
+    private List<Intern> interns;
 }

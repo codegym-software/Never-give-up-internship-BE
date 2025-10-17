@@ -25,7 +25,7 @@ public class Intern {
     private University university;
 
     @ManyToOne
-    @JoinColumn(name = "team_id", nullable = false)
+    @JoinColumn(name = "team_id")
     private Team team;
 
     @Enumerated(EnumType.STRING)

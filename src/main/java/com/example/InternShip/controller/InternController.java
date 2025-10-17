@@ -33,7 +33,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 public class InternController {
     private final InternService internService;
 
-    @PreAuthorize(" hasAuthority('SCOPE_HR')")
+//    @PreAuthorize(" hasAuthority('SCOPE_HR')")
     @PutMapping("/{id}")
     public ResponseEntity<GetInternResponse> UpdateInternById(@PathVariable Integer id, @RequestBody @Valid UpdateInternRequest updateInternRequest) {
         return ResponseEntity.ok(internService.updateIntern(id, updateInternRequest));
