@@ -20,6 +20,8 @@ public class InternshipProgram {
 
     private String name;
 
+    private LocalDate endPublishedTime;
+    private LocalDate endReviewingTime;
     private LocalDate timeStart;
     private LocalDate timeEnd;
 
@@ -31,13 +33,16 @@ public class InternshipProgram {
     private Department department;
 
     @OneToMany(mappedBy = "internshipProgram")
-    @JsonIgnore
     private List<InternshipApplication> applications;
+
+    @OneToMany(mappedBy = "internshipProgram")
+    private List<Team> teams;
 
     public enum Status {
         DRAFT, // bản nháp
         PUBLISHED, // xuất bản
         REVIEWING, // Đang trong quá trình xem xét
+        PENDING, // Thời gian nộp hợp đồng
         ONGOING, // đang thực hiện
         COMPLETED, // hoàn thành
         CANCELLED // huỷ bỏ

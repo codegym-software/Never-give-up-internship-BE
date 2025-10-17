@@ -23,6 +23,8 @@ public class Department {
     private String description;
 
     @OneToMany(mappedBy = "department")
-    @JsonIgnore
     private List<InternshipProgram> internshipPrograms;
+
+    @OneToMany(mappedBy = "department")
+    private List<Mentor> mentors;
 }

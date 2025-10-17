@@ -24,6 +24,10 @@ public class Intern {
     @JoinColumn(name = "school_id")
     private University university;
 
+    @ManyToOne
+    @JoinColumn(name = "team_id", nullable = false)
+    private Team team;
+
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private Status status;
@@ -31,7 +35,6 @@ public class Intern {
     @Column(length = 512)
     private String cvUrl;
 
-    //
     @Getter
     public enum Status{
         ACTIVE, // đang thực tập

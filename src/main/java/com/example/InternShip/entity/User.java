@@ -32,6 +32,9 @@ public class User {
     @OneToOne(mappedBy = "user")
     private Intern intern;
 
+    @OneToOne(mappedBy = "user")
+    private Mentor mentor;
+
     private String phone;
 
     private String address;
