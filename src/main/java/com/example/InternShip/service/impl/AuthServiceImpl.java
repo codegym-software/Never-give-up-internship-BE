@@ -69,12 +69,12 @@ public class AuthServiceImpl implements AuthService {
         Optional<User> userOptional = userRepository.findByEmail(payload.getEmail());
 
         if (userOptional.isPresent()) {
-            User user = userOptional.get();
-            if (user.getGoogleId() == null || user.getGoogleId().isEmpty()) {
+            
+            //if (user.getGoogleId() == null || user.getGoogleId().isEmpty()) {
                
-                throw new AccountConflictException("Account with this email already exists. Please log in with your password to link your Google account.");
-            }
-            return user;
+            //    throw new AccountConflictException("Account with this email already exists. Please log in with your password to link your Google account.");
+            //}
+            return userOptional.get();
         } else {
             User newUser = new User();
             newUser.setGoogleId(payload.getSubject());
@@ -120,7 +120,7 @@ public class AuthServiceImpl implements AuthService {
         pendingUser.setExpiryDate(LocalDateTime.now().plusMinutes(20));
         pendingUserRepository.save(pendingUser);
 
-        String verifyLink = "http://localhost:8082/api/v1/pendingUsers/verify?token=" + token;
+        String verifyLink = "http://localhost:8080/api/v1/pendingUsers/verify?token=" + token;
         pendingUserService.sendVerification(request.getEmail(), verifyLink);
     }
 

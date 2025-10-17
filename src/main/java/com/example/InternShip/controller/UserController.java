@@ -32,7 +32,7 @@ public class UserController {
     @PostMapping
     @PreAuthorize("hasAuthority('SCOPE_ADMIN')")
     public ResponseEntity<GetUserResponse> createUser(@RequestBody @Valid CreateUserRequest request){
-        return ResponseEntity.ok(userService.creatUser(request));
+        return ResponseEntity.ok(userService.createUser(request));
     }
 
     @PutMapping("/{id}")
@@ -42,8 +42,8 @@ public class UserController {
     }
 
 
-    @PutMapping("/info")
-    public ResponseEntity<GetUserResponse> updateUserInfo(@RequestBody @Valid UpdateInfoRequest request){
+    @PutMapping(value = "/info", consumes = "multipart/form-data")
+    public ResponseEntity<GetUserResponse> updateUserInfo(@ModelAttribute @Valid UpdateInfoRequest request){
         return ResponseEntity.ok(userService.updateUserInfo(request));
     }
 }
