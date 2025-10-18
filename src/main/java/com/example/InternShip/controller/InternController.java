@@ -23,7 +23,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.security.access.prepost.PreAuthorize;
 
 import org.springframework.web.bind.annotation.PathVariable;
 
@@ -33,7 +32,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 public class InternController {
     private final InternService internService;
 
-//    @PreAuthorize(" hasAuthority('SCOPE_HR')")
     @PutMapping("/{id}")
     public ResponseEntity<GetInternResponse> UpdateInternById(@PathVariable Integer id, @RequestBody @Valid UpdateInternRequest updateInternRequest) {
         return ResponseEntity.ok(internService.updateIntern(id, updateInternRequest));
@@ -49,5 +47,8 @@ public class InternController {
         return ResponseEntity.ok(internService.getAllIntern(request));
     }
 
-      
+    @GetMapping("/{teamId}") // Hàm lấy ra danh sách intern chưa có nhóm, status ACTIVE, và có kỳ thực tập trùng với nhóm
+    public ResponseEntity<?> getAllInternNoTeam(@PathVariable Integer teamId){
+        return ResponseEntity.ok(internService.getAllInternNoTeam(teamId));
+    }
 }

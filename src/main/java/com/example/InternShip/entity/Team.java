@@ -14,6 +14,8 @@ public class Team {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
+    private String name;
+
     @ManyToOne
     @JoinColumn(name = "internshipProgram_id", nullable = false)
     private InternshipProgram internshipProgram;

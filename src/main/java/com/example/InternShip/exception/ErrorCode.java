@@ -36,6 +36,7 @@ public enum ErrorCode {
     MAJOR_NOT_EXISTED ("Ngành học không tồn tại"),
     INTERNSHIPTERM_NOT_EXISTED ("Kì thực tập không tồn tại"),
     INTERNSHIP_APPLICATION_NOT_EXISTED("Đơn đăng ký không tồn tại"),
+    TEAM_NOT_EXISTED("Nhóm không tồn tại"),
 
     //NOT_NULL
     UNIVERSITY_NOT_NULL ("Trường học không được để trống"),
