@@ -121,7 +121,7 @@ public class UserServiceImpl implements UserService {
         pendingUser.setToken(token);
         pendingUser.setExpiryDate(LocalDateTime.now().plusMinutes(20));
         pendingUserRepository.save(pendingUser);
-        String verifyLink = "http://localhost:8080/api/v1/pendingUsers/verifyForgetPassword?token=" + token;
+        String verifyLink = "http://localhost:8082/api/v1/pendingUsers/verifyForgetPassword?token=" + token;
         pendingUserService.sendVerification(request.getEmail(), verifyLink);
 
     }
