@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 public class ConversationResponse {
     private Long id;
     private String candidateName;
-    private User hr;
+    private Integer hrId;
     private String lastMessage;
     private LocalDateTime lastMessageTimestamp;
     private int unreadCount;

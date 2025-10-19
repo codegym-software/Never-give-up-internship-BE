@@ -14,7 +14,7 @@ public interface ChatService {
 
     ChatMessageResponse saveMessage(ChatMessageRequest request, String senderEmail);
 
-    Conversation findOrCreateConversation(String candidateEmail);
+    Conversation findOrCreateConversation(String candidateUsername);
 
     Conversation claimConversation(Long conversationId, String hrEmail);
 

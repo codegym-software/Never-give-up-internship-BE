@@ -21,10 +21,6 @@ public class Conversation {
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "program_id", nullable = true) // Allow null for general chat
-    private InternshipProgram program;
-
-    @ManyToOne
     @JoinColumn(name = "candidate_id", nullable = false)
     private User candidate;
 

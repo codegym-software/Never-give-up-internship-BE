@@ -6,22 +6,17 @@ import com.example.InternShip.dto.response.ConversationListResponse;
 import com.example.InternShip.dto.response.ConversationResponse;
 import com.example.InternShip.entity.ChatMessage;
 import com.example.InternShip.entity.Conversation;
-import com.example.InternShip.entity.InternshipProgram;
 import com.example.InternShip.entity.User;
-import com.example.InternShip.entity.enums.Role;
 import com.example.InternShip.exception.ConversationNotFoundException;
-import com.example.InternShip.exception.ProgramNotFoundException;
 import com.example.InternShip.exception.UnauthorizedException;
 import com.example.InternShip.exception.UserNotFoundException;
 import com.example.InternShip.repository.ChatMessageRepository;
 import com.example.InternShip.repository.ConversationRepository;
-import com.example.InternShip.repository.InternshipProgramRepository;
 import com.example.InternShip.repository.UserRepository;
 import com.example.InternShip.service.ChatService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -35,13 +30,12 @@ public class ChatServiceImpl implements ChatService {
     private final ConversationRepository conversationRepository;
     private final UserRepository userRepository;
     private final ChatMessageRepository chatMessageRepository;
-    private final InternshipProgramRepository internshipProgramRepository;
     private final SimpMessagingTemplate messagingTemplate;
 
     @Override
-    public ConversationListResponse getConversationsForHr(String hrEmail) {
-        User hrUser = userRepository.findByUsername(hrEmail)
-                .orElseThrow(() -> new UserNotFoundException("HR user not found with email: " + hrEmail));
+    public ConversationListResponse getConversationsForHr(String hrUsername) {
+        User hrUser = userRepository.findByUsername(hrUsername)
+                .orElseThrow(() -> new UserNotFoundException("HR user not found with email: " + hrUsername));
 
         List<Conversation> assigned = conversationRepository.findByHr(hrUser);
         List<Conversation> unassigned = conversationRepository.findByHrIsNull();
@@ -87,9 +81,9 @@ public class ChatServiceImpl implements ChatService {
     }
 
     @Override
-    public Conversation findOrCreateConversation(String candidateEmail) {
-        User candidate = userRepository.findByUsername(candidateEmail)
-                .orElseThrow(() -> new UserNotFoundException("Candidate not found with email: " + candidateEmail));
+    public Conversation findOrCreateConversation(String candidateUsername) {
+        User candidate = userRepository.findByUsername(candidateUsername)
+                .orElseThrow(() -> new UserNotFoundException("Candidate not found with user: " + candidateUsername));
 
         return conversationRepository.findByCandidate(candidate)
                 .orElseGet(() -> {
@@ -130,12 +124,12 @@ public class ChatServiceImpl implements ChatService {
 
     @Override
     @Transactional
-    public void deleteConversation(Long conversationId, String hrEmail) {
+    public void deleteConversation(Long conversationId, String hrUsername) {
         Conversation conversation = conversationRepository.findById(conversationId)
                 .orElseThrow(() -> new ConversationNotFoundException("Conversation not found with id: " + conversationId));
 
-        User hrUser = userRepository.findByUsername(hrEmail)
-                .orElseThrow(() -> new UserNotFoundException("HR user not found with email: " + hrEmail));
+        User hrUser = userRepository.findByUsername(hrUsername)
+                .orElseThrow(() -> new UserNotFoundException("HR user not found with username: " + hrUsername));
 
         // Ensure the HR user owns this conversation
         if (conversation.getHr() == null || !conversation.getHr().getId().equals(hrUser.getId())) {
@@ -158,7 +152,7 @@ public class ChatServiceImpl implements ChatService {
         return ConversationResponse.builder()
                 .id(conversation.getId())
                 .candidateName(conversation.getCandidate().getFullName())
-                .hr(conversation.getHr())
+                .hrId(conversation.getHr().getId())
                 .lastMessage(lastMessageContent)
                 .lastMessageTimestamp(lastMessageTimestamp)
                 .unreadCount(0) // Placeholder for unread count
