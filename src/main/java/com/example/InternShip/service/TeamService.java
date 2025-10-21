@@ -12,6 +12,6 @@ public interface TeamService {
     TeamDetailResponse createTeam(CreateTeamRequest request);
     TeamDetailResponse getTeamDetails(Integer teamId);
     TeamDetailResponse addMember(Integer teamId, AddMemberRequest request);
-    void removeMember(Integer teamId, Integer internId);
+    void removeMember(Integer internId);
     PagedResponse<GetAllTeamResponse> getAllTeam(List<Integer> internshipTerm, List<Integer> mentor, String keyword, int page);
 }

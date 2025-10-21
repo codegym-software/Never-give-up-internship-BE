@@ -6,9 +6,9 @@ import com.example.InternShip.dto.response.TeamDetailResponse;
 import com.example.InternShip.service.TeamService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
 import java.util.List;
 
 @RestController
@@ -48,11 +48,9 @@ public class TeamController {
                 page));
     }
 
-    @DeleteMapping("/{teamId}/members/{internId}")
-    public ResponseEntity<Void> removeMember(
-            @PathVariable Integer teamId,
-            @PathVariable Integer internId) {
-        teamService.removeMember(teamId, internId);
+    @PatchMapping("/{internId}")
+    public ResponseEntity<Void> removeMember(@PathVariable Integer internId) {
+        teamService.removeMember(internId);
         return ResponseEntity.ok().build();
     }
 }

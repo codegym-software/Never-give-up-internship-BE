@@ -91,14 +91,9 @@ public class TeamServiceImpl implements TeamService {
 
     @Override
     @Transactional
-    public void removeMember(Integer teamId, Integer internId) {
+    public void removeMember(Integer internId) {
         Intern intern = internRepository.findById(internId)
                 .orElseThrow(() -> new EntityNotFoundException(ErrorCode.INTERN_NOT_EXISTED.getMessage()));
-
-        if (intern.getTeam() == null || !intern.getTeam().getId().equals(teamId)) {
-            throw new IllegalStateException("Thực tập sinh này không thuộc nhóm " + teamId);
-        }
-
         intern.setTeam(null);
         internRepository.save(intern);
     }
