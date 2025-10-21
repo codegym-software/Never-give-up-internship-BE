@@ -2,7 +2,9 @@ package com.example.InternShip.service.impl;
 
 import com.example.InternShip.dto.request.AddMemberRequest;
 import com.example.InternShip.dto.request.CreateTeamRequest;
+import com.example.InternShip.dto.response.GetAllTeamResponse;
 import com.example.InternShip.dto.response.GetInternResponse;
+import com.example.InternShip.dto.response.PagedResponse;
 import com.example.InternShip.dto.response.TeamDetailResponse;
 import com.example.InternShip.entity.*;
 import com.example.InternShip.exception.ErrorCode;
@@ -15,6 +17,8 @@ import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -97,6 +101,44 @@ public class TeamServiceImpl implements TeamService {
 
         intern.setTeam(null);
         internRepository.save(intern);
+    }
+
+    @Override
+    public PagedResponse<GetAllTeamResponse> getAllTeam(List<Integer> internshipProgram, List<Integer> mentor,
+                                                        String keyword, int page) {
+        page = Math.min(0, page - 1);
+        PageRequest pageable = PageRequest.of(page, 10);
+
+        // Kiểm tra null vì Hibernate không coi List rỗng là null
+        if (internshipProgram == null || internshipProgram.isEmpty()) {
+            internshipProgram = null;
+        }
+        if (mentor == null || mentor.isEmpty()) {
+            mentor = null;
+        }
+
+        Page<Team> teams = teamRepository.searchTeam(internshipProgram, mentor, keyword, pageable);
+
+        List<GetAllTeamResponse> responses = teams.stream()
+                .map(team -> {
+                    // Map các field trùng tự động
+                    GetAllTeamResponse res = modelMapper.map(team, GetAllTeamResponse.class);
+
+                    // Map thủ công các field đặc biệt
+                    res.setInternshipProgramName(team.getInternshipProgram().getName());
+                    res.setMentorName(team.getMentor().getUser().getFullName());
+
+                    return res;
+                })
+                .collect(Collectors.toList());
+
+        return new PagedResponse<>(
+                responses,
+                page + 1,
+                teams.getTotalElements(),
+                teams.getTotalPages(),
+                teams.hasNext(),
+                teams.hasPrevious());
     }
 
     private TeamDetailResponse mapToTeamDetailResponse(Team team) {
