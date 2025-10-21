@@ -1,12 +1,132 @@
 package com.example.InternShip.service.impl;
 
+import com.example.InternShip.dto.request.AddMemberRequest;
+import com.example.InternShip.dto.request.CreateTeamRequest;
+import com.example.InternShip.dto.response.GetInternResponse;
+import com.example.InternShip.dto.response.TeamDetailResponse;
+import com.example.InternShip.entity.*;
+import com.example.InternShip.exception.ErrorCode;
+import com.example.InternShip.repository.InternRepository;
+import com.example.InternShip.repository.InternshipProgramRepository;
+import com.example.InternShip.repository.MentorRepository;
 import com.example.InternShip.repository.TeamRepository;
 import com.example.InternShip.service.TeamService;
+import jakarta.persistence.EntityNotFoundException;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class TeamServiceImpl implements TeamService {
+
     private final TeamRepository teamRepository;
+    private final InternRepository internRepository;
+    private final InternshipProgramRepository programRepository;
+    private final MentorRepository mentorRepository;
+    private final ModelMapper modelMapper;
+
+    @Override
+    @Transactional
+    public TeamDetailResponse createTeam(CreateTeamRequest request) {
+        InternshipProgram program = programRepository.findById(request.getInternshipProgramId())
+                .orElseThrow(() -> new EntityNotFoundException(ErrorCode.PROGRAM_NOT_EXISTED.getMessage()));
+
+        Mentor mentor = mentorRepository.findById(request.getMentorId())
+                .orElseThrow(() -> new EntityNotFoundException(ErrorCode.MENTOR_NOT_EXISTED.getMessage()));
+
+        if (teamRepository.existsByNameAndInternshipProgram(request.getName(), program)) {
+            throw new IllegalArgumentException(ErrorCode.TEAM_NAME_EXISTED.getMessage());
+        }
+
+        Team newTeam = new Team();
+        newTeam.setName(request.getName());
+        newTeam.setInternshipProgram(program);
+        newTeam.setMentor(mentor);
+
+        Team savedTeam = teamRepository.save(newTeam);
+
+        return mapToTeamDetailResponse(savedTeam);
+    }
+
+    @Override
+    public TeamDetailResponse getTeamDetails(Integer teamId) {
+        Team team = teamRepository.findById(teamId)
+                .orElseThrow(() -> new EntityNotFoundException(ErrorCode.TEAM_NOT_EXISTED.getMessage()));
+        return mapToTeamDetailResponse(team);
+    }
+
+    @Override
+    public TeamDetailResponse addMember(Integer teamId, AddMemberRequest request) {
+        Team team = teamRepository.findById(teamId)
+                .orElseThrow(() -> new EntityNotFoundException(ErrorCode.TEAM_NOT_EXISTED.getMessage()));
+
+        List<Intern> internsToUpdate = new ArrayList<>();
+
+        for (Integer internId : request.getInternIds()) {
+            Intern intern = internRepository.findById(internId)
+                    .orElseThrow(() -> new EntityNotFoundException(ErrorCode.INTERN_NOT_EXISTED.getMessage()));
+
+            if (intern.getTeam() != null) {
+                throw new IllegalStateException(ErrorCode.INTERN_INVALID.getMessage());
+            }
+
+            intern.setTeam(team);
+            internsToUpdate.add(intern);
+        }
+        internRepository.saveAll(internsToUpdate);
+
+        Team updatedTeam = teamRepository.findById(teamId).get();
+        return mapToTeamDetailResponse(updatedTeam);
+    }
+
+    @Override
+    @Transactional
+    public void removeMember(Integer teamId, Integer internId) {
+        Intern intern = internRepository.findById(internId)
+                .orElseThrow(() -> new EntityNotFoundException(ErrorCode.INTERN_NOT_EXISTED.getMessage()));
+
+        if (intern.getTeam() == null || !intern.getTeam().getId().equals(teamId)) {
+            throw new IllegalStateException("Thực tập sinh này không thuộc nhóm " + teamId);
+        }
+
+        intern.setTeam(null);
+        internRepository.save(intern);
+    }
+
+    private TeamDetailResponse mapToTeamDetailResponse(Team team) {
+        TeamDetailResponse response = new TeamDetailResponse();
+        response.setId(team.getId());
+        response.setTeamName(team.getName());
+        response.setInternshipProgramName(team.getInternshipProgram().getName());
+
+        Mentor mentor = team.getMentor();
+        if (mentor != null) {
+            User mentorUser = mentor.getUser();
+            if (mentorUser != null) {
+                response.setMentorName(mentorUser.getFullName());
+            }
+        }
+
+        List<GetInternResponse> members = team.getInterns().stream()
+                .map(this::mapToInternResponse)
+                .collect(Collectors.toList());
+        response.setMembers(members);
+
+        return response;
+    }
+
+    private GetInternResponse mapToInternResponse(Intern intern) {
+        GetInternResponse dto = modelMapper.map(intern.getUser(), GetInternResponse.class);
+        modelMapper.map(intern, dto);
+        dto.setMajor(intern.getMajor().getName());
+        dto.setUniversity(intern.getUniversity().getName());
+
+        return dto;
+    }
 }

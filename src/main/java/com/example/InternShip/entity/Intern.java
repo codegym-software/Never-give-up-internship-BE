@@ -36,7 +36,7 @@ public class Intern {
     private String cvUrl;
 
     @Getter
-    public enum Status{
+    public enum Status {
         ACTIVE, // đang thực tập
         SUSPENDED, // tạm dừng thực tập
         COMPLETED, // hoành thành thực tập
