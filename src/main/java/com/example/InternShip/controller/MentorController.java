@@ -8,6 +8,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/mentors")
@@ -25,5 +26,17 @@ public class MentorController {
             @PathVariable("id") Integer id,
             @RequestBody @Valid UpdateMentorRequest request) {
         return ResponseEntity.ok(mentorService.updateMentorDepartment(id, request));
+    }
+
+    @GetMapping // Hàm lấy ra danh sách mentor
+    public ResponseEntity<?> getAll(
+            @RequestParam(required = false, defaultValue = "") List<Integer> department,
+            @RequestParam(required = false, defaultValue = "") String keyword, // fullName, Email, Phone, Address
+            @RequestParam(required = false, defaultValue = "1") int page) {
+
+        return ResponseEntity.ok(mentorService.getAll(
+                department,
+                keyword,
+                page));
     }
 }

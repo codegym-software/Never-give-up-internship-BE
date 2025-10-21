@@ -39,6 +39,7 @@ public class ApplicationServiceImpl implements ApplicationService {
     private final UserRepository userRepository;
     private final ModelMapper modelMapper;
 
+    @SuppressWarnings("unlikely-arg-type")
     @Override
     @Transactional
     public ApplicationResponse submitApplication(ApplicationRequest request) { // Tài

@@ -1,7 +1,5 @@
 package com.example.InternShip.dto.response;
 
-import com.example.InternShip.entity.InternshipApplication;
-import com.example.InternShip.entity.InternshipProgram;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
 import lombok.AllArgsConstructor;

@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/teams")
@@ -31,6 +32,20 @@ public class TeamController {
             @PathVariable Integer teamId,
             @RequestBody @Valid AddMemberRequest request) {
         return ResponseEntity.ok(teamService.addMember(teamId, request));
+    }
+
+    @GetMapping // Hàm lấy ra danh sách đơn xin thực tập
+    public ResponseEntity<?> getAllTeam(
+            @RequestParam(required = false, defaultValue = "") List<Integer> internshipProgram,
+            @RequestParam(required = false, defaultValue = "") List<Integer> mentor,
+            @RequestParam(required = false, defaultValue = "") String keyword, // Tên nhóm
+            @RequestParam(required = false, defaultValue = "1") int page) {
+
+        return ResponseEntity.ok(teamService.getAllTeam(
+                internshipProgram,
+                mentor,
+                keyword,
+                page));
     }
 
     @DeleteMapping("/{teamId}/members/{internId}")

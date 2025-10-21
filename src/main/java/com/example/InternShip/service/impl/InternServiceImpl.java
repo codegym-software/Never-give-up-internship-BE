@@ -3,20 +3,27 @@ package com.example.InternShip.service.impl;
 import com.example.InternShip.dto.request.UpdateInternRequest;
 import com.example.InternShip.dto.request.CreateInternRequest;
 import com.example.InternShip.entity.Intern;
+import com.example.InternShip.entity.InternshipApplication;
 import com.example.InternShip.entity.Major;
+import com.example.InternShip.entity.Team;
 import com.example.InternShip.entity.University;
 import com.example.InternShip.entity.User;
 import com.example.InternShip.entity.enums.Role;
 import com.example.InternShip.exception.ErrorCode;
 import com.example.InternShip.repository.InternRepository;
+import com.example.InternShip.repository.InternshipApplicationRepository;
 import com.example.InternShip.repository.MajorRepository;
+import com.example.InternShip.repository.TeamRepository;
 import com.example.InternShip.repository.UniversityRepository;
 import com.example.InternShip.repository.UserRepository;
 import com.example.InternShip.dto.request.GetAllInternRequest;
+import com.example.InternShip.dto.response.GetAllInternNoTeamResponse;
 import com.example.InternShip.dto.response.GetInternResponse;
 import com.example.InternShip.dto.response.PagedResponse;
 
 import com.example.InternShip.service.InternService;
+
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 
@@ -34,100 +41,133 @@ import java.util.List;
 @RequiredArgsConstructor
 public class InternServiceImpl implements InternService {
 
-    private final UserRepository userRepository;
-    private final InternRepository internRepository;
-    private final UniversityRepository universityRepository;
-    private final MajorRepository majorRepository;
-    private final ModelMapper modelMapper;
+        private final UserRepository userRepository;
+        private final InternRepository internRepository;
+        private final UniversityRepository universityRepository;
+        private final MajorRepository majorRepository;
+        private final InternshipApplicationRepository internshipApplicationRepository;
+        private final TeamRepository teamRepository;
 
+        private final ModelMapper modelMapper;
 
-    @Override
-    public GetInternResponse updateIntern(Integer id, UpdateInternRequest updateInternRequest) {
-        University university = universityRepository.findById(updateInternRequest.getUniversityId())
-                .orElseThrow(() -> new RuntimeException(ErrorCode.UNIVERSITY_NOT_EXISTED.getMessage()));
+        @Override
+        public GetInternResponse updateIntern(Integer id, UpdateInternRequest updateInternRequest) {
+                University university = universityRepository.findById(updateInternRequest.getUniversityId())
+                                .orElseThrow(() -> new RuntimeException(ErrorCode.UNIVERSITY_NOT_EXISTED.getMessage()));
 
-        Major major = majorRepository.findById(updateInternRequest.getMajorId())
-                .orElseThrow(() -> new RuntimeException(ErrorCode.MAJOR_NOT_EXISTED.getMessage()));
+                Major major = majorRepository.findById(updateInternRequest.getMajorId())
+                                .orElseThrow(() -> new RuntimeException(ErrorCode.MAJOR_NOT_EXISTED.getMessage()));
 
-        Intern intern = internRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException(ErrorCode.INTERN_NOT_EXISTED.getMessage()));
+                Intern intern = internRepository.findById(id)
+                                .orElseThrow(() -> new RuntimeException(ErrorCode.INTERN_NOT_EXISTED.getMessage()));
 
-        try {
-            intern.setStatus(Intern.Status.valueOf(updateInternRequest.getStatus().toUpperCase()));
-        } catch (Exception e) {
-            throw new RuntimeException(ErrorCode.STATUS_INVALID.getMessage());
+                try {
+                        intern.setStatus(Intern.Status.valueOf(updateInternRequest.getStatus().toUpperCase()));
+                } catch (Exception e) {
+                        throw new RuntimeException(ErrorCode.STATUS_INVALID.getMessage());
+                }
+                intern.setUniversity(university);
+                intern.setMajor(major);
+                internRepository.save(intern);
+
+                GetInternResponse response = modelMapper.map(intern.getUser(), GetInternResponse.class);
+                response.setId(intern.getId());
+                response.setUniversity(university.getName());
+                response.setMajor(major.getName());
+                response.setStatus(intern.getStatus());
+                return response;
         }
-        intern.setUniversity(university);
-        intern.setMajor(major);
-        internRepository.save(intern);
 
-        GetInternResponse response = modelMapper.map(intern.getUser(),GetInternResponse.class);
-        response.setId(intern.getId());
-        response.setUniversity(university.getName());
-        response.setMajor(major.getName());
-        response.setStatus(intern.getStatus());
-        return response;
-    }
+        BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
+        @Override
+        @Transactional
+        public GetInternResponse createIntern(CreateInternRequest request) {
+                if (userRepository.existsByEmail(request.getEmail())) {
+                        throw new RuntimeException(ErrorCode.EMAIL_EXISTED.getMessage());
+                }
+                University university = universityRepository.findById(request.getUniversityId())
+                                .orElseThrow(() -> new RuntimeException(ErrorCode.UNIVERSITY_NOT_EXISTED.getMessage()));
+                Major major = majorRepository.findById(request.getMajorId())
+                                .orElseThrow(() -> new RuntimeException(ErrorCode.MAJOR_NOT_EXISTED.getMessage()));
 
-    BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+                User user = modelMapper.map(request, User.class);
+                user.setUsername(request.getEmail());
+                user.setPassword(passwordEncoder.encode("123456@Abc"));
+                user.setRole(Role.INTERN);
+                User savedUser = userRepository.save(user);
 
-    @Override
-    @Transactional
-    public GetInternResponse createIntern(CreateInternRequest request) {
-        if (userRepository.existsByEmail(request.getEmail())) {
-            throw new RuntimeException(ErrorCode.EMAIL_EXISTED.getMessage());
+                Intern intern = new Intern();
+                intern.setUser(savedUser);
+                intern.setStatus(Intern.Status.ACTIVE);
+                intern.setMajor(major);
+                intern.setUniversity(university);
+                Intern savedIntern = internRepository.save(intern);
+
+                GetInternResponse internResponse = modelMapper.map(savedUser, GetInternResponse.class);
+                internResponse.setId(savedIntern.getId());
+                internResponse.setMajor(savedIntern.getMajor().getName());
+                internResponse.setUniversity(savedIntern.getUniversity().getName());
+                internResponse.setStatus(savedIntern.getStatus());
+
+                return internResponse;
         }
-        University university = universityRepository.findById(request.getUniversityId())
-                .orElseThrow(() -> new RuntimeException(ErrorCode.UNIVERSITY_NOT_EXISTED.getMessage()));
-        Major major = majorRepository.findById(request.getMajorId())
-                .orElseThrow(() -> new RuntimeException(ErrorCode.MAJOR_NOT_EXISTED.getMessage()));
 
-        User user = modelMapper.map(request, User.class);
-        user.setUsername(request.getEmail());
-        user.setPassword(passwordEncoder.encode("123456@Abc"));
-        user.setRole(Role.INTERN);
-        User savedUser = userRepository.save(user);
+        public PagedResponse<GetInternResponse> getAllIntern(GetAllInternRequest request) {
+                int page = Math.max(0, request.getPage() - 1);
+                int size = 15;
+                PageRequest pageable = PageRequest.of(page, size, Sort.by("id").descending());
+                Page<Intern> interns = internRepository.searchInterns(request.getMajorId(), request.getUniversityId(),
+                                request.getKeyWord(), pageable);
 
-        Intern intern = new Intern();
-        intern.setUser(savedUser);
-        intern.setStatus(Intern.Status.ACTIVE);
-        intern.setMajor(major);
-        intern.setUniversity(university);
-        Intern savedIntern = internRepository.save(intern);
+                List<GetInternResponse> response = interns.map(intern -> {
+                        GetInternResponse dto = modelMapper.map(intern.getUser(), GetInternResponse.class);
+                        modelMapper.map(intern, dto);
+                        dto.setMajor(intern.getMajor().getName());
+                        dto.setUniversity(intern.getUniversity().getName());
+                        return dto;
+                }).getContent();
 
-        GetInternResponse internResponse = modelMapper.map(savedUser, GetInternResponse.class);
-        internResponse.setId(savedIntern.getId());
-        internResponse.setMajor(savedIntern.getMajor().getName());
-        internResponse.setUniversity(savedIntern.getUniversity().getName());
-        internResponse.setStatus(savedIntern.getStatus());
+                return new PagedResponse<>(
+                                response,
+                                page + 1,
+                                interns.getTotalElements(),
+                                interns.getTotalPages(),
+                                interns.hasNext(),
+                                interns.hasPrevious());
+        }
 
-        return internResponse;
-    }
+        /*
+         * Hàm lấy ra danh sách intern chưa có nhóm,
+         * status ACTIVE, và có kỳ thực tập trùng với nhóm
+         */
+        @Override // Thật ra nguyên đoạn dưới chỉ cần viết bằng 1 repository với @Query là xong
+        public List<GetAllInternNoTeamResponse> getAllInternNoTeam(Integer teamId) {
+                // Lấy ra team để lấy ra InternshipProgram
+                Team team = teamRepository.findById(teamId)
+                                .orElseThrow(() -> new EntityNotFoundException(
+                                                ErrorCode.TEAM_NOT_EXISTED.getMessage()));
 
+                // Lấy ra InternshipApplication để lấy ra User
+                List<InternshipApplication> applications = internshipApplicationRepository
+                                .findByInternshipProgram_IdAndStatus(team.getInternshipProgram().getId(),
+                                                InternshipApplication.Status.CONFIRM);
 
-    public PagedResponse<GetInternResponse> getAllIntern (GetAllInternRequest request){
-        int page = Math.max(0, request.getPage() - 1);
-        int size = 15;
-        PageRequest pageable = PageRequest.of(page, size, Sort.by("id").descending());
-        Page<Intern> interns = internRepository.searchInterns(request.getMajorId(),request.getUniversityId(),request.getKeyWord(),pageable);
+                // Lấy ra user thông tin user dựa trên Intern thỏa mãn điều kiện
+                List<User> users = applications.stream()
+                                .map(InternshipApplication::getUser)
+                                .filter(user -> {
+                                        Intern intern = internRepository
+                                                        .findByUser_IdAndStatusAndTeamIsNull(user.getId(),
+                                                                        Intern.Status.ACTIVE)
+                                                        .orElse(null);
+                                        System.out.println(intern);
+                                        return intern == null || intern.getTeam() == null;
+                                })
+                                .toList();
+                return users.stream()
+                                .map(user -> modelMapper.map(user, GetAllInternNoTeamResponse.class))
+                                .toList();
+        }
 
-        List<GetInternResponse> response = interns.map(intern ->{
-                GetInternResponse dto = modelMapper.map(intern.getUser(),GetInternResponse.class);
-                modelMapper.map(intern,dto);
-                dto.setMajor(intern.getMajor().getName());
-                dto.setUniversity(intern.getUniversity().getName());
-                return dto;
-        }).getContent();
-
-        return new PagedResponse<>(
-                response,
-                page + 1,
-                interns.getTotalElements(),
-                interns.getTotalPages(),
-                interns.hasNext(),
-                interns.hasPrevious()
-        );
-    }
 }
-
