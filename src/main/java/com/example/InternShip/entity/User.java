@@ -1,11 +1,14 @@
 package com.example.InternShip.entity;
 
 import com.example.InternShip.entity.enums.Role;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Getter
@@ -34,6 +37,14 @@ public class User {
 
     @OneToOne(mappedBy = "user")
     private Mentor mentor;
+
+    @OneToMany(mappedBy = "user")
+    @JsonIgnore
+    private List<InternshipApplication> internshipApplication;
+
+    @OneToMany(mappedBy = "hr")
+    @JsonIgnore
+    private List<Conversation> hrConversations;
 
     private String phone;
 

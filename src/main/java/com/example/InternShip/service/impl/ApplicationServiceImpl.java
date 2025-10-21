@@ -39,6 +39,7 @@ public class ApplicationServiceImpl implements ApplicationService {
     private final UserRepository userRepository;
     private final ModelMapper modelMapper;
 
+    @SuppressWarnings("unlikely-arg-type")
     @Override
     @Transactional
     public ApplicationResponse submitApplication(ApplicationRequest request) { // Tài
@@ -60,7 +61,7 @@ public class ApplicationServiceImpl implements ApplicationService {
         // Kiểm tra và lấy thông tin từ các ID trong request
         InternshipProgram program = programRepository.findById(request.getInternshipTermId())
                 .orElseThrow(() -> new EntityNotFoundException(
-                        ErrorCode.INTERNSHIPTERM_NOT_EXISTED.getMessage()));
+                        ErrorCode.INTERNSHIP_TERM_NOT_EXISTED.getMessage()));
         if (!program.getStatus().equals(InternshipProgram.Status.PUBLISHED)) {
             throw new IllegalArgumentException(ErrorCode.TIME_APPLY_INVALID.getMessage());
         }

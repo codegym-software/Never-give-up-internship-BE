@@ -58,6 +58,7 @@ public class InternshipApplication {
         APPROVED, // đã duyệt
         CONFIRM, // đã xác nhận hợp đồng thực tập
         REJECTED, // bị từ chối
-        WITHDRAWN // rút lại
+        WITHDRAWN, // rút lại
+        NOT_CONTRACT // không nộp hợp đồng
     }
 }

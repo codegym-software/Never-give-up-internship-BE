@@ -39,6 +39,7 @@ public class CloudinaryServiceImpl implements CloudinaryService {
             String fileName = removeEmailDomain(user.getEmail());
 
             // Let Cloudinary auto-detect the resource type
+            @SuppressWarnings("rawtypes")
             Map uploadResult = cloudinary.uploader().upload(file.getBytes(),
                     ObjectUtils.asMap(
                             "resource_type", "auto",

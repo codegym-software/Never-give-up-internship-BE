@@ -87,8 +87,7 @@ public class PendingUserServiceImpl implements PendingUserService {
                             Xin chào!
                           </h2>
 
-                          <p>Bạn đang thực hiện hành động cần xác thực tài khoản.
-                          Vui lòng nhấn vào nút bên dưới để xác thực email của bạn.</p>
+                                <p>Cảm ơn bạn đã đăng ký. Vui lòng hoàn tất xác thực email để kích hoạt tài khoản.</p>
 
                           <p style="text-align: center; margin: 30px 0;">
                             <a href="%s"
@@ -97,21 +96,19 @@ public class PendingUserServiceImpl implements PendingUserService {
                             </a>
                           </p>
 
-                          <p>Liên kết xác thực sẽ hết hạn sau 20 phút kể từ thời điểm: <b>%s</b></p>
+                                <p>Liên kết xác thực sẽ **hết hạn sau 20 phút** tính từ: **%s**</p>
 
                           <p style="font-size: 12px; color: #777;">
                             Nếu bạn không yêu cầu xác thực email này, vui lòng bỏ qua thư này.
                           </p>
 
-                        </div>
-                        <div style="text-align: center; padding: 10px 0; font-size: 12px; color: #aaa;">
-                          Bản quyền &copy; CodeGym 2025.
-                        </div>
-                      </body>
+                            </div>
+                            <div style="text-align: center; padding: 10px 0; font-size: 12px; color: #aaa;">
+                                Bản quyền &copy; [Tên Công ty của bạn]
+                            </div>
+                        </body>
                     </html>
-                                        """
-                    .formatted(verifyLink, formattedNow);
-
+                    """.formatted(formattedNow, verifyLink);
             helper.setText(emailContent, true);
 
             mailSender.send(message);

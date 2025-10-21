@@ -111,8 +111,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void forgetPassword(ForgetPasswordRequest request) {
-        // TODO Auto-generated method stub
-        User user = userRepository.findByUsernameOrEmail(request.getEmail())
+        userRepository.findByUsernameOrEmail(request.getEmail())
                 .orElseThrow(() -> new RuntimeException(ErrorCode.EMAIL_INVALID.getMessage()));
         String token = UUID.randomUUID().toString();
         BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
@@ -121,14 +120,13 @@ public class UserServiceImpl implements UserService {
         pendingUser.setToken(token);
         pendingUser.setExpiryDate(LocalDateTime.now().plusMinutes(20));
         pendingUserRepository.save(pendingUser);
-        String verifyLink = "http://localhost:8080/api/v1/pendingUsers/verifyForgetPassword?token=" + token;
+        String verifyLink = "http://localhost:8082/api/v1/pendingUsers/verifyForgetPassword?token=" + token;
         pendingUserService.sendVerification(request.getEmail(), verifyLink);
 
     }
 
     @Override
     public void changePassword(ChangeMyPasswordRequest request) {
-        // TODO Auto-generated method stub
         User user = authService.getUserLogin();
         BCryptPasswordEncoder bcrypt = new BCryptPasswordEncoder();
         if (!bcrypt.matches(request.getOldPassword(), user.getPassword())) {
