@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
@@ -18,10 +19,10 @@ public class InternshipProgram {
 
     private String name;
 
-    private LocalDate endPublishedTime;
-    private LocalDate endReviewingTime;
-    private LocalDate timeStart;
-    private LocalDate timeEnd;
+    private LocalDateTime endPublishedTime;
+    private LocalDateTime endReviewingTime;
+    private LocalDateTime timeStart;
+    private LocalDateTime timeEnd;
 
     @Enumerated(EnumType.STRING)
     private Status status;

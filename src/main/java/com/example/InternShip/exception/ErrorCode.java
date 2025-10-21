@@ -24,6 +24,10 @@ public enum ErrorCode {
     EDIT_USER_INVALID("Không thể sửa thông tin admin"),
     LIST_APPLICATION_INVALID("Phải chọn ít nhất 1 hồ sơ"),
     INTERN_INVALID("Thực tập sinh không hợp lệ"),
+    NAME_INTERN_PROGRAM_INVALID("Tên kì thực tập không hợp lệ"),
+    TIME_INVALID("Thời gian không hợp lệ"),
+    DEPARTMENT_INVALID("Phòng ban không hợp lệ"),
+
 
     //EXISTED
     USERNAME_EXISTED("Tên đăng nhập đã tồn tại."),
@@ -37,22 +41,25 @@ public enum ErrorCode {
     INTERN_NOT_EXISTED("Thực tập sinh không tồn tại."),
     UNIVERSITY_NOT_EXISTED ("Trường học không tồn tại"),
     MAJOR_NOT_EXISTED ("Ngành học không tồn tại"),
-    INTERNSHIPTERM_NOT_EXISTED ("Kì thực tập không tồn tại"),
+    INTERNSHIP_TERM_NOT_EXISTED("Kì thực tập không tồn tại"),
     INTERNSHIP_APPLICATION_NOT_EXISTED("Đơn đăng ký không tồn tại"),
     PROGRAM_NOT_EXISTED("Chương trình không tồn tại"),
     TEAM_NOT_EXISTED("Nhóm không tồn tại"),
     MENTOR_NOT_EXISTED("Mentor không tồn tại"),
-    DEPARTMENT_NOT_EXISTED("Phòng ban không tồn tại"),
+    DEPARTMENT_NOT_EXISTED("Phòng ban không tồn tại."),
+    INTERNSHIP_PROGRAM_NOT_EXISTED("Kì thực tập không tồn tại"),
 
     //NOT_NULL
     UNIVERSITY_NOT_NULL ("Trường học không được để trống"),
     MAJOR_NOT_NULL ("Ngành học không được để trống"),
     STATUS_NOT_BLANK("Trạng thái không được để trống"),
+
     //FAILED
     VERIFICATION_FAILED("Xác thực thất bại"),
     VERIFICATION_CODE_SEND_FAILED("Gửi mã xác thực thất bại"),
     SUBMIT_FAILED("Gửi thất bại"),
     WITHDRAWAL_FAILED("Rút đơn thất bại"),
+    SCHEDULER_FAILED("Lập lịch thất bại"),
 
     //UNAUTHENTICATED
     UNAUTHENTICATED("Đăng nhập thất bại"),
