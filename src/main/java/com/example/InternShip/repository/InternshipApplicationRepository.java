@@ -1,6 +1,7 @@
 package com.example.InternShip.repository;
 
 import com.example.InternShip.entity.InternshipApplication;
+import com.example.InternShip.entity.InternshipApplication.Status;
 
 import java.util.Optional;
 
@@ -42,4 +43,5 @@ public interface InternshipApplicationRepository extends JpaRepository<Internshi
                 @Param("status") InternshipApplication.Status status,
                 Pageable pageable
                 );
+     List<InternshipApplication> findByInternshipProgram_IdAndStatus(Integer internshipProgramId, Status status);
 }

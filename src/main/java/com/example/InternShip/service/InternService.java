@@ -10,5 +10,6 @@ public interface InternService {
     PagedResponse<GetInternResponse> getAllIntern (GetAllInternRequest request);
     GetInternResponse createIntern(CreateInternRequest request);
     GetInternResponse updateIntern(Integer id,UpdateInternRequest updateInternRequest);
+    Object getAllInternNoTeam(Integer teamId);
 }
 

@@ -1,7 +1,5 @@
 package com.example.InternShip.dto.response;
 
-
-
 import lombok.Data;
 
 @Data

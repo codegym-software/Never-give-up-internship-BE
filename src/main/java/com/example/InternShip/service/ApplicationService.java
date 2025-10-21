@@ -11,7 +11,7 @@ import java.util.List;
 public interface ApplicationService {
     ApplicationResponse submitApplication(ApplicationRequest request);
     List<ApplicationResponse> getMyApplication(); // <-- mới
-   PagedResponse<ApplicationResponse> getAllApplication(Integer internshipTerm, Integer university, Integer major, String applicantName, String status, int page);
+    PagedResponse<ApplicationResponse> getAllApplication(Integer internshipTerm, Integer university, Integer major, String applicantName, String status, int page);
     void submitApplicationContract(SubmitApplicationContractRequest request);
     void withdrawApplication(Integer applicationId);
     void handleApplicationAction (HandleApplicationRequest request);

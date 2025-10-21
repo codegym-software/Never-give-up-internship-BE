@@ -23,11 +23,14 @@ public enum ErrorCode {
     ACTION_INVALID("Hành động không hợp lệ"),
     EDIT_USER_INVALID("Không thể sửa thông tin admin"),
     LIST_APPLICATION_INVALID("Phải chọn ít nhất 1 hồ sơ"),
+    INTERN_INVALID("Thực tập sinh không hợp lệ"),
 
     //EXISTED
     USERNAME_EXISTED("Tên đăng nhập đã tồn tại."),
     EMAIL_EXISTED("Email đã tồn tại."),
     APPLICATION_EXISTED("Hồ sơ đã tồn tại"),
+    TEAM_NAME_EXISTED("Tên nhóm đã tồn tại"),
+    
     //NOT_EXISTED
     USER_NOT_EXISTED("Người dùng không tồn tại."),
     VERIFICATION_CODE_NOT_EXISTED("Mã xác thực không tồn tại."),
@@ -36,6 +39,10 @@ public enum ErrorCode {
     MAJOR_NOT_EXISTED ("Ngành học không tồn tại"),
     INTERNSHIPTERM_NOT_EXISTED ("Kì thực tập không tồn tại"),
     INTERNSHIP_APPLICATION_NOT_EXISTED("Đơn đăng ký không tồn tại"),
+    PROGRAM_NOT_EXISTED("Chương trình không tồn tại"),
+    TEAM_NOT_EXISTED("Nhóm không tồn tại"),
+    MENTOR_NOT_EXISTED("Mentor không tồn tại"),
+    DEPARTMENT_NOT_EXISTED("Phòng ban không tồn tại"),
 
     //NOT_NULL
     UNIVERSITY_NOT_NULL ("Trường học không được để trống"),
