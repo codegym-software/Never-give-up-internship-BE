@@ -1,14 +1,15 @@
 package com.example.InternShip.config;
 
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import org.jetbrains.annotations.NotNull;
 import org.quartz.spi.TriggerFiredBundle;
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 import org.springframework.scheduling.quartz.SpringBeanJobFactory;
 
-@RequiredArgsConstructor
+@Setter
 public class AutoWiringSpringBeanJobFactory extends SpringBeanJobFactory {
-    private final AutowireCapableBeanFactory beanFactory;
+    private AutowireCapableBeanFactory beanFactory;
 
     @NotNull
     @Override

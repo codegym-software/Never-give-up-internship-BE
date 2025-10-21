@@ -1,6 +1,7 @@
 package com.example.InternShip.job;
 
 import com.example.InternShip.service.InternshipProgramService;
+import jakarta.transaction.Transactional;
 import org.quartz.Job;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
