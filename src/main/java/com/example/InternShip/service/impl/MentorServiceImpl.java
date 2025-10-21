@@ -21,6 +21,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -99,10 +100,14 @@ public class MentorServiceImpl implements MentorService {
                 .map(mentor -> {
                     User user = mentor.getUser();
                     GetAllMentorResponse res = modelMapper.map(user, GetAllMentorResponse.class);
-                    Team team = teamRepository.findByMentor_id(mentor.getId());
+                    List<Team> teams = mentor.getTeams();
                     // Lấy ra id nhóm dựa trên id mentor rồi đếm tất cả intern có id nhóm đó
-                    int totalInternInGroup = internRepository.countByTeam_id(team.getId());
-                    res.setTotalInternOwn(totalInternInGroup);
+                    int totalInternInAllGroup = 0;
+                    for (Team team : teams) {
+                        int totalInternInGroup = team.getInterns().size();
+                        totalInternInAllGroup += totalInternInGroup;
+                    }
+                    res.setTotalInternOwn(totalInternInAllGroup);
                     res.setDepartmentName(mentor.getDepartment().getName());
                     return res;
                 })

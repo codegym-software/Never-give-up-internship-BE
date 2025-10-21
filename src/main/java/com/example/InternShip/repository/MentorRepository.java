@@ -19,7 +19,7 @@ public interface MentorRepository extends JpaRepository<Mentor, Integer> {
           FROM Mentor m
           JOIN m.user u
           JOIN m.department d
-          WHERE (:department IS NULL OR d.id = :department)
+          WHERE (:department IS NULL OR d.id IN :department)
             AND (
                   :keyword IS NULL
                   OR LOWER(u.fullName) LIKE LOWER(CONCAT('%', :keyword, '%'))
