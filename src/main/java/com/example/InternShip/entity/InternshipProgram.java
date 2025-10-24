@@ -37,6 +37,9 @@ public class InternshipProgram {
     @OneToMany(mappedBy = "internshipProgram")
     private List<Team> teams;
 
+    @OneToMany(mappedBy = "internshipProgram")
+    private List<Intern> interns;
+
     public enum Status {
         DRAFT, // bản nháp
         PUBLISHED, // xuất bản

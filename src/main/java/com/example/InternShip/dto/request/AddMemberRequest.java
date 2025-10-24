@@ -7,6 +7,6 @@ import java.util.Set;
 
 @Data
 public class AddMemberRequest {
-    @NotEmpty(message = "INTERN_IDS_EMPTY")
+    @NotEmpty(message = "LIST_INTERN_INVALID")
     Set<Integer> internIds;
 }

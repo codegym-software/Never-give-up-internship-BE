@@ -1,7 +1,5 @@
 package com.example.InternShip.dto.response;
 
-import java.time.LocalDate;
-
 import com.example.InternShip.entity.InternshipProgram;
 import java.time.LocalDateTime;
 import com.fasterxml.jackson.annotation.JsonFormat;
@@ -14,7 +12,7 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class GetAllInternProgramManagerResponse {
+public class GetInternProgramResponse {
     private Integer id;
     private String name;
     @JsonFormat(pattern = "dd-MM-yyyy HH:mm:ss")

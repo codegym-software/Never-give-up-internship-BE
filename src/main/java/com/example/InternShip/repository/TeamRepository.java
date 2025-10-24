@@ -20,17 +20,17 @@ public interface TeamRepository extends JpaRepository<Team, Integer> {
         LEFT JOIN t.internshipProgram ip
         LEFT JOIN t.mentor m
         WHERE
-            (:internshipProgram IS NULL OR ip.id IN :internshipProgram)
+            (:internshipProgram IS NULL OR ip.id = :internshipProgram)
             AND
-            (:mentor IS NULL OR m.id IN :mentor)
+            (:mentor IS NULL OR m.id = :mentor)
             AND (
             :keyword IS NULL OR :keyword = ''
             OR LOWER(t.name) LIKE LOWER(CONCAT('%', :keyword, '%'))
             )
         """)
         Page<Team> searchTeam(
-            @Param("internshipProgram") List<Integer> internshipProgram,
-            @Param("mentor") List<Integer> mentor,
+            @Param("internshipProgram") Integer internshipProgram,
+            @Param("mentor") Integer mentor,
             @Param("keyword") String keyword,
             Pageable pageable);
 

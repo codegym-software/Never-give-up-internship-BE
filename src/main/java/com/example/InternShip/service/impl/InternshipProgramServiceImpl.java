@@ -9,7 +9,7 @@ import java.util.stream.Collectors;
 
 import com.example.InternShip.dto.request.CreateInternProgramRequest;
 import com.example.InternShip.dto.request.UpdateInternProgramRequest;
-import com.example.InternShip.dto.response.GetAllInternProgramManagerResponse;
+import com.example.InternShip.dto.response.GetInternProgramResponse;
 import com.example.InternShip.dto.response.GetAllInternProgramResponse;
 import com.example.InternShip.dto.response.PagedResponse;
 import com.example.InternShip.entity.*;
@@ -61,8 +61,8 @@ public class InternshipProgramServiceImpl implements InternshipProgramService {
     }
 
     @Override // Tùng
-    public PagedResponse<GetAllInternProgramManagerResponse> getAllInternshipPrograms(List<Integer> department,
-                                                                                      String keyword, int page) {
+    public PagedResponse<GetInternProgramResponse> getAllInternshipPrograms(List<Integer> department,
+                                                                            String keyword, int page) {
         page = Math.min(0, page - 1);
         PageRequest pageable = PageRequest.of(page, 10);
 
@@ -74,8 +74,8 @@ public class InternshipProgramServiceImpl implements InternshipProgramService {
         Page<InternshipProgram> internshipPrograms = internshipProgramRepository.searchInternshipProgram(department,
                 keyword, pageable);
 
-        List<GetAllInternProgramManagerResponse> responses = internshipPrograms.stream()
-                .map(internshipProgram -> modelMapper.map(internshipProgram, GetAllInternProgramManagerResponse.class))
+        List<GetInternProgramResponse> responses = internshipPrograms.stream()
+                .map(internshipProgram -> modelMapper.map(internshipProgram, GetInternProgramResponse.class))
                 .collect(Collectors.toList());
 
         return new PagedResponse<>(
@@ -88,7 +88,7 @@ public class InternshipProgramServiceImpl implements InternshipProgramService {
     }
 
     // thêm InternProgram
-    public GetAllInternProgramManagerResponse createInternProgram (CreateInternProgramRequest request) throws SchedulerException {
+    public GetInternProgramResponse createInternProgram (CreateInternProgramRequest request) throws SchedulerException {
         if (!(LocalDateTime.now().isBefore(request.getEndPublishedTime()) &&
                 request.getEndPublishedTime().isBefore(request.getEndReviewingTime()) &&
                 request.getEndReviewingTime().isBefore(request.getTimeStart()))) {
@@ -114,11 +114,11 @@ public class InternshipProgramServiceImpl implements InternshipProgramService {
                 throw new SchedulerException(ErrorCode.SCHEDULER_FAILED.getMessage());
             }
         }
-        return modelMapper.map(internshipProgram,GetAllInternProgramManagerResponse.class);
+        return modelMapper.map(internshipProgram, GetInternProgramResponse.class);
     }
 
     // sửa InternProgram
-    public GetAllInternProgramManagerResponse updateInternProgram(UpdateInternProgramRequest request, int id) throws SchedulerException {
+    public GetInternProgramResponse updateInternProgram(UpdateInternProgramRequest request, int id) throws SchedulerException {
         if (!(LocalDateTime.now().isBefore(request.getEndPublishedTime()) &&
                 request.getEndPublishedTime().isBefore(request.getEndReviewingTime()) &&
                 request.getEndReviewingTime().isBefore(request.getTimeStart()))) {
@@ -153,11 +153,11 @@ public class InternshipProgramServiceImpl implements InternshipProgramService {
                 throw new SchedulerException(ErrorCode.SCHEDULER_FAILED.getMessage());
             }
         }
-        return modelMapper.map(internshipProgram,GetAllInternProgramManagerResponse.class);
+        return modelMapper.map(internshipProgram, GetInternProgramResponse.class);
     }
 
     // hủy InternProgram
-    public GetAllInternProgramManagerResponse cancelInternProgram(int id) throws SchedulerException {
+    public GetInternProgramResponse cancelInternProgram(int id) throws SchedulerException {
         InternshipProgram internshipProgram = internshipProgramRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException(ErrorCode.INTERNSHIP_PROGRAM_NOT_EXISTED.getMessage()));
 
@@ -174,10 +174,10 @@ public class InternshipProgramServiceImpl implements InternshipProgramService {
 
         deleteAllJobsForProgram(id);
 
-        return modelMapper.map(internshipProgram, GetAllInternProgramManagerResponse.class);
+        return modelMapper.map(internshipProgram, GetInternProgramResponse.class);
     }
 
-    public GetAllInternProgramManagerResponse publishInternProgram(int id) throws SchedulerException {
+    public GetInternProgramResponse publishInternProgram(int id) throws SchedulerException {
         InternshipProgram internshipProgram = internshipProgramRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException(ErrorCode.INTERNSHIP_PROGRAM_NOT_EXISTED.getMessage()));
 
@@ -199,7 +199,7 @@ public class InternshipProgramServiceImpl implements InternshipProgramService {
             throw new SchedulerException(ErrorCode.SCHEDULER_FAILED.getMessage());
         }
 
-        return modelMapper.map(internshipProgram, GetAllInternProgramManagerResponse.class);
+        return modelMapper.map(internshipProgram, GetInternProgramResponse.class);
     }
 
     // Xóa job của internProgram có id là programId

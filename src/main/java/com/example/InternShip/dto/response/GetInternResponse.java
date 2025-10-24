@@ -17,5 +17,6 @@ public class GetInternResponse {
     private String phone;
     private String major;
     private String university;
+    private String internshipProgram;
     private Intern.Status status;
 }

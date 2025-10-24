@@ -2,17 +2,14 @@ package com.example.InternShip.dto.request;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
-@Data
-public class CreateTeamRequest {
-
+@Getter
+@Setter
+public class UpdateTeamRequest {
     @NotBlank(message = "TEAM_NAME_INVALID")
     private String name;
-
-    @NotNull(message = "PROGRAM_INVALID")
-    private Integer internshipProgramId;
-
     @NotNull(message = "MENTOR_INVALID")
     private Integer mentorId;
 }

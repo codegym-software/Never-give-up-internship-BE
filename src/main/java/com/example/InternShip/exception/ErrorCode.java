@@ -16,6 +16,7 @@ public enum ErrorCode {
     PHONE_INVALID("Số điện thoại không hợp lệ"),
     VERIFICATION_CODE_INVALID("Mã xác thực không hợp lệ"),
     STATUS_INVALID("trạng thái không hợp lệ "),
+    STATUS_INTERNSHIP_PROGRAM_INVALID("trạng thái kì thực tập không hợp lệ "),
     MAJOR_INVALID ("Chuyên ngành không hợp lệ"),
     UNIVERSITY_INVALID ("Trường học không hợp lệ"),
     TIME_APPLY_INVALID("Đã quá hạn nộp đơn thực tập"),
@@ -24,10 +25,13 @@ public enum ErrorCode {
     EDIT_USER_INVALID("Không thể sửa thông tin admin"),
     LIST_APPLICATION_INVALID("Phải chọn ít nhất 1 hồ sơ"),
     INTERN_INVALID("Thực tập sinh không hợp lệ"),
-    NAME_INTERN_PROGRAM_INVALID("Tên kì thực tập không hợp lệ"),
+    INTERNSHIP_PROGRAM_INVALID("Tên kì thực tập không hợp lệ"),
     TIME_INVALID("Thời gian không hợp lệ"),
     DEPARTMENT_INVALID("Phòng ban không hợp lệ"),
-
+    MENTOR_INVALID("Mentor không hợp lệ"),
+    PROGRAM_INVALID("Kì thực tập không hợp lệ"),
+    TEAM_NAME_INVALID("Tên nhóm không hợp lệ"),
+    LIST_INTERN_INVALID("Danh sách thực tập sinh không hợp lệ"),
 
     //EXISTED
     USERNAME_EXISTED("Tên đăng nhập đã tồn tại."),
@@ -65,7 +69,9 @@ public enum ErrorCode {
     UNAUTHENTICATED("Đăng nhập thất bại"),
     USER_INACTIVE("Tài khoản đã bị vô hiệu hóa"), 
     UNAUTHORIZED_ACTION("Hành động không được phép"),
-    
+
+    //OTHER
+    INTERN_NOT_IN_TEAM("Thực tập sinh hiện không thuộc nhóm nào")
     ;
     private final String message;
 }
