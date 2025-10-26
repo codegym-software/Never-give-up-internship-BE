@@ -18,6 +18,8 @@ import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
@@ -63,6 +65,15 @@ public class TeamServiceImpl implements TeamService {
     }
 
     @Override
+    @Cacheable(value = "team", key = "#id")
+    public TeamDetailResponse getTeamById(int id) {
+        Team team = teamRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException(ErrorCode.TEAM_NOT_EXISTED.getMessage()));
+        return mapToTeamDetailResponse(team);
+    }
+
+    @Override
+    @CacheEvict(value = "team", key = "#teamId")
     public TeamDetailResponse updateTeam(Integer teamId, UpdateTeamRequest request) {
         Team team = teamRepository.findById(teamId)
                 .orElseThrow(() -> new EntityNotFoundException(ErrorCode.TEAM_NOT_EXISTED.getMessage()));
@@ -85,6 +96,7 @@ public class TeamServiceImpl implements TeamService {
     }
 
     @Override
+    @CacheEvict(value = "team", key = "#teamId")
     public TeamDetailResponse addMember(Integer teamId, AddMemberRequest request) {
         Team team = teamRepository.findById(teamId)
                 .orElseThrow(() -> new EntityNotFoundException(ErrorCode.TEAM_NOT_EXISTED.getMessage()));
@@ -109,6 +121,7 @@ public class TeamServiceImpl implements TeamService {
 
     @Override
     @Transactional
+    @CacheEvict(value = "team", key = "#result.id")
     public TeamDetailResponse removeMember(Integer internId) {
         Intern intern = internRepository.findById(internId)
                 .orElseThrow(() -> new EntityNotFoundException(ErrorCode.INTERN_NOT_EXISTED.getMessage()));

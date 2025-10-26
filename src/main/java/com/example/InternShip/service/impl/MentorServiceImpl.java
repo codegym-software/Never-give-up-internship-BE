@@ -14,6 +14,9 @@ import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -36,6 +39,7 @@ public class MentorServiceImpl implements MentorService {
 
     @Override
     @Transactional
+    @CacheEvict(value = "mentors", allEntries = true)
     public GetMentorResponse createMentor(CreateMentorRequest request) {
         if (userRepository.existsByEmail(request.getEmail())) {
             throw new RuntimeException(ErrorCode.EMAIL_EXISTED.getMessage());
@@ -65,6 +69,10 @@ public class MentorServiceImpl implements MentorService {
 
     @Override
     @Transactional
+    @Caching(evict = {
+            @CacheEvict(value = "mentors", allEntries = true),
+            @CacheEvict(value = "mentor", key = "#mentorId")
+    })
     public GetMentorResponse updateMentorDepartment(Integer mentorId, UpdateMentorRequest request) {
 
         Mentor mentor = mentorRepository.findById(mentorId)
@@ -130,6 +138,19 @@ public class MentorServiceImpl implements MentorService {
                 mentors.hasPrevious());
     }
 
+    @Override
+    @Cacheable(value = "mentor", key = "#id")
+    public GetMentorResponse getMentorById(int id) {
+        Mentor mentor = mentorRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException(ErrorCode.MENTOR_NOT_EXISTED.getMessage()));
+        GetMentorResponse res = modelMapper.map(mentor.getUser(), GetMentorResponse.class);
+        res.setId(mentor.getId());
+        res.setTotalInternOwn(totalInternInAllGroup(mentor));
+        res.setDepartmentName(mentor.getDepartment().getName());
+        return res;
+    }
+
+    @Cacheable("mentors")
     public List<GetAllMentorResponse> getAllMentor(){
         List<Mentor> mentors = mentorRepository.findAll().stream()
                 .filter(m -> m.getUser().isActive())
@@ -143,5 +164,4 @@ public class MentorServiceImpl implements MentorService {
                         mentor.getDepartment().getName()
                 ))
                 .toList();
-    }
-}
+    }}

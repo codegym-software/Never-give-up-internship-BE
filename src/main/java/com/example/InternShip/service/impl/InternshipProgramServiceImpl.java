@@ -25,6 +25,8 @@ import jakarta.transaction.Transactional;
 import org.modelmapper.ModelMapper;
 import org.quartz.*;
 import org.quartz.impl.matchers.GroupMatcher;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
@@ -47,6 +49,7 @@ public class InternshipProgramServiceImpl implements InternshipProgramService {
     private final EmailService emailService;
 
     @Override
+    @Cacheable("internshipPrograms")
     public List<GetAllInternProgramResponse> getAllPrograms() {
         Role role = authService.getUserLogin().getRole();
         List<InternshipProgram> results = null;
@@ -88,6 +91,7 @@ public class InternshipProgramServiceImpl implements InternshipProgramService {
     }
 
     // thêm InternProgram
+    @CacheEvict(value = "internshipPrograms", allEntries = true)
     public GetInternProgramResponse createInternProgram (CreateInternProgramRequest request) throws SchedulerException {
         if (!(LocalDateTime.now().isBefore(request.getEndPublishedTime()) &&
                 request.getEndPublishedTime().isBefore(request.getEndReviewingTime()) &&
@@ -118,6 +122,7 @@ public class InternshipProgramServiceImpl implements InternshipProgramService {
     }
 
     // sửa InternProgram
+    @CacheEvict(value = "internshipPrograms", allEntries = true)
     public GetInternProgramResponse updateInternProgram(UpdateInternProgramRequest request, int id) throws SchedulerException {
         if (!(LocalDateTime.now().isBefore(request.getEndPublishedTime()) &&
                 request.getEndPublishedTime().isBefore(request.getEndReviewingTime()) &&
@@ -157,6 +162,7 @@ public class InternshipProgramServiceImpl implements InternshipProgramService {
     }
 
     // hủy InternProgram
+    @CacheEvict(value = "internshipPrograms", allEntries = true)
     public GetInternProgramResponse cancelInternProgram(int id) throws SchedulerException {
         InternshipProgram internshipProgram = internshipProgramRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException(ErrorCode.INTERNSHIP_PROGRAM_NOT_EXISTED.getMessage()));
@@ -177,6 +183,7 @@ public class InternshipProgramServiceImpl implements InternshipProgramService {
         return modelMapper.map(internshipProgram, GetInternProgramResponse.class);
     }
 
+    @CacheEvict(value = "internshipPrograms", allEntries = true)
     public GetInternProgramResponse publishInternProgram(int id) throws SchedulerException {
         InternshipProgram internshipProgram = internshipProgramRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException(ErrorCode.INTERNSHIP_PROGRAM_NOT_EXISTED.getMessage()));

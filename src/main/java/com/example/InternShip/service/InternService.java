@@ -8,6 +8,7 @@ import com.example.InternShip.dto.response.PagedResponse;
 
 public interface InternService {
     PagedResponse<GetInternResponse> getAllIntern (GetAllInternRequest request);
+    GetInternResponse getInternById(int id);
     GetInternResponse createIntern(CreateInternRequest request);
     GetInternResponse updateIntern(Integer id,UpdateInternRequest updateInternRequest);
     Object getAllInternNoTeam(Integer teamId);

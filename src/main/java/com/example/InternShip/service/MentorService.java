@@ -11,5 +11,6 @@ public interface MentorService {
     GetMentorResponse createMentor(CreateMentorRequest request);
     GetMentorResponse updateMentorDepartment(Integer mentorId, UpdateMentorRequest request);
     Object getAll(List<Integer> department, String keyword, int page);
+    GetMentorResponse getMentorById(int id);
     public List<GetAllMentorResponse> getAllMentor();
 }

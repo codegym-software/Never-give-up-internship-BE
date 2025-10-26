@@ -12,6 +12,7 @@ import com.example.InternShip.dto.request.ChangeMyPasswordRequest;
 public interface UserService {
     PagedResponse<GetUserResponse> getAllUser(GetAllUserRequest request);
     GetUserResponse getUserInfo();
+    GetUserResponse findById(int id);
     GetUserResponse createUser(CreateUserRequest request);
     GetUserResponse updateUser(UpdateUserRequest request, int id);
     GetUserResponse updateUserInfo(UpdateInfoRequest request);

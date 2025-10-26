@@ -11,6 +11,7 @@ import java.util.List;
 
 public interface TeamService {
     TeamDetailResponse createTeam(CreateTeamRequest request);
+    TeamDetailResponse getTeamById(int id);
     TeamDetailResponse addMember(Integer teamId, AddMemberRequest request);
     TeamDetailResponse removeMember(Integer internId);
     PagedResponse<TeamDetailResponse> getAllTeam(Integer internshipTerm, Integer mentor, String keyword, int page);

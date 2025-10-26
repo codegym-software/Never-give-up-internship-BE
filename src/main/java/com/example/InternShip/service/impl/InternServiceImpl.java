@@ -17,6 +17,8 @@ import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -42,6 +44,21 @@ public class InternServiceImpl implements InternService {
         private final ModelMapper modelMapper;
 
         @Override
+        @Cacheable(value = "intern", key = "#id")
+        public GetInternResponse getInternById(int id) {
+                Intern intern = internRepository.findById(id)
+                        .orElseThrow(() -> new RuntimeException(ErrorCode.INTERN_NOT_EXISTED.getMessage()));
+                GetInternResponse response = modelMapper.map(intern.getUser(), GetInternResponse.class);
+                response.setId(intern.getId());
+                response.setUniversity(intern.getUniversity().getName());
+                response.setMajor(intern.getMajor().getName());
+                response.setInternshipProgram(intern.getInternshipProgram().getName());
+                response.setStatus(intern.getStatus());
+                return response;
+        }
+
+        @Override
+        @CacheEvict(value = "intern", key = "#id")
         public GetInternResponse updateIntern(Integer id, UpdateInternRequest updateInternRequest) {
                 University university = universityRepository.findById(updateInternRequest.getUniversityId())
                                 .orElseThrow(() -> new RuntimeException(ErrorCode.UNIVERSITY_NOT_EXISTED.getMessage()));
