@@ -110,7 +110,7 @@ public class ApplicationServiceImpl implements ApplicationService {
     @Transactional(readOnly = true)
     public PagedResponse<ApplicationResponse> getAllApplication(Integer internshipTerm, Integer university,
                                                                 Integer major, String keyword, String status, int page) {
-        page = Math.min(0, page - 1);
+        page = Math.max(0, page - 1);
         PageRequest pageable = PageRequest.of(page, 10);
         InternshipApplication.Status iStatus = parseInternshipApplicationStatus(status);
         Page<InternshipApplication> applications = applicationRepository.searchApplications(internshipTerm,

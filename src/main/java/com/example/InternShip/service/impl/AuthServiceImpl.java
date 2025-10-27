@@ -135,7 +135,7 @@ public class AuthServiceImpl implements AuthService {
             throw new RuntimeException(ErrorCode.UNAUTHENTICATED.getMessage());
         }
 
-        if (user.isActive() == false) {
+        if (!user.isActive()) {
             throw new RuntimeException(ErrorCode.USER_INACTIVE.getMessage());
         }
 

@@ -27,6 +27,7 @@ import org.quartz.*;
 import org.quartz.impl.matchers.GroupMatcher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import com.example.InternShip.service.InternshipProgramService;
@@ -63,8 +64,8 @@ public class InternshipProgramServiceImpl implements InternshipProgramService {
     @Override // Tùng
     public PagedResponse<GetInternProgramResponse> getAllInternshipPrograms(List<Integer> department,
                                                                             String keyword, int page) {
-        page = Math.min(0, page - 1);
-        PageRequest pageable = PageRequest.of(page, 10);
+        page = Math.max(0, page - 1);
+        PageRequest pageable = PageRequest.of(page, 10, Sort.by("id").descending());
 
         // Kiểm tra null vì Hibernate không coi List rỗng là null
         if (department == null || department.isEmpty()) {
@@ -75,7 +76,11 @@ public class InternshipProgramServiceImpl implements InternshipProgramService {
                 keyword, pageable);
 
         List<GetInternProgramResponse> responses = internshipPrograms.stream()
-                .map(internshipProgram -> modelMapper.map(internshipProgram, GetInternProgramResponse.class))
+                .map(internshipProgram -> {
+                    GetInternProgramResponse response = modelMapper.map(internshipProgram, GetInternProgramResponse.class);
+                    response.setDepartment(internshipProgram.getDepartment().getName());
+                    return response;
+                })
                 .collect(Collectors.toList());
 
         return new PagedResponse<>(
@@ -114,7 +119,9 @@ public class InternshipProgramServiceImpl implements InternshipProgramService {
                 throw new SchedulerException(ErrorCode.SCHEDULER_FAILED.getMessage());
             }
         }
-        return modelMapper.map(internshipProgram, GetInternProgramResponse.class);
+        GetInternProgramResponse response = modelMapper.map(internshipProgram, GetInternProgramResponse.class);
+        response.setDepartment(internshipProgram.getDepartment().getName());
+        return response;
     }
 
     // sửa InternProgram
@@ -134,25 +141,19 @@ public class InternshipProgramServiceImpl implements InternshipProgramService {
             internshipProgram.setName(request.getName());
             if (internshipProgram.getEndPublishedTime().isAfter(LocalDateTime.now())) {
                 internshipProgram.setEndPublishedTime(request.getEndPublishedTime());
+                scheduleInternship(internshipProgram.getId(), EndPublishJob.class, internshipProgram.getEndPublishedTime());
             }
             if (internshipProgram.getEndReviewingTime().isAfter(LocalDateTime.now())) {
                 internshipProgram.setEndReviewingTime(request.getEndReviewingTime());
+                scheduleInternship(internshipProgram.getId(), EndReviewJob.class, internshipProgram.getEndReviewingTime());
             }
             if (internshipProgram.getTimeStart().isAfter(LocalDateTime.now())) {
                 internshipProgram.setTimeStart(request.getTimeStart());
+                scheduleInternship(internshipProgram.getId(), StartInternship.class, internshipProgram.getTimeStart());
             }
         }
         internshipProgramRepository.save(internshipProgram);
 
-        if (internshipProgram.getStatus() != InternshipProgram.Status.DRAFT) {
-            try {
-                scheduleInternship(internshipProgram.getId(), EndPublishJob.class, internshipProgram.getEndPublishedTime());
-                scheduleInternship(internshipProgram.getId(), EndReviewJob.class, internshipProgram.getEndReviewingTime());
-                scheduleInternship(internshipProgram.getId(), StartInternship.class, internshipProgram.getTimeStart());
-            }catch (SchedulerException e){
-                throw new SchedulerException(ErrorCode.SCHEDULER_FAILED.getMessage());
-            }
-        }
         return modelMapper.map(internshipProgram, GetInternProgramResponse.class);
     }
 
@@ -200,17 +201,6 @@ public class InternshipProgramServiceImpl implements InternshipProgramService {
         }
 
         return modelMapper.map(internshipProgram, GetInternProgramResponse.class);
-    }
-
-    // Xóa job của internProgram có id là programId
-    private void deleteAllJobsForProgram(int programId) throws SchedulerException {
-        for (String groupName : scheduler.getJobGroupNames()) {
-            for (JobKey jobKey : scheduler.getJobKeys(GroupMatcher.jobGroupEquals(groupName))) {
-                if (jobKey.getName().startsWith("job_" + programId)) {
-                    scheduler.deleteJob(jobKey);
-                }
-            }
-        }
     }
 
     @Transactional
@@ -303,5 +293,16 @@ public class InternshipProgramServiceImpl implements InternshipProgramService {
                 .build();
 
         scheduler.scheduleJob(jobDetail, trigger);
+    }
+
+    // Xóa job của internProgram có id là programId
+    private void deleteAllJobsForProgram(int programId) throws SchedulerException {
+        for (String groupName : scheduler.getJobGroupNames()) {
+            for (JobKey jobKey : scheduler.getJobKeys(GroupMatcher.jobGroupEquals(groupName))) {
+                if (jobKey.getName().startsWith("job_" + programId)) {
+                    scheduler.deleteJob(jobKey);
+                }
+            }
+        }
     }
 }

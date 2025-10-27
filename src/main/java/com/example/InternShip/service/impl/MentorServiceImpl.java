@@ -100,7 +100,7 @@ public class MentorServiceImpl implements MentorService {
 
     @Override
     public PagedResponse<GetMentorResponse> getAll(List<Integer> department, String keyword, int page) {
-        page = Math.min(0, page - 1);
+        page = Math.max(0, page - 1);
         PageRequest pageable = PageRequest.of(page, 10);
 
         // Kiểm tra null vì Hibernate không coi List rỗng là null

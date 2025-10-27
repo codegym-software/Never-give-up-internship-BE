@@ -1,5 +1,6 @@
 package com.example.InternShip.exception;
 
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -16,6 +17,11 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(value = IllegalArgumentException.class)
     ResponseEntity<String> handlingIllegalArgumentException(IllegalArgumentException exception){
+        return ResponseEntity.badRequest().body(exception.getMessage());
+    }
+
+    @ExceptionHandler(value = EntityNotFoundException.class)
+    ResponseEntity<String> handlingEntityNotFoundException(EntityNotFoundException exception){
         return ResponseEntity.badRequest().body(exception.getMessage());
     }
 
