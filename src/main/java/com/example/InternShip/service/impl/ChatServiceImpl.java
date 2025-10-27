@@ -152,7 +152,7 @@ public class ChatServiceImpl implements ChatService {
         return ConversationResponse.builder()
                 .id(conversation.getId())
                 .candidateName(conversation.getCandidate().getFullName())
-                .hrId(conversation.getHr().getId())
+                .hrId(  conversation.getHr()==null?null:  conversation.getHr().getId())
                 .lastMessage(lastMessageContent)
                 .lastMessageTimestamp(lastMessageTimestamp)
                 .unreadCount(0) // Placeholder for unread count
