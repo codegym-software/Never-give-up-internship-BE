@@ -126,8 +126,7 @@ public class InternshipProgramServiceImpl implements InternshipProgramService {
 
     // sửa InternProgram
     public GetInternProgramResponse updateInternProgram(UpdateInternProgramRequest request, int id) throws SchedulerException {
-        if (!(LocalDateTime.now().isBefore(request.getEndPublishedTime()) &&
-                request.getEndPublishedTime().isBefore(request.getEndReviewingTime()) &&
+        if (!(request.getEndPublishedTime().isBefore(request.getEndReviewingTime()) &&
                 request.getEndReviewingTime().isBefore(request.getTimeStart()))) {
             throw new IllegalArgumentException(ErrorCode.TIME_INVALID.getMessage());
         }
@@ -247,28 +246,16 @@ public class InternshipProgramServiceImpl implements InternshipProgramService {
         InternshipProgram internshipProgram = internshipProgramRepository.findById(programId)
                 .orElseThrow(() -> new EntityNotFoundException(ErrorCode.INTERNSHIP_TERM_NOT_EXISTED.getMessage()));
         List<InternshipApplication> applications = internshipProgram.getApplications();
-        List<Intern> toCreate = new ArrayList<>();
-        List<User> toUpdate = new ArrayList<>();
         List<InternshipApplication> toUpdateApp = new ArrayList<>();
 
         for (InternshipApplication app : applications){
-            if (app.getStatus() == InternshipApplication.Status.CONFIRM){
-                Intern intern = modelMapper.map(app,Intern.class);
-                intern.setStatus(Intern.Status.ACTIVE);
-                toCreate.add(intern);
-
-                User user = app.getUser();
-                user.setRole(Role.INTERN);
-                toUpdate.add(user);
-            } else if (app.getStatus() == InternshipApplication.Status.APPROVED) {
+            if (app.getStatus() == InternshipApplication.Status.APPROVED) {
                 app.setStatus(InternshipApplication.Status.NOT_CONTRACT);
                 toUpdateApp.add(app);
             }
         }
         internshipProgram.setStatus(InternshipProgram.Status.ONGOING);
         internshipProgramRepository.save(internshipProgram);
-        internRepository.saveAll(toCreate);
-        userRepository.saveAll(toUpdate);
         internshipApplicationRepository.saveAll(toUpdateApp);
     }
 

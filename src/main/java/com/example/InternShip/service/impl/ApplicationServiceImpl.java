@@ -169,6 +169,7 @@ public class ApplicationServiceImpl implements ApplicationService {
         intern.setMajor(application.getMajor());
         intern.setUniversity(application.getUniversity());
         intern.setStatus(Intern.Status.ACTIVE);
+        intern.setInternshipProgram(application.getInternshipProgram());
         internRepository.save(intern);
         // Cập nhật vai trò
         user.setRole(Role.INTERN);
@@ -212,7 +213,10 @@ public class ApplicationServiceImpl implements ApplicationService {
         for (InternshipApplication app : applications) {
             InternshipApplication.Status currentStatus = app.getStatus();
 
-            if (!(currentStatus == InternshipApplication.Status.UNDER_REVIEW || currentStatus == InternshipApplication.Status.APPROVED || currentStatus == InternshipApplication.Status.REJECTED)) {
+            if (!(currentStatus == InternshipApplication.Status.UNDER_REVIEW ||
+                    currentStatus == InternshipApplication.Status.APPROVED ||
+                    currentStatus == InternshipApplication.Status.REJECTED ) ||
+                    app.getInternshipProgram().getStatus() != InternshipProgram.Status.REVIEWING) {
                 throw new IllegalArgumentException(
                         ErrorCode.STATUS_APPLICATION_INVALID.getMessage() + app.getUser().getEmail()
                 );
