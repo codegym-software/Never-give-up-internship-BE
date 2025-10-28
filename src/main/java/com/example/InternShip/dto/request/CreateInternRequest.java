@@ -22,8 +22,11 @@ public class CreateInternRequest {
     private String address;
 
     @NotNull(message = "MAJOR_INVALID")
-    private int majorId;
+    private Integer majorId;
 
     @NotNull(message = "UNIVERSITY_INVALID")
-    private int universityId;
+    private Integer universityId;
+
+    @NotNull(message = "INTERNSHIP_PROGRAM_INVALID")
+    private Integer internshipProgramId;
 }

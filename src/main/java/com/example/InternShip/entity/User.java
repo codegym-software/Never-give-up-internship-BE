@@ -39,11 +39,9 @@ public class User {
     private Mentor mentor;
 
     @OneToMany(mappedBy = "user")
-    @JsonIgnore
     private List<InternshipApplication> internshipApplication;
 
     @OneToMany(mappedBy = "hr")
-    @JsonIgnore
     private List<Conversation> hrConversations;
 
     private String phone;

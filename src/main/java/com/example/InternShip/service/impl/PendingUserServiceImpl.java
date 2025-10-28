@@ -96,7 +96,7 @@ public class PendingUserServiceImpl implements PendingUserService {
                             </a>
                           </p>
 
-                                <p>Liên kết xác thực sẽ **hết hạn sau 20 phút** tính từ: **%s**</p>
+                                <p>Liên kết xác thực sẽ **hết hạn sau 20 phút** tính từ: %s</p>
 
                           <p style="font-size: 12px; color: #777;">
                             Nếu bạn không yêu cầu xác thực email này, vui lòng bỏ qua thư này.

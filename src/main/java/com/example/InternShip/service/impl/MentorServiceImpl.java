@@ -3,12 +3,9 @@ package com.example.InternShip.service.impl;
 import com.example.InternShip.dto.request.CreateMentorRequest;
 import com.example.InternShip.dto.request.UpdateMentorRequest;
 import com.example.InternShip.dto.response.GetAllMentorResponse;
-import com.example.InternShip.dto.response.MentorResponse;
+import com.example.InternShip.dto.response.GetMentorResponse;
 import com.example.InternShip.dto.response.PagedResponse;
-import com.example.InternShip.entity.Department;
-import com.example.InternShip.entity.Mentor;
-import com.example.InternShip.entity.Team;
-import com.example.InternShip.entity.User;
+import com.example.InternShip.entity.*;
 import com.example.InternShip.entity.enums.Role;
 import com.example.InternShip.exception.ErrorCode;
 import com.example.InternShip.repository.*;
@@ -39,7 +36,7 @@ public class MentorServiceImpl implements MentorService {
 
     @Override
     @Transactional
-    public MentorResponse createMentor(CreateMentorRequest request) {
+    public GetMentorResponse createMentor(CreateMentorRequest request) {
         if (userRepository.existsByEmail(request.getEmail())) {
             throw new RuntimeException(ErrorCode.EMAIL_EXISTED.getMessage());
         }
@@ -58,16 +55,17 @@ public class MentorServiceImpl implements MentorService {
         mentor.setDepartment(department);
         Mentor savedMentor = mentorRepository.save(mentor);
 
-        MentorResponse mentorResponse = modelMapper.map(savedUser, MentorResponse.class);
-        mentorResponse.setMentorId(savedMentor.getId());
+        GetMentorResponse mentorResponse = modelMapper.map(savedUser, GetMentorResponse.class);
+        mentorResponse.setId(savedMentor.getId());
         mentorResponse.setDepartmentName(department.getName());
+        mentorResponse.setTotalInternOwn(0);
 
         return mentorResponse;
     }
 
     @Override
     @Transactional
-    public MentorResponse updateMentorDepartment(Integer mentorId, UpdateMentorRequest request) {
+    public GetMentorResponse updateMentorDepartment(Integer mentorId, UpdateMentorRequest request) {
 
         Mentor mentor = mentorRepository.findById(mentorId)
                 .orElseThrow(() -> new EntityNotFoundException(ErrorCode.MENTOR_NOT_EXISTED.getMessage()));
@@ -78,15 +76,31 @@ public class MentorServiceImpl implements MentorService {
         mentor.setDepartment(department);
         Mentor savedMentor = mentorRepository.save(mentor);
 
-        MentorResponse response = modelMapper.map(savedMentor, MentorResponse.class);
-        response.setMentorId(savedMentor.getId());
+        GetMentorResponse response = modelMapper.map(savedMentor.getUser(), GetMentorResponse.class);
+        modelMapper.map(savedMentor, response);
+
+        response.setTotalInternOwn(totalInternInAllGroup(mentor));
+        response.setDepartmentName(mentor.getDepartment().getName());
 
         return response;
     }
 
+    private int totalInternInAllGroup(Mentor mentor){
+        List<Team> teams = mentor.getTeams().stream()
+                .filter(team -> team.getInternshipProgram().getStatus() == InternshipProgram.Status.ONGOING)
+                .toList();
+
+        int totalInternInAllGroup = 0;
+        for (Team team : teams) {
+            int totalInternInGroup = team.getInterns().size();
+            totalInternInAllGroup += totalInternInGroup;
+        }
+        return totalInternInAllGroup;
+    }
+
     @Override
-    public PagedResponse<GetAllMentorResponse> getAll(List<Integer> department, String keyword, int page) {
-        page = Math.min(0, page - 1);
+    public PagedResponse<GetMentorResponse> getAll(List<Integer> department, String keyword, int page) {
+        page = Math.max(0, page - 1);
         PageRequest pageable = PageRequest.of(page, 10);
 
         // Kiểm tra null vì Hibernate không coi List rỗng là null
@@ -96,18 +110,12 @@ public class MentorServiceImpl implements MentorService {
 
         Page<Mentor> mentors = mentorRepository.searchMentor(department, keyword, pageable);
 
-        List<GetAllMentorResponse> responses = mentors.stream()
+        List<GetMentorResponse> responses = mentors.stream()
                 .map(mentor -> {
                     User user = mentor.getUser();
-                    GetAllMentorResponse res = modelMapper.map(user, GetAllMentorResponse.class);
-                    List<Team> teams = mentor.getTeams();
-                    // Lấy ra id nhóm dựa trên id mentor rồi đếm tất cả intern có id nhóm đó
-                    int totalInternInAllGroup = 0;
-                    for (Team team : teams) {
-                        int totalInternInGroup = team.getInterns().size();
-                        totalInternInAllGroup += totalInternInGroup;
-                    }
-                    res.setTotalInternOwn(totalInternInAllGroup);
+                    GetMentorResponse res = modelMapper.map(user, GetMentorResponse.class);
+                    res.setId(mentor.getId());
+                    res.setTotalInternOwn(totalInternInAllGroup(mentor));
                     res.setDepartmentName(mentor.getDepartment().getName());
                     return res;
                 })
@@ -120,5 +128,20 @@ public class MentorServiceImpl implements MentorService {
                 mentors.getTotalPages(),
                 mentors.hasNext(),
                 mentors.hasPrevious());
+    }
+
+    public List<GetAllMentorResponse> getAllMentor(){
+        List<Mentor> mentors = mentorRepository.findAll().stream()
+                .filter(m -> m.getUser().isActive())
+                .toList();
+
+        return mentors.stream()
+                .map(mentor -> new GetAllMentorResponse(
+                        mentor.getId(),
+                        mentor.getUser().getFullName(),
+                        mentor.getUser().getEmail(),
+                        mentor.getDepartment().getName()
+                ))
+                .toList();
     }
 }

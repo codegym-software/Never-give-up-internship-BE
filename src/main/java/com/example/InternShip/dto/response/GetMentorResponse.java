@@ -9,9 +9,14 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class GetAllMentorResponse {
+public class GetMentorResponse {
     private Integer id;
     private String fullName;
     private String email;
-    private String departmentName;
+    private String phone;
+    private boolean isActive;
+
+    private String departmentName; // Tên phòng ban
+    private Integer totalInternOwn; // Số lượng intern đang có
 }
+

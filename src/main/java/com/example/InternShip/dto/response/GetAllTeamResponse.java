@@ -14,4 +14,5 @@ public class GetAllTeamResponse {
     private String name;
     private String internshipProgramName;
     private String mentorName;
+    private int totalIntern;
 }

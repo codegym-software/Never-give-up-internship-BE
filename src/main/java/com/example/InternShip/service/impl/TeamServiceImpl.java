@@ -2,6 +2,7 @@ package com.example.InternShip.service.impl;
 
 import com.example.InternShip.dto.request.AddMemberRequest;
 import com.example.InternShip.dto.request.CreateTeamRequest;
+import com.example.InternShip.dto.request.UpdateTeamRequest;
 import com.example.InternShip.dto.response.GetAllTeamResponse;
 import com.example.InternShip.dto.response.GetInternResponse;
 import com.example.InternShip.dto.response.PagedResponse;
@@ -41,6 +42,9 @@ public class TeamServiceImpl implements TeamService {
         InternshipProgram program = programRepository.findById(request.getInternshipProgramId())
                 .orElseThrow(() -> new EntityNotFoundException(ErrorCode.PROGRAM_NOT_EXISTED.getMessage()));
 
+        if (program.getStatus() != InternshipProgram.Status.ONGOING){
+            throw new IllegalArgumentException(ErrorCode.STATUS_INTERNSHIP_PROGRAM_INVALID.getMessage());
+        }
         Mentor mentor = mentorRepository.findById(request.getMentorId())
                 .orElseThrow(() -> new EntityNotFoundException(ErrorCode.MENTOR_NOT_EXISTED.getMessage()));
 
@@ -59,10 +63,25 @@ public class TeamServiceImpl implements TeamService {
     }
 
     @Override
-    public TeamDetailResponse getTeamDetails(Integer teamId) {
+    public TeamDetailResponse updateTeam(Integer teamId, UpdateTeamRequest request) {
         Team team = teamRepository.findById(teamId)
                 .orElseThrow(() -> new EntityNotFoundException(ErrorCode.TEAM_NOT_EXISTED.getMessage()));
-        return mapToTeamDetailResponse(team);
+        Mentor mentor = mentorRepository.findById(request.getMentorId())
+                .orElseThrow(() -> new EntityNotFoundException(ErrorCode.MENTOR_NOT_EXISTED.getMessage()));
+
+        if (!team.getName().equals(request.getName())) {
+            InternshipProgram program = team.getInternshipProgram();
+            if (teamRepository.existsByNameAndInternshipProgram(request.getName().trim(), program)) {
+                throw new IllegalArgumentException(ErrorCode.TEAM_NAME_EXISTED.getMessage());
+            }
+        }
+
+        team.setName(request.getName());
+        team.setMentor(mentor);
+
+        Team savedTeam = teamRepository.save(team);
+
+        return mapToTeamDetailResponse(savedTeam);
     }
 
     @Override
@@ -85,46 +104,34 @@ public class TeamServiceImpl implements TeamService {
         }
         internRepository.saveAll(internsToUpdate);
 
-        Team updatedTeam = teamRepository.findById(teamId).get();
-        return mapToTeamDetailResponse(updatedTeam);
+        return mapToTeamDetailResponse(team);
     }
 
     @Override
     @Transactional
-    public void removeMember(Integer internId) {
+    public TeamDetailResponse removeMember(Integer internId) {
         Intern intern = internRepository.findById(internId)
                 .orElseThrow(() -> new EntityNotFoundException(ErrorCode.INTERN_NOT_EXISTED.getMessage()));
+        Team team = intern.getTeam();
+        if (team == null){
+            throw new IllegalArgumentException(ErrorCode.INTERN_NOT_IN_TEAM.getMessage());
+        }
+        team.getInterns().remove(intern);
         intern.setTeam(null);
         internRepository.save(intern);
+
+        return mapToTeamDetailResponse(team);
     }
 
     @Override
-    public PagedResponse<GetAllTeamResponse> getAllTeam(List<Integer> internshipProgram, List<Integer> mentor,
-                                                        String keyword, int page) {
-        page = Math.min(0, page - 1);
+    public PagedResponse<TeamDetailResponse> getAllTeam(Integer internshipProgram, Integer mentor, String keyword, int page) {
+        page = Math.max(0, page - 1);
         PageRequest pageable = PageRequest.of(page, 10);
-
-        // Kiểm tra null vì Hibernate không coi List rỗng là null
-        if (internshipProgram == null || internshipProgram.isEmpty()) {
-            internshipProgram = null;
-        }
-        if (mentor == null || mentor.isEmpty()) {
-            mentor = null;
-        }
 
         Page<Team> teams = teamRepository.searchTeam(internshipProgram, mentor, keyword, pageable);
 
-        List<GetAllTeamResponse> responses = teams.stream()
-                .map(team -> {
-                    // Map các field trùng tự động
-                    GetAllTeamResponse res = modelMapper.map(team, GetAllTeamResponse.class);
-
-                    // Map thủ công các field đặc biệt
-                    res.setInternshipProgramName(team.getInternshipProgram().getName());
-                    res.setMentorName(team.getMentor().getUser().getFullName());
-
-                    return res;
-                })
+        List<TeamDetailResponse> responses = teams.stream()
+                .map(this::mapToTeamDetailResponse)
                 .collect(Collectors.toList());
 
         return new PagedResponse<>(
@@ -141,14 +148,8 @@ public class TeamServiceImpl implements TeamService {
         response.setId(team.getId());
         response.setTeamName(team.getName());
         response.setInternshipProgramName(team.getInternshipProgram().getName());
-
-        Mentor mentor = team.getMentor();
-        if (mentor != null) {
-            User mentorUser = mentor.getUser();
-            if (mentorUser != null) {
-                response.setMentorName(mentorUser.getFullName());
-            }
-        }
+        response.setMentorName(team.getMentor().getUser().getFullName());
+        response.setSize(team.getInterns().size());
 
         List<GetInternResponse> members = team.getInterns().stream()
                 .map(this::mapToInternResponse)
@@ -163,7 +164,6 @@ public class TeamServiceImpl implements TeamService {
         modelMapper.map(intern, dto);
         dto.setMajor(intern.getMajor().getName());
         dto.setUniversity(intern.getUniversity().getName());
-
         return dto;
     }
 }

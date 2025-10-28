@@ -110,7 +110,7 @@ public class ApplicationServiceImpl implements ApplicationService {
     @Transactional(readOnly = true)
     public PagedResponse<ApplicationResponse> getAllApplication(Integer internshipTerm, Integer university,
                                                                 Integer major, String keyword, String status, int page) {
-        page = Math.min(0, page - 1);
+        page = Math.max(0, page - 1);
         PageRequest pageable = PageRequest.of(page, 10);
         InternshipApplication.Status iStatus = parseInternshipApplicationStatus(status);
         Page<InternshipApplication> applications = applicationRepository.searchApplications(internshipTerm,
@@ -169,6 +169,7 @@ public class ApplicationServiceImpl implements ApplicationService {
         intern.setMajor(application.getMajor());
         intern.setUniversity(application.getUniversity());
         intern.setStatus(Intern.Status.ACTIVE);
+        intern.setInternshipProgram(application.getInternshipProgram());
         internRepository.save(intern);
         // Cập nhật vai trò
         user.setRole(Role.INTERN);
@@ -212,7 +213,10 @@ public class ApplicationServiceImpl implements ApplicationService {
         for (InternshipApplication app : applications) {
             InternshipApplication.Status currentStatus = app.getStatus();
 
-            if (!(currentStatus == InternshipApplication.Status.UNDER_REVIEW || currentStatus == InternshipApplication.Status.APPROVED || currentStatus == InternshipApplication.Status.REJECTED)) {
+            if (!(currentStatus == InternshipApplication.Status.UNDER_REVIEW ||
+                    currentStatus == InternshipApplication.Status.APPROVED ||
+                    currentStatus == InternshipApplication.Status.REJECTED ) ||
+                    app.getInternshipProgram().getStatus() != InternshipProgram.Status.REVIEWING) {
                 throw new IllegalArgumentException(
                         ErrorCode.STATUS_APPLICATION_INVALID.getMessage() + app.getUser().getEmail()
                 );

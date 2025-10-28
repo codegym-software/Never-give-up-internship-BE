@@ -21,6 +21,6 @@ public class CreateMentorRequest {
 
     private String address;
 
-    @NotNull(message = "DEPARTMENT_ID_INVALID")
+    @NotNull(message = "DEPARTMENT_INVALID")
     private Integer departmentId;
 }

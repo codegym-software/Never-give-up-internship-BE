@@ -35,6 +35,10 @@ public class Intern {
     @Column(length = 512)
     private String cvUrl;
 
+    @ManyToOne
+    @JoinColumn(name = "internship_program_id", nullable = false)
+    private InternshipProgram internshipProgram;
+
     @Getter
     public enum Status {
         ACTIVE, // đang thực tập

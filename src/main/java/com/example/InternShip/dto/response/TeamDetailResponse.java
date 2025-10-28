@@ -9,5 +9,6 @@ public class TeamDetailResponse {
     private String teamName;
     private String internshipProgramName;
     private String mentorName;
+    private int size;
     private List<GetInternResponse> members;
 }
