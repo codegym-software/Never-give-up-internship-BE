@@ -32,6 +32,7 @@ public enum ErrorCode {
     PROGRAM_INVALID("Kì thực tập không hợp lệ"),
     TEAM_NAME_INVALID("Tên nhóm không hợp lệ"),
     LIST_INTERN_INVALID("Danh sách thực tập sinh không hợp lệ"),
+    NAME_INTERN_PROGRAM_INVALID("Tên kì thực tập không hợp lệ"),
 
     //EXISTED
     USERNAME_EXISTED("Tên đăng nhập đã tồn tại."),

@@ -138,7 +138,7 @@ public class TeamServiceImpl implements TeamService {
 
     @Override
     public PagedResponse<TeamDetailResponse> getAllTeam(Integer internshipProgram, Integer mentor, String keyword, int page) {
-        page = Math.min(0, page - 1);
+        page = Math.max(0, page - 1);
         PageRequest pageable = PageRequest.of(page, 10);
 
         Page<Team> teams = teamRepository.searchTeam(internshipProgram, mentor, keyword, pageable);
