@@ -1,6 +1,12 @@
 package com.example.InternShip.controller;
 
+import com.example.InternShip.dto.response.AttendanceResponse;
+import com.example.InternShip.service.AttendanceService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -8,4 +14,18 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/v1/attendances")
 @RequiredArgsConstructor
 public class AttendanceController {
+
+    private final AttendanceService attendanceService;
+
+    //@PreAuthorize("hasAuthority('SCOPE_INTERN')")
+    @PostMapping("/check-in")
+    public ResponseEntity<AttendanceResponse> checkIn() {
+        return ResponseEntity.ok(attendanceService.checkIn());
+    }
+
+    @PutMapping("/check-out")
+    //@PreAuthorize("hasAuthority('SCOPE_INTERN')")
+    public ResponseEntity<AttendanceResponse> checkOut() {
+        return ResponseEntity.ok(attendanceService.checkOut());
+    }
 }

@@ -40,5 +40,5 @@ public interface InternRepository extends JpaRepository<Intern, Integer> {
   Optional<Intern> findByUser_IdAndStatusAndTeamIsNull(Integer id, Status active);
 
   int countByTeam_id(Integer id);
-
+  Optional<Intern> findByUser(User user);
 }

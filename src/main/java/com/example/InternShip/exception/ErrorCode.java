@@ -72,7 +72,14 @@ public enum ErrorCode {
     UNAUTHORIZED_ACTION("Hành động không được phép"),
 
     //OTHER
-    INTERN_NOT_IN_TEAM("Thực tập sinh hiện không thuộc nhóm nào")
+    INTERN_NOT_IN_TEAM("Thực tập sinh hiện không thuộc nhóm nào"),
+    INTERN_NOT_FOUND("Không tìm thấy thông tin thực tập sinh"),
+    ALREADY_CHECKED_IN_TODAY("Bạn đã check-in hôm nay rồi"),
+    ALREADY_CHECKED_OUT_TODAY("Bạn đã check-out hôm nay rồi"),
+    NOT_CHECKED_IN_TODAY("Bạn chưa check-in hôm nay"),
+    INTERN_NOT_TEAM("Bạn chưa được gán vào nhóm nào, không thể chấm công"),
+    SCHEDULE_NOT_SET_TODAY("Lịch chưa được thiết lập hôm nay"),
+    CANNOT_CHECKIN("Ca làm việc đã kết thúc , không thể check-in"),
     ;
     private final String message;
 }
