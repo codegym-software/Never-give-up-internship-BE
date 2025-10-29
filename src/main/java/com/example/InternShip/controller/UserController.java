@@ -7,6 +7,7 @@ import com.example.InternShip.dto.request.UpdateUserRequest;
 import com.example.InternShip.dto.response.GetUserResponse;
 import com.example.InternShip.dto.response.PagedResponse;
 import com.example.InternShip.service.UserService;
+import io.swagger.v3.oas.models.annotations.OpenAPI30;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;

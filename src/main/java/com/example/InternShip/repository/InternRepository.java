@@ -1,5 +1,6 @@
 package com.example.InternShip.repository;
 
+import java.util.List;
 import java.util.Optional;
 import com.example.InternShip.entity.Intern;
 import com.example.InternShip.entity.Intern.Status;
@@ -41,4 +42,5 @@ public interface InternRepository extends JpaRepository<Intern, Integer> {
 
   int countByTeam_id(Integer id);
 
+  List<Intern> findAllByStatus(Intern.Status status);
 }

@@ -35,4 +35,7 @@ public interface TeamRepository extends JpaRepository<Team, Integer> {
             Pageable pageable);
 
     Team findByMentor_id(Integer id);
+
+    @Query("SELECT t.id from Team t")
+    List<Integer> getAllTeamId();
 }
