@@ -7,6 +7,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -27,5 +29,15 @@ public class AttendanceController {
     //@PreAuthorize("hasAuthority('SCOPE_INTERN')")
     public ResponseEntity<AttendanceResponse> checkOut() {
         return ResponseEntity.ok(attendanceService.checkOut());
+    }
+
+    @GetMapping("/me")
+    public ResponseEntity<?> getMySchedule() {
+        return ResponseEntity.ok(attendanceService.getMySchedule());
+    }
+
+    @GetMapping("/{teamId}")
+    public ResponseEntity<?> getTeamSchedule(@PathVariable int teamId) {
+        return ResponseEntity.ok(attendanceService.getTeamSchedule(teamId));
     }
 }

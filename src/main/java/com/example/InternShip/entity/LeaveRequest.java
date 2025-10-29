@@ -31,7 +31,6 @@ public class LeaveRequest {
     public enum Type {
         LATE,                 // Xin đi muộn
         EARLY_LEAVE,          // Xin về sớm
-        LATE_AND_EARLY_LEAVE, // Xin đi muộn và về sớm
         ON_LEAVE              // Xin nghỉ phép
     }
 }

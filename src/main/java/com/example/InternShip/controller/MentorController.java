@@ -42,7 +42,7 @@ public class MentorController {
     }
 
     @GetMapping("/getAll")
-    public List<GetAllMentorResponse> getAllMentor(){
-        return mentorService.getAllMentor();
+    public ResponseEntity<?> getAllMentor(){
+        return ResponseEntity.ok(mentorService.getAllMentor());
     }
 }

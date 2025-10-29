@@ -6,8 +6,12 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.time.LocalDate;
 import java.util.Optional;
+import java.util.List;
 
-public interface AttendanceRepository extends JpaRepository<Attendance,Integer> {
+public interface AttendanceRepository extends JpaRepository<Attendance, Integer> {
     // Tìm bản ghi chấm công của 1 intern, trong 1 ngày cụ thể
     Optional<Attendance> findByInternAndDate(Intern intern, LocalDate date);
+
+    List<Attendance> findAllByTeamId(int teamId);
+
 }
