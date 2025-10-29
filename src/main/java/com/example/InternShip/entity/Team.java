@@ -27,4 +27,11 @@ public class Team {
 
     @OneToMany(mappedBy = "team")
     private List<Intern> interns = new ArrayList<>();
+
+    @OneToMany(mappedBy = "team")
+    private List<WorkSchedule> workSchedules;
+
+    @OneToMany(mappedBy = "team")
+    private List<Attendance> attendances;
+
 }
