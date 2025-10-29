@@ -9,6 +9,8 @@ import com.example.InternShip.dto.response.GetInternResponse;
 import com.example.InternShip.dto.response.PagedResponse;
 
 import com.example.InternShip.service.InternService;
+import com.example.InternShip.service.WorkScheduleService; // Added
+import com.example.InternShip.dto.response.WorkScheduleResponse; // Added
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
@@ -26,11 +28,14 @@ import org.springframework.web.bind.annotation.PutMapping;
 
 import org.springframework.web.bind.annotation.PathVariable;
 
+import java.util.List; // Added
+
 @RestController
 @RequestMapping("/api/v1/interns")
 @RequiredArgsConstructor
 public class InternController {
     private final InternService internService;
+    private final WorkScheduleService workScheduleService; // Added
 
     @PutMapping("/{id}")
     public ResponseEntity<GetInternResponse> UpdateInternById(@PathVariable Integer id, @RequestBody @Valid UpdateInternRequest updateInternRequest) {
@@ -50,5 +55,19 @@ public class InternController {
     @GetMapping("/{teamId}") // Hàm lấy ra danh sách intern chưa có nhóm, status ACTIVE, và có kỳ thực tập trùng với nhóm
     public ResponseEntity<?> getAllInternNoTeam(@PathVariable Integer teamId){
         return ResponseEntity.ok(internService.getAllInternNoTeam(teamId));
+    }
+
+    @GetMapping("/my-team-schedule") // New endpoint
+    public ResponseEntity<List<WorkScheduleResponse>> getMyTeamSchedule() {
+        Integer internTeamId = internService.getAuthenticatedInternTeamId();
+
+        if (internTeamId == null) {
+            // If the intern is not associated with a team or not found, return 404 Not Found
+            // Or 403 Forbidden, depending on desired error handling
+            return ResponseEntity.notFound().build();
+        }
+
+        List<WorkScheduleResponse> teamSchedule = workScheduleService.getWorkSchedule(internTeamId);
+        return ResponseEntity.ok(teamSchedule);
     }
 }

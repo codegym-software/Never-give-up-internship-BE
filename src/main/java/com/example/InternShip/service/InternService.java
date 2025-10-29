@@ -12,5 +12,6 @@ public interface InternService {
     GetInternResponse createIntern(CreateInternRequest request);
     GetInternResponse updateIntern(Integer id,UpdateInternRequest updateInternRequest);
     Object getAllInternNoTeam(Integer teamId);
+    Integer getAuthenticatedInternTeamId();
 }
 

@@ -10,7 +10,7 @@ import com.example.InternShip.dto.request.GetAllInternRequest;
 import com.example.InternShip.dto.response.GetAllInternNoTeamResponse;
 import com.example.InternShip.dto.response.GetInternResponse;
 import com.example.InternShip.dto.response.PagedResponse;
-
+import com.example.InternShip.service.AuthService;
 import com.example.InternShip.service.InternService;
 
 import jakarta.persistence.EntityNotFoundException;
@@ -40,7 +40,7 @@ public class InternServiceImpl implements InternService {
         private final InternshipApplicationRepository internshipApplicationRepository;
         private final InternshipProgramRepository internshipProgramRepository;
         private final TeamRepository teamRepository;
-
+       private final AuthService authService;
         private final ModelMapper modelMapper;
 
         @Override
@@ -184,5 +184,16 @@ public class InternServiceImpl implements InternService {
                                 })
                                 .toList();
         }
+        @Override
+        public Integer getAuthenticatedInternTeamId() {
+           
+                User user =authService.getUserLogin();
+            Intern intern = internRepository.findByUser(user)
+                    .orElseThrow(() -> new EntityNotFoundException(ErrorCode.INTERN_NOT_EXISTED.getMessage()));
 
+            if (intern.getTeam() != null) {
+                return intern.getTeam().getId();
+            }
+            return null; // Intern is not assigned to a team
+        }
 }
