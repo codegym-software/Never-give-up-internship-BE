@@ -1,22 +1,47 @@
 package com.example.InternShip.config;
 
-import io.swagger.v3.oas.annotations.OpenAPIDefinition;
-import io.swagger.v3.oas.annotations.enums.SecuritySchemeType;
-import io.swagger.v3.oas.annotations.info.Info;
-import io.swagger.v3.oas.annotations.security.SecurityRequirement;
-import io.swagger.v3.oas.annotations.security.SecurityScheme;
+import io.swagger.v3.oas.models.OpenAPI;
+import io.swagger.v3.oas.models.info.Info;
+import io.swagger.v3.oas.models.servers.Server;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import java.util.List;
+
 @Configuration
-@OpenAPIDefinition(
-        info = @Info(title = "API Library", version = "1.0"),
-        security = @SecurityRequirement(name = "bearerAuth") // dùng cho toàn bộ API
-)
-@SecurityScheme(
-        name = "bearerAuth",
-        type = SecuritySchemeType.HTTP,
-        bearerFormat = "JWT",
-        scheme = "bearer"
-)
 public class SwaggerConfig {
+
+        @Value("${NGROK_URL}") 
+        private String ngrokUrl;
+
+        @Value("${server.port}")
+        private String serverPort;
+
+        @Bean
+        public OpenAPI customOpenAPI() {
+                Server localServer = new Server()
+                                .url("http://localhost:" + serverPort)
+                                .description("Local Development Server");
+
+                List<Server> servers = new java.util.ArrayList<>();
+                servers.add(localServer);
+
+                OpenAPI openAPI = new OpenAPI()
+                                .info(new Info()
+                                                .title("API Library")
+                                                .version("1.0")
+                                                .description("Swagger configuration for Internship project"))
+                                .servers(servers);
+
+                if (ngrokUrl != null && !ngrokUrl.isBlank()) {
+                        Server ngrokServer = new Server()
+                                        .url(ngrokUrl)
+                                        .description("Ngrok Tunnel Server");
+                        openAPI.getServers().add(0, ngrokServer); 
+                }
+
+                return openAPI;
+        }
+
 }

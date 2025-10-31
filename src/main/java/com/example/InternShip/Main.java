@@ -7,6 +7,7 @@ import org.springframework.cache.annotation.EnableCaching;
 import io.github.cdimascio.dotenv.Dotenv;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
+
 @SpringBootApplication
 @EnableCaching
 @EnableScheduling
@@ -20,5 +21,6 @@ public class Main {
         // Set tất cả biến vào System properties để Spring đọc được
         dotenv.entries().forEach(entry -> System.setProperty(entry.getKey(), entry.getValue()));
 		SpringApplication.run(Main.class, args);
+       
 	}
 }
