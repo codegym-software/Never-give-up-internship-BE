@@ -4,7 +4,8 @@ import com.example.InternShip.dto.request.SetWorkScheduleRequest;
 import com.example.InternShip.service.WorkScheduleService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-
+import org.springframework.format.annotation.DateTimeFormat;
+import java.time.LocalDate;
 import java.time.DayOfWeek;
 
 import org.springframework.http.ResponseEntity;
@@ -23,8 +24,8 @@ public class WorkScheduleController {
     }
 
     @PutMapping("/{teamId}")
-    public ResponseEntity<?> updateWorkSchedule(@PathVariable Integer teamId, @RequestBody @Valid SetWorkScheduleRequest request) {
-        return ResponseEntity.ok(workScheduleService.updateWorkSchedule(teamId, request));
+    public ResponseEntity<?> updateWorkSchedule(@PathVariable Integer teamId, @RequestBody @Valid SetWorkScheduleRequest request,@RequestParam("date") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
+        return ResponseEntity.ok(workScheduleService.updateWorkSchedule(teamId, request,date));
     }
 
     @GetMapping("/{teamId}")
@@ -32,9 +33,12 @@ public class WorkScheduleController {
         return ResponseEntity.ok(workScheduleService.getWorkSchedule(teamId));
     }
 
-    @DeleteMapping("/{teamId}/{dayOfWeek}")
-    public ResponseEntity<?> deleteWorkSchedule(@PathVariable Integer teamId, @PathVariable DayOfWeek dayOfWeek) {
-        workScheduleService.deleteWorkSchedule(teamId, dayOfWeek);
+ 
+
+@DeleteMapping("/{teamId}/{dayOfWeek}")
+    public ResponseEntity<?> deleteWorkSchedule(@PathVariable Integer teamId, @PathVariable DayOfWeek dayOfWeek, @RequestParam("date") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
+        workScheduleService.deleteWorkSchedule(teamId, dayOfWeek, date);
         return ResponseEntity.noContent().build();
     }
 }
+

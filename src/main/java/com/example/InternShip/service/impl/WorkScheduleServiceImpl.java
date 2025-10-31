@@ -19,6 +19,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import java.time.LocalDate;
+
 
 @Service
 @RequiredArgsConstructor
@@ -58,10 +60,12 @@ public class WorkScheduleServiceImpl implements WorkScheduleService {
 
     @Override
     @Transactional
-    public List<WorkScheduleResponse> updateWorkSchedule(Integer teamId, SetWorkScheduleRequest request) {
+    public List<WorkScheduleResponse> updateWorkSchedule(Integer teamId, SetWorkScheduleRequest request,LocalDate date) {
         Team team = teamRepository.findById(teamId)
                 .orElseThrow(() -> new EntityNotFoundException(ErrorCode.TEAM_NOT_EXISTED.getMessage()));
-
+ if (date.isBefore(LocalDate.now())) {
+            throw new IllegalStateException("Không thể chỉnh sửa lịch làm việc của một ngày trong quá khứ.");
+        }
         List<WorkSchedule> schedulesToSave = new ArrayList<>();
 
         for (SetWorkScheduleRequest.WorkScheduleItem item : request.getSchedules()) {
@@ -93,7 +97,11 @@ public class WorkScheduleServiceImpl implements WorkScheduleService {
 
     @Override
     @Transactional
-    public void deleteWorkSchedule(Integer teamId, DayOfWeek dayOfWeek) {
+    public void deleteWorkSchedule(Integer teamId, DayOfWeek dayOfWeek, LocalDate date) {
+        if (date.isBefore(LocalDate.now())) {
+            throw new IllegalStateException("Không thể xóa lịch làm việc của một ngày trong quá khứ.");
+        }
+
         Team team = teamRepository.findById(teamId)
                 .orElseThrow(() -> new EntityNotFoundException(ErrorCode.TEAM_NOT_EXISTED.getMessage()));
 
