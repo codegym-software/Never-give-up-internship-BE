@@ -66,6 +66,10 @@ public class WorkScheduleServiceImpl implements WorkScheduleService {
  if (date.isBefore(LocalDate.now())) {
             throw new IllegalStateException("Không thể chỉnh sửa lịch làm việc của một ngày trong quá khứ.");
         }
+if (date.equals(LocalDate.now())) {
+    throw new IllegalStateException("Không thể chỉnh sửa lịch làm việc của ngày hiện tại ");
+}
+
         List<WorkSchedule> schedulesToSave = new ArrayList<>();
 
         for (SetWorkScheduleRequest.WorkScheduleItem item : request.getSchedules()) {
@@ -100,6 +104,10 @@ public class WorkScheduleServiceImpl implements WorkScheduleService {
     public void deleteWorkSchedule(Integer teamId, DayOfWeek dayOfWeek, LocalDate date) {
         if (date.isBefore(LocalDate.now())) {
             throw new IllegalStateException("Không thể xóa lịch làm việc của một ngày trong quá khứ.");
+        }
+        if (date.equals(LocalDate.now())) {
+            
+            throw new IllegalStateException("Không thể xóa lịch làm việc của ngày hiện tại");
         }
 
         Team team = teamRepository.findById(teamId)
