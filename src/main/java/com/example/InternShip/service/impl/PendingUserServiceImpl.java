@@ -108,7 +108,7 @@ public class PendingUserServiceImpl implements PendingUserService {
                             </div>
                         </body>
                     </html>
-                    """.formatted(formattedNow, verifyLink);
+                    """.formatted(verifyLink,formattedNow);
             helper.setText(emailContent, true);
 
             mailSender.send(message);
