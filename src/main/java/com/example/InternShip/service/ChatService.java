@@ -16,6 +16,8 @@ public interface ChatService {
 
     Conversation findOrCreateConversation(String candidateUsername);
 
+    Conversation findOrCreateGuestConversation(String guestId);
+
     Conversation claimConversation(Long conversationId, String hrEmail);
 
     void deleteConversation(Long conversationId, String hrEmail);

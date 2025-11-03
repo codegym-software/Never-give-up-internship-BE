@@ -6,4 +6,5 @@ import lombok.Data;
 public class ChatMessageRequest {
     private Long conversationId;
     private String content;
+    private String guestId;
 }

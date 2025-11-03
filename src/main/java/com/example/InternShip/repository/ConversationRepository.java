@@ -13,5 +13,7 @@ public interface ConversationRepository extends JpaRepository<Conversation, Long
 
     Optional<Conversation> findByCandidate(User candidate);
 
+    Optional<Conversation> findByGuestId(String guestId);
+
     List<Conversation> findByHrIsNull();
 }

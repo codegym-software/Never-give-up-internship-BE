@@ -21,6 +21,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -64,16 +65,20 @@ public class ChatServiceImpl implements ChatService {
 
     @Override
     public ChatMessageResponse saveMessage(ChatMessageRequest request, String senderIdentifier) {
-        User sender = userRepository.findByUsernameOrEmail(senderIdentifier)
-                .orElseThrow(() -> new UserNotFoundException("Sender not found with identifier: " + senderIdentifier));
-
         Conversation conversation = conversationRepository.findById(request.getConversationId())
                 .orElseThrow(() -> new ConversationNotFoundException("Conversation not found with id: " + request.getConversationId()));
 
         ChatMessage chatMessage = new ChatMessage();
         chatMessage.setConversation(conversation);
-        chatMessage.setSender(sender);
         chatMessage.setContent(request.getContent());
+
+        // Check if the sender is a registered user or a guest
+        Optional<User> senderOptional = userRepository.findByUsernameOrEmail(senderIdentifier);
+        if (senderOptional.isPresent()) {
+            chatMessage.setSender(senderOptional.get());
+        } else {
+            // This is a guest message, sender remains null
+        }
 
         ChatMessage savedMessage = chatMessageRepository.save(chatMessage);
 
@@ -89,6 +94,22 @@ public class ChatServiceImpl implements ChatService {
                 .orElseGet(() -> {
                     Conversation newConversation = new Conversation();
                     newConversation.setCandidate(candidate);
+                    newConversation.setHr(null); // HR is null until claimed
+                    Conversation savedConversation = conversationRepository.save(newConversation);
+
+                    // Notify all HRs about the new unassigned conversation
+                    messagingTemplate.convertAndSend("/topic/conversations/unassigned", mapToConversationResponse(savedConversation));
+
+                    return savedConversation;
+                });
+    }
+
+    @Override
+    public Conversation findOrCreateGuestConversation(String guestId) {
+        return conversationRepository.findByGuestId(guestId)
+                .orElseGet(() -> {
+                    Conversation newConversation = new Conversation();
+                    newConversation.setGuestId(guestId);
                     newConversation.setHr(null); // HR is null until claimed
                     Conversation savedConversation = conversationRepository.save(newConversation);
 
@@ -149,9 +170,14 @@ public class ChatServiceImpl implements ChatService {
         String lastMessageContent = lastMessageOpt.map(ChatMessage::getContent).orElse("No messages yet.");
         var lastMessageTimestamp = lastMessageOpt.map(ChatMessage::getCreatedAt).orElse(conversation.getCreatedAt());
 
+        String candidateName = "Guest";
+        if (conversation.getCandidate() != null) {
+            candidateName = conversation.getCandidate().getFullName();
+        }
+
         return ConversationResponse.builder()
                 .id(conversation.getId())
-                .candidateName(conversation.getCandidate().getFullName())
+                .candidateName(candidateName)
                 .hrId(  conversation.getHr()==null?null:  conversation.getHr().getId())
                 .lastMessage(lastMessageContent)
                 .lastMessageTimestamp(lastMessageTimestamp)
@@ -161,13 +187,19 @@ public class ChatServiceImpl implements ChatService {
 
 
     private ChatMessageResponse mapToChatMessageResponse(ChatMessage chatMessage) {
-        return ChatMessageResponse.builder()
+        ChatMessageResponse.ChatMessageResponseBuilder builder = ChatMessageResponse.builder()
                 .id(chatMessage.getId())
                 .conversationId(chatMessage.getConversation().getId())
-                .senderId(chatMessage.getSender().getId())
-                .senderName(chatMessage.getSender().getFullName())
                 .content(chatMessage.getContent())
-                .createdAt(chatMessage.getCreatedAt())
-                .build();
+                .createdAt(chatMessage.getCreatedAt());
+
+        if (chatMessage.getSender() != null) {
+            builder.senderId(chatMessage.getSender().getId())
+                   .senderName(chatMessage.getSender().getFullName());
+        } else {
+            builder.guestId(chatMessage.getConversation().getGuestId());
+        }
+
+        return builder.build();
     }
 }
