@@ -10,4 +10,5 @@ public interface WorkScheduleService {
     List<WorkScheduleResponse> getWorkSchedule(Integer teamId);
     WorkScheduleResponse updateSchedule(Integer id, UpdateWorkScheduleRequest request);
     WorkScheduleResponse createSchedule(CreateWorkScheduleRequest request);
+    void deleteSchedule (int id);
 }

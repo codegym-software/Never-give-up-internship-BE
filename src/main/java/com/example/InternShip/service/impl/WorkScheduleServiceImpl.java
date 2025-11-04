@@ -12,10 +12,10 @@ import com.example.InternShip.service.WorkScheduleService;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -53,9 +53,18 @@ public class WorkScheduleServiceImpl implements WorkScheduleService {
 
         WorkSchedule workSchedule = modelMapper.map(request, WorkSchedule.class);
         workSchedule.setTeam(team);
-        workScheduleRepository.save(workSchedule);
+
+        try {
+            workScheduleRepository.save(workSchedule);
+        } catch (DataIntegrityViolationException ex) {
+            throw new RuntimeException(ErrorCode.SCHEDULER_FAILED.getMessage());
+        }
 
         return mapToResponse(workSchedule);
+    }
+
+    public void deleteSchedule (int id){
+        workScheduleRepository.deleteById(id);
     }
 
     private WorkScheduleResponse mapToResponse(WorkSchedule workSchedule) {

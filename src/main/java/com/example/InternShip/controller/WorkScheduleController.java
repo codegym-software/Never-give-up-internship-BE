@@ -31,4 +31,10 @@ public class WorkScheduleController {
     public ResponseEntity<?> createSchedule(@RequestBody @Valid CreateWorkScheduleRequest request){
         return ResponseEntity.ok(workScheduleService.createSchedule(request));
     }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteSchedule (@PathVariable int id){
+        workScheduleService.deleteSchedule(id);
+        return ResponseEntity.ok().build();
+    }
 }
