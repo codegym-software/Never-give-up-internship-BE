@@ -7,9 +7,9 @@ import com.example.InternShip.dto.response.GetTeamScheduleResponse;
 import java.util.List;
 
 public interface AttendanceService {
-    AttendanceResponse checkIn();
+    GetMyScheduleResponse checkIn();
 
-    AttendanceResponse checkOut();
+    GetMyScheduleResponse checkOut();
 
     List<GetMyScheduleResponse> getMySchedule();
 

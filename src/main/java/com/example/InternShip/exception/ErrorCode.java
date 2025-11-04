@@ -33,6 +33,8 @@ public enum ErrorCode {
     TEAM_NAME_INVALID("Tên nhóm không hợp lệ"),
     LIST_INTERN_INVALID("Danh sách thực tập sinh không hợp lệ"),
     NAME_INTERN_PROGRAM_INVALID("Tên kì thực tập không hợp lệ"),
+    TIME_START_INVALID("Thời gian bắt đầu không hợp lệ"),
+    TIME_END_INVALID("Thời gian kết thúc không hợp lệ"),
 
     //EXISTED
     USERNAME_EXISTED("Tên đăng nhập đã tồn tại."),
@@ -53,11 +55,14 @@ public enum ErrorCode {
     MENTOR_NOT_EXISTED("Mentor không tồn tại"),
     DEPARTMENT_NOT_EXISTED("Phòng ban không tồn tại."),
     INTERNSHIP_PROGRAM_NOT_EXISTED("Kì thực tập không tồn tại"),
+    WORK_SCHEDULE_NOT_EXISTED("Lịch làm việc không tồn tại"),
 
     //NOT_NULL
     UNIVERSITY_NOT_NULL ("Trường học không được để trống"),
+    TEAM_NOT_NULL ("Nhóm không được để trống"),
     MAJOR_NOT_NULL ("Ngành học không được để trống"),
     STATUS_NOT_BLANK("Trạng thái không được để trống"),
+    DAY_OF_WEEK_NOT_NULL("Ngày trong tuần không được để trống"),
 
     //FAILED
     VERIFICATION_FAILED("Xác thực thất bại"),
@@ -79,7 +84,7 @@ public enum ErrorCode {
     NOT_CHECKED_IN_TODAY("Bạn chưa check-in hôm nay"),
     INTERN_NOT_TEAM("Bạn chưa được gán vào nhóm nào, không thể chấm công"),
     SCHEDULE_NOT_SET_TODAY("Lịch chưa được thiết lập hôm nay"),
-    CANNOT_CHECKIN("Ca làm việc đã kết thúc , không thể check-in"),
+    CANNOT_CHECK_IN("Không thể check-in"),
     ;
     private final String message;
 }

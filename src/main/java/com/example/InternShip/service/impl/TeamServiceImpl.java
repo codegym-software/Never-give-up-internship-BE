@@ -3,10 +3,7 @@ package com.example.InternShip.service.impl;
 import com.example.InternShip.dto.request.AddMemberRequest;
 import com.example.InternShip.dto.request.CreateTeamRequest;
 import com.example.InternShip.dto.request.UpdateTeamRequest;
-import com.example.InternShip.dto.response.GetAllTeamResponse;
-import com.example.InternShip.dto.response.GetInternResponse;
-import com.example.InternShip.dto.response.PagedResponse;
-import com.example.InternShip.dto.response.TeamDetailResponse;
+import com.example.InternShip.dto.response.*;
 import com.example.InternShip.entity.*;
 import com.example.InternShip.exception.ErrorCode;
 import com.example.InternShip.repository.InternRepository;
@@ -124,7 +121,7 @@ public class TeamServiceImpl implements TeamService {
     }
 
     @Override
-    public PagedResponse<TeamDetailResponse> getAllTeam(Integer internshipProgram, Integer mentor, String keyword, int page) {
+    public PagedResponse<TeamDetailResponse> getTeams(Integer internshipProgram, Integer mentor, String keyword, int page) {
         page = Math.max(0, page - 1);
         PageRequest pageable = PageRequest.of(page, 10);
 
@@ -141,6 +138,16 @@ public class TeamServiceImpl implements TeamService {
                 teams.getTotalPages(),
                 teams.hasNext(),
                 teams.hasPrevious());
+    }
+
+    public List<GetAllTeamResponse> getAllTeam(){
+        List<Team> teams = teamRepository.findAll();
+        return teams.stream()
+                .map(team -> {
+                    GetAllTeamResponse response = modelMapper.map(team,GetAllTeamResponse.class);
+                    response.setInternshipProgramName(team.getInternshipProgram().getName());
+                    return response;
+                }).toList();
     }
 
     private TeamDetailResponse mapToTeamDetailResponse(Team team) {

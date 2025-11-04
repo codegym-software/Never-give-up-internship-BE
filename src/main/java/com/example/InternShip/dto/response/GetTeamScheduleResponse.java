@@ -16,6 +16,7 @@ public class GetTeamScheduleResponse {
 
     @Data
     public static class DetailTeamSchedule {
+        private int id;
         private LocalTime checkIn;
         private LocalTime checkOut;
         private Attendance.Status status;

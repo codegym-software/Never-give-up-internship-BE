@@ -13,6 +13,7 @@ public interface TeamService {
     TeamDetailResponse createTeam(CreateTeamRequest request);
     TeamDetailResponse addMember(Integer teamId, AddMemberRequest request);
     TeamDetailResponse removeMember(Integer internId);
-    PagedResponse<TeamDetailResponse> getAllTeam(Integer internshipTerm, Integer mentor, String keyword, int page);
+    PagedResponse<TeamDetailResponse> getTeams(Integer internshipTerm, Integer mentor, String keyword, int page);
     public TeamDetailResponse updateTeam(Integer teamId, UpdateTeamRequest request);
+    List<GetAllTeamResponse> getAllTeam();
 }
