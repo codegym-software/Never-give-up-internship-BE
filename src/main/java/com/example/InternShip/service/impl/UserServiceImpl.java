@@ -22,8 +22,6 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 import org.modelmapper.ModelMapper;
-import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -58,7 +56,6 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    @Cacheable(value = "users", key = "#id")
     public GetUserResponse findById(int id) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException(ErrorCode.USER_NOT_EXISTED.getMessage()));
@@ -94,7 +91,6 @@ public class UserServiceImpl implements UserService {
         return modelMapper.map(user, GetUserResponse.class);
     }
 
-    @CacheEvict(value = "users", key = "#id")
     public GetUserResponse updateUser(UpdateUserRequest request, int id) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException(ErrorCode.USER_NOT_EXISTED.getMessage()));
