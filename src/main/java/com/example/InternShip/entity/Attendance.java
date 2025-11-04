@@ -39,6 +39,7 @@ public class Attendance {
         PRESENT,     // Hiện diện (check-out đúng giờ)
         LATE,        // Đi muộn
         EARLY_LEAVE, // Về sớm
+        LATE_AND_EARLY_LEAVE, // Muộn và sớm
         ON_LEAVE,    // Nghỉ có phép (từ bảng LeaveRequest)
         ABSENT       // Vắng (sẽ được set bởi service tự động)
     }

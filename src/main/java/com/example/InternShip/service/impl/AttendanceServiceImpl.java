@@ -155,7 +155,7 @@ public class AttendanceServiceImpl implements AttendanceService {
         boolean isEarlyLeave = checkOut.isBefore(expectedEndTime);
 
         if (isLate && isEarlyLeave) {
-            return Attendance.Status.LATE;
+            return Attendance.Status.LATE_AND_EARLY_LEAVE;
         } else if (isLate) {
             return Attendance.Status.LATE;
         } else if (isEarlyLeave) {
