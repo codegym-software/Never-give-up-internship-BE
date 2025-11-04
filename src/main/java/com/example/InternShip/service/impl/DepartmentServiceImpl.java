@@ -21,7 +21,6 @@ public class DepartmentServiceImpl implements DepartmentService {
     private final ModelMapper modelMapper;
 
     @Override
-    @Cacheable("departments")
     public List<GetAllDepartmentResponse> getAllDepartments() {
         List<Department> departments = departmentRepository.findAll();
 
