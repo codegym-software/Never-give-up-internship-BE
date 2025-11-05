@@ -1,6 +1,9 @@
 package com.example.InternShip.exception;
 
+import com.example.InternShip.dto.response.ApiResponse;
 import jakarta.persistence.EntityNotFoundException;
+import org.springframework.http.HttpStatus;
+import com.example.InternShip.exception.SprintUpdateException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -13,6 +16,24 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(value = RuntimeException.class)
     ResponseEntity<String> handlingRuntimeException(RuntimeException exception){
         return ResponseEntity.badRequest().body(exception.getMessage());
+    }
+
+    @ExceptionHandler(value = InvalidSprintDateException.class)
+    ResponseEntity<ApiResponse> handlingInvalidSprintDateException(InvalidSprintDateException exception){
+        ApiResponse apiResponse = new ApiResponse(HttpStatus.BAD_REQUEST.value(), exception.getMessage(), null);
+        return new ResponseEntity<>(apiResponse, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(value = SprintConflictException.class)
+    ResponseEntity<ApiResponse> handlingSprintConflictException(SprintConflictException exception){
+        ApiResponse apiResponse = new ApiResponse(HttpStatus.CONFLICT.value(), exception.getMessage(), null);
+        return new ResponseEntity<>(apiResponse, HttpStatus.CONFLICT);
+    }
+
+    @ExceptionHandler(value = SprintUpdateException.class)
+    ResponseEntity<ApiResponse> handlingSprintUpdateException(SprintUpdateException exception){
+        ApiResponse apiResponse = new ApiResponse(HttpStatus.BAD_REQUEST.value(), exception.getMessage(), null);
+        return new ResponseEntity<>(apiResponse, HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(value = IllegalArgumentException.class)

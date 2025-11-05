@@ -47,6 +47,9 @@ public class Intern {
     @OneToMany(mappedBy = "intern")
     private List<LeaveRequest> leaveRequests;
 
+    @OneToMany(mappedBy = "intern")
+    private List<Task> tasks;
+
     public enum Status {
         ACTIVE, // đang thực tập
         SUSPENDED, // tạm dừng thực tập
