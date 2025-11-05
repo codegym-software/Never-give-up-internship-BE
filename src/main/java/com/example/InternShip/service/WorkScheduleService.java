@@ -1,11 +1,9 @@
 package com.example.InternShip.service;
 
-import com.example.InternShip.dto.request.SetWorkScheduleRequest;
+import com.example.InternShip.dto.request.CreateWorkScheduleRequest;
+import com.example.InternShip.dto.request.UpdateWorkScheduleRequest;
 import com.example.InternShip.dto.response.WorkScheduleResponse;
-import java.time.LocalDate;
 
-
-import java.time.DayOfWeek;
 import java.util.List;
 
 public interface WorkScheduleService {
@@ -13,8 +11,4 @@ public interface WorkScheduleService {
     WorkScheduleResponse updateSchedule(Integer id, UpdateWorkScheduleRequest request);
     WorkScheduleResponse createSchedule(CreateWorkScheduleRequest request);
     void deleteSchedule (int id);
-    List<WorkScheduleResponse> setWorkSchedule(Integer teamId, SetWorkScheduleRequest request);
-
-    List<WorkScheduleResponse> updateWorkSchedule(Integer teamId, SetWorkScheduleRequest request,java.time.LocalDate date);
-    void deleteWorkSchedule(Integer teamId, DayOfWeek dayOfWeek, java.time.LocalDate date);
 }
