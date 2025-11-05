@@ -15,6 +15,6 @@ public class GetLeaveApplicationResponse {
     private LocalDate date;
     private String reason;
     private String attachedFileUrl;
-    private boolean approved;
-    private boolean reasonReject;
+    private Boolean approved;
+    private String reasonReject;
 }

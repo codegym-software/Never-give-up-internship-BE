@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -17,7 +18,6 @@ import com.example.InternShip.dto.request.CreateLeaveApplicationRequest;
 import com.example.InternShip.dto.request.RejectLeaveApplicationRequest;
 import com.example.InternShip.service.LeaveRequestService;
 
-import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import jakarta.validation.Valid;
 
 @RestController
@@ -32,7 +32,12 @@ public class LeaveRequestController {
         return ResponseEntity.ok().build();
     }
 
-    @GetMapping
+    @GetMapping("/me") // Get cho intern
+    public ResponseEntity<?> getAllLeaveApplicationByIntern() {
+        return ResponseEntity.ok(leaveRequestService.getAllLeaveApplicationByIntern());
+    }
+
+    @GetMapping // Get cho riêng hr
     public ResponseEntity<?> getAllLeaveApplication(
             @RequestParam(required = false, defaultValue = "") Boolean approved, // trạng thái
             @RequestParam(required = false, defaultValue = "") String keyword, // internName
@@ -48,7 +53,7 @@ public class LeaveRequestController {
                 size));
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/{id}") // Xem 1 cái
     public ResponseEntity<?> viewLeaveApplication(@PathVariable Integer id) {
         return ResponseEntity.ok(leaveRequestService.viewLeaveApplication(id));
     }

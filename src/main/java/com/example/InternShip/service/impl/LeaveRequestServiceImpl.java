@@ -5,13 +5,14 @@ import com.example.InternShip.dto.request.RejectLeaveApplicationRequest;
 import com.example.InternShip.dto.response.FileResponse;
 import com.example.InternShip.dto.response.GetAllLeaveApplicationResponse;
 import com.example.InternShip.dto.response.GetLeaveApplicationResponse;
+import com.example.InternShip.dto.response.InternGetAllLeaveApplicationResponse;
+import com.example.InternShip.dto.response.InternGetAllLeaveApplicationResponseSupport;
 import com.example.InternShip.dto.response.PagedResponse;
 import com.example.InternShip.entity.Intern;
 import com.example.InternShip.entity.LeaveRequest;
 import com.example.InternShip.entity.User;
 import com.example.InternShip.entity.enums.Role;
 import com.example.InternShip.exception.ErrorCode;
-import com.example.InternShip.repository.InternRepository;
 import com.example.InternShip.repository.LeaveRequestRepository;
 import com.example.InternShip.repository.UserRepository;
 import com.example.InternShip.service.AuthService;
@@ -39,8 +40,6 @@ public class LeaveRequestServiceImpl implements LeaveRequestService {
 
     private final UserRepository userRepository;
 
-    private final InternRepository internRepository;
-
     private final AuthService authService;
 
     private final CloudinaryService cloudinaryService;
@@ -51,11 +50,11 @@ public class LeaveRequestServiceImpl implements LeaveRequestService {
     public void createLeaveRequest(CreateLeaveApplicationRequest request) {
         // Lấy ra thằng intern request
         User user = authService.getUserLogin();
-        Intern intern = internRepository.findByUser_IdAndStatusAndTeamIsNull(user.getId(), Intern.Status.ACTIVE)
-                .orElseThrow(() -> new EntityNotFoundException(ErrorCode.INTERN_NOT_EXISTED.getMessage()));
+        Intern intern = user.getIntern();
+
         // Kiểm tra type hợp lệ
-        if (!request.getType().equals(LeaveRequest.Type.EARLY_LEAVE.toString()) ||
-                !request.getType().equals(LeaveRequest.Type.LATE.toString()) ||
+        if (!request.getType().equals(LeaveRequest.Type.EARLY_LEAVE.toString()) &&
+                !request.getType().equals(LeaveRequest.Type.LATE.toString()) &&
                 !request.getType().equals(LeaveRequest.Type.ON_LEAVE.toString())) {
             throw new IllegalArgumentException(ErrorCode.TYPE_LEAVE_APPLICATION_INVALID.getMessage());
         }
@@ -89,12 +88,12 @@ public class LeaveRequestServiceImpl implements LeaveRequestService {
         page = Math.max(0, page - 1);
         Pageable pageable = PageRequest.of(page, size, Sort.by("date").descending());
 
-        // Chuyển type String sang enum nếu cần
         LeaveRequest.Type leaveType = null;
-        if (type != null && !type.isBlank()) {
+        if (type != null && !type.isEmpty()) {
             try {
-                leaveType = LeaveRequest.Type.valueOf(type);
-            } catch (IllegalArgumentException ignored) {
+                leaveType = LeaveRequest.Type.valueOf(type.toUpperCase());
+            } catch (IllegalArgumentException e) {
+                throw new IllegalArgumentException(ErrorCode.TYPE_LEAVE_APPLICATION_INVALID.getMessage());
             }
         }
 
@@ -111,7 +110,11 @@ public class LeaveRequestServiceImpl implements LeaveRequestService {
                     dto.setDate(lr.getDate());
                     dto.setReason(lr.getReason());
                     dto.setAttachedFileUrl(lr.getAttachedFileUrl());
-                    dto.setApproved(lr.getApproved());
+                    if (lr.getApproved() == null) {
+                        dto.setApproved(null);
+                    } else {
+                        dto.setApproved(lr.getApproved());
+                    }
                     dto.setReasonReject(lr.getReasonReject());
                     dto.setHrId(lr.getHr().getId());
                     return dto;
@@ -124,6 +127,36 @@ public class LeaveRequestServiceImpl implements LeaveRequestService {
                 leaveApplications.getTotalPages(),
                 leaveApplications.hasNext(),
                 leaveApplications.hasPrevious());
+    }
+
+    @Override
+    public InternGetAllLeaveApplicationResponse getAllLeaveApplicationByIntern() {
+        User user = authService.getUserLogin();
+        Intern intern = user.getIntern();
+
+        InternGetAllLeaveApplicationResponse response = new InternGetAllLeaveApplicationResponse();
+
+        response.setCountLeaveApplication(leaveRequestRepository.countAllByInternId(intern.getId()));
+        response.setCountPendingApprove(leaveRequestRepository.countPendingByInternId(intern.getId()));
+        response.setCountApprove(leaveRequestRepository.countApprovedByInternId(intern.getId()));
+        response.setCountReject(leaveRequestRepository.countRejectedByInternId(intern.getId()));
+
+        List<InternGetAllLeaveApplicationResponseSupport> leaveApps = leaveRequestRepository
+                .findAllByInternId(intern.getId())
+                .stream()
+                .map(l -> {
+                    InternGetAllLeaveApplicationResponseSupport dto = new InternGetAllLeaveApplicationResponseSupport();
+                    dto.setId(l.getId());
+                    dto.setType(l.getType());
+                    dto.setDate(l.getDate());
+                    dto.setReason(l.getReason());
+                    dto.setApproved(l.getApproved() != null ? l.getApproved() : false);
+                    return dto;
+                })
+                .toList();
+
+        response.setLeaveApplications(leaveApps);
+        return response;
     }
 
     @Override
@@ -147,7 +180,10 @@ public class LeaveRequestServiceImpl implements LeaveRequestService {
 
     @Override
     public void approveLeaveAppication(Integer id) {
-        // Tính làm cái check đơn của người dùng nhưng mà thôi
+        // User user = authService.getUserLogin();
+        // if (user.getRole() != Role.HR) {
+        //     throw new IllegalArgumentException();
+        // }
         LeaveRequest leaveRequest = leaveRequestRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException(ErrorCode.LEAVE_APPLICATION_NOT_EXISTS.getMessage()));
         if (leaveRequest.getApproved() == null) {
@@ -160,16 +196,18 @@ public class LeaveRequestServiceImpl implements LeaveRequestService {
 
     @Override
     public void rejectLeaveAppication(RejectLeaveApplicationRequest request) {
-        // Tính làm cái check đơn của người dùng nhưng mà thôi
+        // User user = authService.getUserLogin();
+        // if (user.getRole() != Role.HR) {
+        //     throw new IllegalArgumentException();
+        // }
         LeaveRequest leaveRequest = leaveRequestRepository.findById(request.getId())
                 .orElseThrow(() -> new EntityNotFoundException(ErrorCode.LEAVE_APPLICATION_NOT_EXISTS.getMessage()));
         if (leaveRequest.getApproved() == null) {
-            leaveRequest.setApproved(true);
+            leaveRequest.setApproved(false);
             leaveRequest.setReasonReject(request.getReasonReject());
             leaveRequestRepository.save(leaveRequest);
         } else {
             throw new IllegalArgumentException(ErrorCode.ACTION_INVALID.getMessage());
         }
     }
-
 }
