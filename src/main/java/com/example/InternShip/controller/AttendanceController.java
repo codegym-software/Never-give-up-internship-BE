@@ -1,6 +1,7 @@
 package com.example.InternShip.controller;
 
 import com.example.InternShip.dto.response.AttendanceResponse;
+import com.example.InternShip.dto.response.GetMyScheduleResponse;
 import com.example.InternShip.service.AttendanceService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -21,13 +22,13 @@ public class AttendanceController {
 
     //@PreAuthorize("hasAuthority('SCOPE_INTERN')")
     @PostMapping("/check-in")
-    public ResponseEntity<AttendanceResponse> checkIn() {
+    public ResponseEntity<GetMyScheduleResponse> checkIn() {
         return ResponseEntity.ok(attendanceService.checkIn());
     }
 
     @PutMapping("/check-out")
     //@PreAuthorize("hasAuthority('SCOPE_INTERN')")
-    public ResponseEntity<AttendanceResponse> checkOut() {
+    public ResponseEntity<GetMyScheduleResponse> checkOut() {
         return ResponseEntity.ok(attendanceService.checkOut());
     }
 

@@ -44,7 +44,7 @@ public class AttendanceServiceImpl implements AttendanceService {
 
     @Override
     @Transactional
-    public AttendanceResponse checkIn() {
+    public GetMyScheduleResponse checkIn() {
         User user = authService.getUserLogin();
 
         Intern intern = internRepository.findByUser(user)
@@ -60,8 +60,9 @@ public class AttendanceServiceImpl implements AttendanceService {
         //Lấy lịch làm việc của nhóm
         WorkSchedule schedule = getWorkScheduleForIntern(intern, today.getDayOfWeek());
 
-        if (now.isAfter(schedule.getTimeEnd())) {
-            throw new IllegalStateException(ErrorCode.CANNOT_CHECKIN.getMessage());
+        if (now.isAfter(schedule.getTimeEnd()) ||
+                now.isBefore(schedule.getTimeStart().minusMinutes(30))) {
+            throw new IllegalStateException(ErrorCode.CANNOT_CHECK_IN.getMessage());
         }
 
         //Tạo bản ghi chấm công mới
@@ -82,7 +83,7 @@ public class AttendanceServiceImpl implements AttendanceService {
 
     @Override
     @Transactional
-    public AttendanceResponse checkOut() {
+    public GetMyScheduleResponse checkOut() {
         User user = authService.getUserLogin();
 
         Intern intern = internRepository.findByUser(user)
@@ -94,11 +95,6 @@ public class AttendanceServiceImpl implements AttendanceService {
         //Tìm bản ghi check-in của hôm nay
         Attendance attendance = attendanceRepository.findByInternAndDate(intern, today)
                 .orElseThrow(() -> new IllegalStateException(ErrorCode.NOT_CHECKED_IN_TODAY.getMessage()));
-
-        //Kiểm tra xem đã check-out chưa
-        if (attendance.getCheckOut() != null) {
-            throw new IllegalStateException(ErrorCode.ALREADY_CHECKED_OUT_TODAY.getMessage());
-        }
 
         //Cập nhật tg check-out
         attendance.setCheckOut(now);
@@ -159,7 +155,7 @@ public class AttendanceServiceImpl implements AttendanceService {
         boolean isEarlyLeave = checkOut.isBefore(expectedEndTime);
 
         if (isLate && isEarlyLeave) {
-            return Attendance.Status.LATE;
+            return Attendance.Status.LATE_AND_EARLY_LEAVE;
         } else if (isLate) {
             return Attendance.Status.LATE;
         } else if (isEarlyLeave) {
@@ -170,14 +166,9 @@ public class AttendanceServiceImpl implements AttendanceService {
     }
 
     // Phương thức tiện ích để map sang DTO
-    private AttendanceResponse mapToResponse(Attendance attendance) {
-        AttendanceResponse res = modelMapper.map(attendance, AttendanceResponse.class);
-        res.setInternName(attendance.getIntern().getUser().getFullName());
-        res.setTeamName(attendance.getTeam().getName());
-        res.setStatus(attendance.getStatus().name());
-
-        res.setExpectedTimeStart(attendance.getTimeStart());
-        res.setExpectedTimeEnd(attendance.getTimeEnd());
+    private GetMyScheduleResponse mapToResponse(Attendance attendance) {
+        GetMyScheduleResponse res = modelMapper.map(attendance, GetMyScheduleResponse.class);
+        res.setTeam(attendance.getTeam().getName());
         return res;
     }
 
@@ -188,7 +179,6 @@ public class AttendanceServiceImpl implements AttendanceService {
         }
 
         List<Attendance> attendances = intern.getAttendances();
-        List<WorkSchedule> workSchedules = intern.getTeam().getWorkSchedules();
         AtomicReference<LocalDate> date = new AtomicReference<>(LocalDate.now());
 
         // map attendance vào GetMyScheduleResponse
@@ -197,13 +187,14 @@ public class AttendanceServiceImpl implements AttendanceService {
                     if (attendance.getDate().isEqual(LocalDate.now())) {
                         date.set(LocalDate.now().plusDays(1));
                     }
-                    GetMyScheduleResponse response = modelMapper.map(attendance, GetMyScheduleResponse.class);
-                    response.setTeam(attendance.getTeam().getName());
-                    return response;
+                    return mapToResponse(attendance);
                 }).collect(Collectors.toList());
 
-        if (intern.getInternshipProgram().getStatus() == InternshipProgram.Status.ONGOING ||
-                intern.getStatus() == Intern.Status.ACTIVE) {
+        if (intern.getInternshipProgram().getStatus() == InternshipProgram.Status.ONGOING &&
+                intern.getStatus() == Intern.Status.ACTIVE &&
+                intern.getTeam() != null) {
+            List<WorkSchedule> workSchedules = intern.getTeam().getWorkSchedules();
+
             // thêm dữ liệu giả vào responses
             for (int i = 0; i < 20; i++) {
                 LocalDate currentDate = date.get().plusDays(i);
@@ -248,7 +239,7 @@ public class AttendanceServiceImpl implements AttendanceService {
             response.setTimeEnd((LocalTime) key.get(1));
             response.setDate((LocalDate) key.get(2));
 
-            if (response.getDate() == date) {
+            if (response.getDate().equals(date)) {
                 date = date.plusDays(1);
             }
 
@@ -292,13 +283,14 @@ public class AttendanceServiceImpl implements AttendanceService {
         List<Intern> interns = internRepository.findAllByStatus(Intern.Status.ACTIVE);
 
         for (Intern intern : interns) {
-            List<WorkSchedule> workSchedules = intern.getTeam().getWorkSchedules();
-
-            if (workSchedules == null || workSchedules.isEmpty()) {
+            if (intern.getTeam() == null || intern.getTeam().getWorkSchedules() == null ||
+                    intern.getTeam().getWorkSchedules().isEmpty()) {
                 continue;
             }
 
-            // Tìm xem hôm nay có lich ko
+            List<WorkSchedule> workSchedules = intern.getTeam().getWorkSchedules();
+
+            // Tìm xem hôm nay có lịch ko
             WorkSchedule todaySchedule = workSchedules.stream()
                     .filter(ws -> ws.getDayOfWeek() == today.getDayOfWeek())
                     .findFirst()
