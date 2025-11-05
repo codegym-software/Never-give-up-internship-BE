@@ -1,11 +1,9 @@
 package com.example.InternShip.controller;
 
-import com.example.InternShip.dto.response.AttendanceResponse;
 import com.example.InternShip.dto.response.GetMyScheduleResponse;
 import com.example.InternShip.service.AttendanceService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -20,14 +18,14 @@ public class AttendanceController {
 
     private final AttendanceService attendanceService;
 
-    //@PreAuthorize("hasAuthority('SCOPE_INTERN')")
+    // @PreAuthorize("hasAuthority('SCOPE_INTERN')")
     @PostMapping("/check-in")
     public ResponseEntity<GetMyScheduleResponse> checkIn() {
         return ResponseEntity.ok(attendanceService.checkIn());
     }
 
     @PutMapping("/check-out")
-    //@PreAuthorize("hasAuthority('SCOPE_INTERN')")
+    // @PreAuthorize("hasAuthority('SCOPE_INTERN')")
     public ResponseEntity<GetMyScheduleResponse> checkOut() {
         return ResponseEntity.ok(attendanceService.checkOut());
     }
@@ -40,5 +38,10 @@ public class AttendanceController {
     @GetMapping("/{teamId}")
     public ResponseEntity<?> getTeamSchedule(@PathVariable int teamId) {
         return ResponseEntity.ok(attendanceService.getTeamSchedule(teamId));
+    }
+
+    @GetMapping
+    public ResponseEntity<?> getInternsAttendance(){
+        return ResponseEntity.ok(attendanceService.getInternsAttendance());
     }
 }

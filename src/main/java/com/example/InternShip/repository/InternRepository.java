@@ -46,4 +46,6 @@ public interface InternRepository extends JpaRepository<Intern, Integer> {
     Optional<Intern> findByUser(User user);
 
     List<Intern> findAllByStatus(Intern.Status status);
+
+    List<Intern> findAllByStatusAndTeamNotNull(Intern.Status status);
 }

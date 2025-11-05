@@ -2,7 +2,6 @@ package com.example.InternShip.controller;
 
 import com.example.InternShip.dto.request.CreateWorkScheduleRequest;
 import com.example.InternShip.dto.request.UpdateWorkScheduleRequest;
-import com.example.InternShip.dto.response.WorkScheduleResponse;
 import com.example.InternShip.service.WorkScheduleService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;

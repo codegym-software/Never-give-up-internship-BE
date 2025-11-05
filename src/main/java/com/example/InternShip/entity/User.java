@@ -1,7 +1,6 @@
 package com.example.InternShip.entity;
 
 import com.example.InternShip.entity.enums.Role;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.*;
 import lombok.Getter;

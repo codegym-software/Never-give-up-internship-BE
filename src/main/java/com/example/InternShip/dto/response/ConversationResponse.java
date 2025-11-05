@@ -1,6 +1,5 @@
 package com.example.InternShip.dto.response;
 
-import com.example.InternShip.entity.User;
 import lombok.Builder;
 import lombok.Data;
 

@@ -1,6 +1,7 @@
 package com.example.InternShip.service.impl;
 
 import com.example.InternShip.dto.response.AttendanceResponse;
+import com.example.InternShip.dto.response.GetAllAttendanceResponse;
 import com.example.InternShip.dto.response.GetMyScheduleResponse;
 import com.example.InternShip.dto.response.GetTeamScheduleResponse;
 import com.example.InternShip.entity.*;
@@ -311,5 +312,15 @@ public class AttendanceServiceImpl implements AttendanceService {
                 attendanceRepository.save(attendance);
             }
         }
+    }
+
+    @Override
+    public List<GetAllAttendanceResponse> getInternsAttendance() {
+        List<Intern> interns = internRepository.findAllByStatusAndTeamNotNull(Intern.Status.ACTIVE);
+        List<GetAllAttendanceResponse> res = new ArrayList<>();
+        for (Intern intern : interns) { 
+            res.add(attendanceRepository.findAttendanceSummaryByInternId(intern.getId()));
+        }
+        return res;
     }
 }

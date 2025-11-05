@@ -18,9 +18,15 @@ public class LeaveRequest {
     @JoinColumn(name = "intern_id", nullable = false)
     private Intern intern;
 
+    @ManyToOne
+    @JoinColumn(name = "hr_id", nullable = false)
+    private User hr;
+
     private LocalDate date;
 
     private String reason;
+
+    private String attachedFileUrl;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
@@ -29,8 +35,8 @@ public class LeaveRequest {
     private Boolean approved;
 
     public enum Type {
-        LATE,                 // Xin đi muộn
-        EARLY_LEAVE,          // Xin về sớm
-        ON_LEAVE              // Xin nghỉ phép
+        LATE, // Xin đi muộn
+        EARLY_LEAVE, // Xin về sớm
+        ON_LEAVE // Xin nghỉ phép
     }
 }

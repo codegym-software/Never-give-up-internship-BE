@@ -41,4 +41,5 @@ public interface UserRepository extends JpaRepository<User, Integer> {
     @Query("SELECT u FROM User u WHERE u.role = :role ORDER BY SIZE(u.hrConversations) ASC")
     List<User> findUsersByRoleSortedByConversationCount(@Param("role") Role role, Pageable pageable);
 
+    Optional<User> findByIdAndRole(Integer id, Role role);
 }

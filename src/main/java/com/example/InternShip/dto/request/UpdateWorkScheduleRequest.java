@@ -3,7 +3,6 @@ package com.example.InternShip.dto.request;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
-import java.time.DayOfWeek;
 import java.time.LocalTime;
 
 @Data

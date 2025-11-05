@@ -1,5 +1,6 @@
 package com.example.InternShip.repository;
 
+import com.example.InternShip.dto.response.GetAllAttendanceResponse;
 import com.example.InternShip.entity.Attendance;
 import com.example.InternShip.entity.Intern;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -30,7 +31,8 @@ public interface AttendanceRepository extends JpaRepository<Attendance, Integer>
 
     @Query("SELECT " +
             "    a.intern.id as internId, " +
-            "    SUM(CASE WHEN a.status IN ('PRESENT', 'LATE', 'EARLY_LEAVE', 'LATE_AND_EARLY_LEAVE') THEN 1 ELSE 0 END) as totalWorkingDays, " +
+            "    SUM(CASE WHEN a.status IN ('PRESENT', 'LATE', 'EARLY_LEAVE', 'LATE_AND_EARLY_LEAVE') THEN 1 ELSE 0 END) as totalWorkingDays, "
+            +
             "    SUM(CASE WHEN a.status = 'ON_LEAVE' THEN 1 ELSE 0 END) as totalOnLeaveDays, " +
             "    SUM(CASE WHEN a.status = 'ABSENT' THEN 1 ELSE 0 END) as totalAbsentDays " +
             "FROM Attendance a " +
@@ -41,4 +43,22 @@ public interface AttendanceRepository extends JpaRepository<Attendance, Integer>
             @Param("startDate") LocalDate startDate,
             @Param("endDate") LocalDate endDate,
             @Param("teamId") Integer teamId);
+
+    @Query(value = """
+                SELECT
+                    i.id AS internId,
+                    u.full_name AS internName,
+                    t.name AS teamName,
+                    SUM(CASE WHEN a.status = 'PRESENT' THEN 1 ELSE 0 END) AS presentDay,
+                    SUM(CASE WHEN a.status = 'ABSENT' THEN 1 ELSE 0 END) AS absentDay,
+                    SUM(CASE WHEN a.status = 'LATE_AND_EARLY_LEAVE' THEN 1 ELSE 0 END) AS lateAndLeaveDay
+                FROM attendance a
+                JOIN intern i ON a.intern_id = i.id
+                JOIN `user` u ON i.user_id = u.id
+                JOIN team t ON a.team_id = t.id
+                WHERE i.id = :internId
+                GROUP BY i.id, u.full_name, t.name
+            """, nativeQuery = true)
+    GetAllAttendanceResponse findAttendanceSummaryByInternId(@Param("internId") Integer internId);
+
 }

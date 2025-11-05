@@ -35,6 +35,7 @@ public enum ErrorCode {
     NAME_INTERN_PROGRAM_INVALID("Tên kì thực tập không hợp lệ"),
     TIME_START_INVALID("Thời gian bắt đầu không hợp lệ"),
     TIME_END_INVALID("Thời gian kết thúc không hợp lệ"),
+    TYPE_LEAVE_APPLICATION_INVALID("Loại đơn nghỉ phép không hợp lệ"),
 
     //EXISTED
     USERNAME_EXISTED("Tên đăng nhập đã tồn tại."),
@@ -56,6 +57,8 @@ public enum ErrorCode {
     DEPARTMENT_NOT_EXISTED("Phòng ban không tồn tại."),
     INTERNSHIP_PROGRAM_NOT_EXISTED("Kì thực tập không tồn tại"),
     WORK_SCHEDULE_NOT_EXISTED("Lịch làm việc không tồn tại"),
+    HR_NOT_EXISTS("HR không tồn tại"),
+    LEAVE_APPLICATION_NOT_EXISTS("Đơn xin nghỉ phép không tồn tại"),
 
     //NOT_NULL
     UNIVERSITY_NOT_NULL ("Trường học không được để trống"),
@@ -63,7 +66,11 @@ public enum ErrorCode {
     MAJOR_NOT_NULL ("Ngành học không được để trống"),
     STATUS_NOT_BLANK("Trạng thái không được để trống"),
     DAY_OF_WEEK_NOT_NULL("Ngày trong tuần không được để trống"),
-
+    LEAVE_APPLICATION_TYPE_NOT_NULL("Loại đơn không được để trống"),
+    DATE_LEAVE_NOT_NULL("Ngày nghỉ phép không được để trống"),
+    REASON_NOT_NULL("Lý do nghỉ không được để trống"),
+    HR_NOT_NULL("PHải chọn ít nhất 1 HR"),
+    
     //FAILED
     VERIFICATION_FAILED("Xác thực thất bại"),
     VERIFICATION_CODE_SEND_FAILED("Gửi mã xác thực thất bại"),

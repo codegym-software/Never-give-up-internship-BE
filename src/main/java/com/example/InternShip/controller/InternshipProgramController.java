@@ -2,8 +2,6 @@ package com.example.InternShip.controller;
 
 import com.example.InternShip.dto.request.CreateInternProgramRequest;
 import com.example.InternShip.dto.request.UpdateInternProgramRequest;
-import com.example.InternShip.dto.response.GetInternProgramResponse;
-import com.example.InternShip.dto.response.GetAllInternProgramResponse;
 import jakarta.validation.Valid;
 import org.quartz.SchedulerException;
 

@@ -1,6 +1,5 @@
 package com.example.InternShip.dto.response;
 
-import com.example.InternShip.entity.Attendance;
 import lombok.Data;
 import java.time.LocalDate;
 import java.time.LocalTime;

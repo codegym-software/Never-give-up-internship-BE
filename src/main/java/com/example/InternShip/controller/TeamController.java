@@ -3,7 +3,6 @@ package com.example.InternShip.controller;
 import com.example.InternShip.dto.request.AddMemberRequest;
 import com.example.InternShip.dto.request.CreateTeamRequest;
 import com.example.InternShip.dto.request.UpdateTeamRequest;
-import com.example.InternShip.dto.response.GetAllTeamResponse;
 import com.example.InternShip.dto.response.TeamDetailResponse;
 import com.example.InternShip.service.TeamService;
 import jakarta.validation.Valid;

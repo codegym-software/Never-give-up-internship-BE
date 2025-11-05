@@ -2,7 +2,6 @@ package com.example.InternShip.dto.response;
 import com.example.InternShip.entity.Attendance;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
-import org.checkerframework.checker.formatter.qual.Format;
 
 import java.time.LocalDate;
 import java.time.LocalTime;

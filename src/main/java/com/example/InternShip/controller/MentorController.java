@@ -2,7 +2,6 @@ package com.example.InternShip.controller;
 
 import com.example.InternShip.dto.request.CreateMentorRequest;
 import com.example.InternShip.dto.request.UpdateMentorRequest;
-import com.example.InternShip.dto.response.GetAllMentorResponse;
 import com.example.InternShip.dto.response.GetMentorResponse;
 import com.example.InternShip.service.MentorService;
 import jakarta.validation.Valid;
