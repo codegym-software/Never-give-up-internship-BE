@@ -42,4 +42,6 @@ public interface UserRepository extends JpaRepository<User, Integer> {
     List<User> findUsersByRoleSortedByConversationCount(@Param("role") Role role, Pageable pageable);
 
     Optional<User> findByIdAndRole(Integer id, Role role);
+
+    List<User> findByRole(Role role);
 }

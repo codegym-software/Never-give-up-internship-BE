@@ -9,6 +9,8 @@ import com.example.InternShip.dto.response.GetUserResponse;
 import com.example.InternShip.dto.response.PagedResponse;
 import com.example.InternShip.dto.request.ChangeMyPasswordRequest;
 
+import java.util.List;
+
 public interface UserService {
     PagedResponse<GetUserResponse> getAllUser(GetAllUserRequest request);
     GetUserResponse getUserInfo();
@@ -18,5 +20,7 @@ public interface UserService {
     GetUserResponse updateUserInfo(UpdateInfoRequest request);
     void forgetPassword(ForgetPasswordRequest request);
     void changePassword(ChangeMyPasswordRequest request);
+
+    List<GetUserResponse> getAllHr();
 
 }

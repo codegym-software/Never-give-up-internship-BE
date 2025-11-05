@@ -18,6 +18,8 @@ import com.example.InternShip.service.CloudinaryService;
 import com.example.InternShip.service.UserService;
 import lombok.RequiredArgsConstructor;
 
+import java.util.List;
+
 import java.time.LocalDateTime;
 import java.util.UUID;
 
@@ -140,6 +142,14 @@ public class UserServiceImpl implements UserService {
         }
         user.setPassword(bcrypt.encode(request.getNewPassword()));
         userRepository.save(user);
+    }
+
+    @Override
+    public List<GetUserResponse> getAllHr() {
+        return userRepository.findByRole(Role.HR)
+                .stream()
+                .map(user -> modelMapper.map(user, GetUserResponse.class))
+                .toList();
     }
 
 }
