@@ -26,7 +26,6 @@ public class ReportServiceImpl implements ReportService {
 
     private final AttendanceRepository attendanceRepository;
     private final InternRepository internRepository;
-    private final ModelMapper modelMapper;
 
     @Override
     public List<AttendanceSummaryResponse> getAttendanceSummaryReport(LocalDate startDate, LocalDate endDate, Integer teamId) {

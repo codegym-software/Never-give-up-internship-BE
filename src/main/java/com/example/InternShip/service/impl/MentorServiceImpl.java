@@ -28,8 +28,6 @@ public class MentorServiceImpl implements MentorService {
     private final UserRepository userRepository;
     private final DepartmentRepository departmentRepository;
     private final MentorRepository mentorRepository;
-    private final TeamRepository teamRepository;
-    private final InternRepository internRepository;
     private final ModelMapper modelMapper;
 
     BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();

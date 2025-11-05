@@ -3,7 +3,6 @@ package com.example.InternShip.exception;
 import com.example.InternShip.dto.response.ApiResponse;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.http.HttpStatus;
-import com.example.InternShip.exception.SprintUpdateException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;

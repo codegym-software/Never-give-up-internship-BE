@@ -1,6 +1,7 @@
 package com.example.InternShip.service.impl;
 
 import com.example.InternShip.dto.request.CreateLeaveApplicationRequest;
+import com.example.InternShip.dto.request.RejectLeaveApplicationRequest;
 import com.example.InternShip.dto.response.FileResponse;
 import com.example.InternShip.dto.response.GetAllLeaveApplicationResponse;
 import com.example.InternShip.dto.response.GetLeaveApplicationResponse;
@@ -111,6 +112,7 @@ public class LeaveRequestServiceImpl implements LeaveRequestService {
                     dto.setReason(lr.getReason());
                     dto.setAttachedFileUrl(lr.getAttachedFileUrl());
                     dto.setApproved(lr.getApproved());
+                    dto.setReasonReject(lr.getReasonReject());
                     dto.setHrId(lr.getHr().getId());
                     return dto;
                 }).toList();
@@ -157,12 +159,13 @@ public class LeaveRequestServiceImpl implements LeaveRequestService {
     }
 
     @Override
-    public void rejectLeaveAppication(Integer id) {
+    public void rejectLeaveAppication(RejectLeaveApplicationRequest request) {
         // Tính làm cái check đơn của người dùng nhưng mà thôi
-        LeaveRequest leaveRequest = leaveRequestRepository.findById(id)
+        LeaveRequest leaveRequest = leaveRequestRepository.findById(request.getId())
                 .orElseThrow(() -> new EntityNotFoundException(ErrorCode.LEAVE_APPLICATION_NOT_EXISTS.getMessage()));
         if (leaveRequest.getApproved() == null) {
             leaveRequest.setApproved(true);
+            leaveRequest.setReasonReject(request.getReasonReject());
             leaveRequestRepository.save(leaveRequest);
         } else {
             throw new IllegalArgumentException(ErrorCode.ACTION_INVALID.getMessage());

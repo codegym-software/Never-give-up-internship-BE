@@ -14,8 +14,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.InternShip.dto.request.CreateLeaveApplicationRequest;
+import com.example.InternShip.dto.request.RejectLeaveApplicationRequest;
 import com.example.InternShip.service.LeaveRequestService;
 
+import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import jakarta.validation.Valid;
 
 @RestController
@@ -57,9 +59,15 @@ public class LeaveRequestController {
         return ResponseEntity.ok().build();
     }
 
-    @PatchMapping("/{id}") // Chỉ có duyệt từ chối thì tự động
+    @PatchMapping("/approve/{id}")
     public ResponseEntity<?> approveLeaveAppication(@PathVariable Integer id) {
         leaveRequestService.approveLeaveAppication(id);
+        return ResponseEntity.ok().build();
+    }
+
+    @PatchMapping("/reject")
+    public ResponseEntity<?> rejectLeaveAppication(@RequestBody @Valid RejectLeaveApplicationRequest request) {
+        leaveRequestService.rejectLeaveAppication(request);
         return ResponseEntity.ok().build();
     }
 }

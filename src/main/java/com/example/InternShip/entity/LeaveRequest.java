@@ -34,6 +34,8 @@ public class LeaveRequest {
 
     private Boolean approved;
 
+    private String reasonReject;
+
     public enum Type {
         LATE, // Xin đi muộn
         EARLY_LEAVE, // Xin về sớm

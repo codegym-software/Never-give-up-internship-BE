@@ -69,7 +69,9 @@ public enum ErrorCode {
     LEAVE_APPLICATION_TYPE_NOT_NULL("Loại đơn không được để trống"),
     DATE_LEAVE_NOT_NULL("Ngày nghỉ phép không được để trống"),
     REASON_NOT_NULL("Lý do nghỉ không được để trống"),
-    HR_NOT_NULL("PHải chọn ít nhất 1 HR"),
+    HR_NOT_NULL("Phải chọn ít nhất 1 HR"),
+    ID_NOT_NULL("Mày, mày tính làm gì?"),
+    REASON_REJECT_NOT_NULL("Phải có ít nhất 1 lý do chứ?"),
     
     //FAILED
     VERIFICATION_FAILED("Xác thực thất bại"),

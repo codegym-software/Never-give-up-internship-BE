@@ -1,9 +1,12 @@
 package com.example.InternShip.service;
 
 import com.example.InternShip.dto.request.CreateLeaveApplicationRequest;
+import com.example.InternShip.dto.request.RejectLeaveApplicationRequest;
 import com.example.InternShip.dto.response.GetAllLeaveApplicationResponse;
 import com.example.InternShip.dto.response.GetLeaveApplicationResponse;
 import com.example.InternShip.dto.response.PagedResponse;
+
+import jakarta.validation.Valid;
 
 public interface LeaveRequestService {
 
@@ -18,5 +21,5 @@ public interface LeaveRequestService {
 
     void approveLeaveAppication(Integer id);
 
-    void rejectLeaveAppication(Integer id);
+    void rejectLeaveAppication(RejectLeaveApplicationRequest request);
 }

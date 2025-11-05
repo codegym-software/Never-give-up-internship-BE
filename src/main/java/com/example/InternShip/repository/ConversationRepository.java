@@ -1,7 +1,6 @@
 package com.example.InternShip.repository;
 
 import com.example.InternShip.entity.Conversation;
-import com.example.InternShip.entity.InternshipProgram;
 import com.example.InternShip.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 

@@ -1,7 +1,5 @@
 package com.example.InternShip.repository;
 
-import com.example.InternShip.dto.request.CreateMentorRequest;
-import com.example.InternShip.dto.response.MentorResponse;
 import com.example.InternShip.entity.Mentor;
 
 import java.util.List;

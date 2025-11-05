@@ -40,8 +40,6 @@ public class InternshipProgramServiceImpl implements InternshipProgramService {
     private final InternshipProgramRepository internshipProgramRepository;
     private final InternshipApplicationRepository internshipApplicationRepository;
     private final DepartmentRepository departmentRepository;
-    private final InternRepository internRepository;
-    private final UserRepository userRepository;
     private final AuthServiceImpl authService;
     private final ModelMapper modelMapper;
     private final Scheduler scheduler;

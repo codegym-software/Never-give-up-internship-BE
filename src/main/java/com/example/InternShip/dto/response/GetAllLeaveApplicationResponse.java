@@ -18,5 +18,6 @@ public class GetAllLeaveApplicationResponse {
     private String reason;
     private String attachedFileUrl;
     private boolean approved;
+    private String reasonReject;
     private Integer hrId; // Dù k biết để làm gì
 }

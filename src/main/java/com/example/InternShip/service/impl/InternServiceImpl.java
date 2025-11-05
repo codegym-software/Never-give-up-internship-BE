@@ -35,7 +35,6 @@ public class InternServiceImpl implements InternService {
         private final InternRepository internRepository;
         private final UniversityRepository universityRepository;
         private final MajorRepository majorRepository;
-        private final InternshipApplicationRepository internshipApplicationRepository;
         private final InternshipProgramRepository internshipProgramRepository;
         private final TeamRepository teamRepository;
        private final AuthService authService;
