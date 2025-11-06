@@ -10,6 +10,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
+import com.example.InternShip.dto.response.SprintResponse;
+
+import com.example.InternShip.dto.response.TeamResponse;
+
 @RestController
 @RequestMapping("/api/v1/mentors")
 @RequiredArgsConstructor
@@ -43,5 +47,15 @@ public class MentorController {
     @GetMapping("/getAll")
     public ResponseEntity<?> getAllMentor(){
         return ResponseEntity.ok(mentorService.getAllMentor());
+    }
+
+    @GetMapping("/me/sprints")
+    public ResponseEntity<List<SprintResponse>> getSprintsForCurrentUser() {
+        return ResponseEntity.ok(mentorService.getSprintsForCurrentUser());
+    }
+
+    @GetMapping("/me/teams")
+    public ResponseEntity<List<TeamResponse>> getTeamsForCurrentUser() {
+        return ResponseEntity.ok(mentorService.getTeamsForCurrentUser());
     }
 }

@@ -25,6 +25,10 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import com.example.InternShip.entity.User;
+import com.example.InternShip.entity.enums.Role;
+import com.example.InternShip.service.AuthService;
+
 @Service
 @RequiredArgsConstructor
 public class SprintServiceImpl implements SprintService {
@@ -32,11 +36,22 @@ public class SprintServiceImpl implements SprintService {
     private final SprintRepository sprintRepository;
     private final TeamRepository teamRepository;
     private final ModelMapper modelMapper;
+    private final AuthService authService;
 
     @Override
     public SprintResponse createSprint(Integer teamId, CreateSprintRequest request) {
+        User user = authService.getUserLogin();
+        if (!user.getRole().equals(Role.MENTOR)) {
+            throw new SecurityException("Only mentors can create sprints.");
+        }
+
         Team team = teamRepository.findById(teamId)
                 .orElseThrow(() -> new ProgramNotFoundException("Team not found"));
+
+        // Security Check: Ensure the logged-in mentor is the mentor of this team
+        if (!team.getMentor().getUser().getId().equals(user.getId())) {
+            throw new SecurityException("You are not the mentor of this team and cannot create a sprint.");
+        }
 
         // Validate new sprint dates
         LocalDate today = LocalDate.now();

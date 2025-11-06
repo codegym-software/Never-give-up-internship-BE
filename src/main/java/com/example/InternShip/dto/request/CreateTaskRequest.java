@@ -10,6 +10,5 @@ public class CreateTaskRequest {
     private String description;
     private Long sprintId;
     private Integer internId;
-    private Integer mentorId;
     private LocalDate deadline;
 }
