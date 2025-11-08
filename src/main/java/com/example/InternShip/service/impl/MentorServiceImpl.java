@@ -285,9 +285,6 @@ public class MentorServiceImpl implements MentorService {
                     sprintResponse.setEndDate(sprint.getEndDate());
 
                     sprintResponse.setTeamId(sprint.getTeam().getId());
-
-                    sprintResponse.setTeamName(sprint.getTeam().getName());
-
                     return sprintResponse;
 
                 })
