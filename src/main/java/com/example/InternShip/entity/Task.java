@@ -35,10 +35,14 @@ public class Task {
     private Sprint sprint;
 
     @ManyToOne
-    @JoinColumn(name = "intern_id")
-    private Intern intern;
+    @JoinColumn(name = "assignee_id")
+    private Intern assignee;
 
     @ManyToOne
     @JoinColumn(name = "mentor_id")
     private Mentor mentor;
+
+    @ManyToOne
+    @JoinColumn(name = "created_by_user_id")
+    private User createdBy;
 }

@@ -2,23 +2,19 @@ package com.example.InternShip.service.impl;
 
 import com.example.InternShip.dto.request.CreateSprintRequest;
 import com.example.InternShip.dto.request.UpdateSprintRequest;
-import com.example.InternShip.dto.response.PagedResponse;
 import com.example.InternShip.dto.response.SprintResponse;
 import com.example.InternShip.entity.Team;
 import com.example.InternShip.entity.Sprint;
-import com.example.InternShip.exception.ProgramNotFoundException;
 import com.example.InternShip.exception.SprintConflictException;
 import com.example.InternShip.exception.SprintUpdateException;
 import com.example.InternShip.exception.InvalidSprintDateException;
+import com.example.InternShip.exception.ResourceNotFoundException;
 import com.example.InternShip.repository.TeamRepository;
 import com.example.InternShip.repository.SprintRepository;
 import com.example.InternShip.service.SprintService;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
+
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -41,17 +37,11 @@ public class SprintServiceImpl implements SprintService {
     @Override
     public SprintResponse createSprint(Integer teamId, CreateSprintRequest request) {
         User user = authService.getUserLogin();
-        if (!user.getRole().equals(Role.MENTOR)) {
-            throw new SecurityException("Only mentors can create sprints.");
-        }
-
         Team team = teamRepository.findById(teamId)
-                .orElseThrow(() -> new ProgramNotFoundException("Team not found"));
+                .orElseThrow(
+                        () -> new com.example.InternShip.exception.ResourceNotFoundException("Team", "id", teamId));
 
-        // Security Check: Ensure the logged-in mentor is the mentor of this team
-        if (!team.getMentor().getUser().getId().equals(user.getId())) {
-            throw new SecurityException("You are not the mentor of this team and cannot create a sprint.");
-        }
+        checkSprintManagementPermission(user, team, "create");
 
         // Validate new sprint dates
         LocalDate today = LocalDate.now();
@@ -70,7 +60,7 @@ public class SprintServiceImpl implements SprintService {
         for (Sprint existingSprint : existingSprints) {
             // Check for overlap: (StartA <= EndB) and (EndA >= StartB)
             if (request.getStartDate().isBefore(existingSprint.getEndDate()) &&
-                request.getEndDate().isAfter(existingSprint.getStartDate())) {
+                    request.getEndDate().isAfter(existingSprint.getStartDate())) {
                 throw new SprintConflictException("Sprint dates overlap with an existing sprint.");
             }
         }
@@ -83,66 +73,153 @@ public class SprintServiceImpl implements SprintService {
         sprint.setTeam(team);
 
         Sprint savedSprint = sprintRepository.save(sprint);
-        return modelMapper.map(savedSprint, SprintResponse.class);
+        SprintResponse sprintResponse = mapToSprintResponse(savedSprint);
+        return sprintResponse;
+    }
+
+    public SprintResponse mapToSprintResponse(Sprint sprint) {
+
+        SprintResponse response = new SprintResponse();
+        response.setId(sprint.getId());
+        response.setName(sprint.getName());
+        response.setGoal(sprint.getGoal());
+        response.setStartDate(sprint.getStartDate());
+        response.setEndDate(sprint.getEndDate());
+        response.setTeamId(sprint.getTeam().getId());
+        return response;
+    }
+
+    private void checkSprintManagementPermission(User user, Team team, String action) {
+        // HR can view any sprint
+        if (action.equals("view") && user.getRole().equals(Role.HR)) {
+            return;
+        }
+
+        // For other actions or if not HR, apply mentor-specific checks
+        if (!user.getRole().equals(Role.MENTOR)) {
+            throw new com.example.InternShip.exception.ForbiddenException(
+                    "You do not have permission to " + action + " sprints. Required role: MENTOR (or HR for viewing).");
+        }
+        if (team.getMentor() == null || !team.getMentor().getUser().getId().equals(user.getId())) {
+            throw new com.example.InternShip.exception.ForbiddenException(
+                    "You can only " + action + " sprints for a team that you are mentoring.");
+        }
     }
 
     @Override
     public SprintResponse updateSprint(Long sprintId, UpdateSprintRequest request) {
+        User user = authService.getUserLogin();
         Sprint sprint = sprintRepository.findById(sprintId)
-                .orElseThrow(() -> new RuntimeException("Sprint not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Sprint", "id", sprintId));
 
-        if (sprint.getEndDate().isBefore(LocalDate.now())) {
-            throw new SprintUpdateException("Không thể cập nhật sprint đã hoàn thành.");
+        Team team = sprint.getTeam();
+        checkSprintManagementPermission(user, team, "update");
+
+        // Apply partial updates for non-date fields first
+        if (request.getName() != null) {
+            sprint.setName(request.getName());
+        }
+        if (request.getGoal() != null) {
+            sprint.setGoal(request.getGoal());
         }
 
-        sprint.setName(request.getName());
-        sprint.setGoal(request.getGoal());
-        sprint.setStartDate(request.getStartDate());
-        sprint.setEndDate(request.getEndDate());
+        // Handle date updates based on sprint status
+        LocalDate today = LocalDate.now();
+        boolean isSprintStarted = !today.isBefore(sprint.getStartDate());
+        boolean isSprintEnded = today.isAfter(sprint.getEndDate());
+
+        if (isSprintEnded) {
+            throw new SprintUpdateException("Cannot update a sprint that has already ended.");
+        }
+
+        if (isSprintStarted) { // Sprint is in progress
+            if (request.getStartDate() != null && !request.getStartDate().equals(sprint.getStartDate())) {
+                throw new SprintUpdateException(
+                        "Cannot change the start date of a sprint that is already in progress.");
+            }
+            if (request.getEndDate() != null) {
+                if (request.getEndDate().isBefore(sprint.getEndDate())) {
+                    throw new SprintUpdateException(
+                            "Cannot shorten a sprint that is already in progress. You can only extend the end date.");
+                }
+                sprint.setEndDate(request.getEndDate());
+            }
+        } else { // Sprint has not started yet
+            LocalDate newStartDate = request.getStartDate() != null ? request.getStartDate() : sprint.getStartDate();
+            LocalDate newEndDate = request.getEndDate() != null ? request.getEndDate() : sprint.getEndDate();
+
+            if (request.getStartDate() != null || request.getEndDate() != null) {
+                if (newStartDate.isBefore(today)) {
+                    throw new InvalidSprintDateException("Sprint start date cannot be in the past.");
+                }
+                if (newEndDate.isBefore(today)) {
+                    throw new InvalidSprintDateException("Sprint end date cannot be in the past.");
+                }
+                if (newStartDate.isAfter(newEndDate)) {
+                    throw new InvalidSprintDateException("Sprint start date cannot be after end date.");
+                }
+
+                // Check for overlapping sprints
+                List<Sprint> otherSprints = team.getSprints().stream()
+                        .filter(s -> !s.getId().equals(sprintId))
+                        .collect(Collectors.toList());
+                for (Sprint existingSprint : otherSprints) {
+                    if (newStartDate.isBefore(existingSprint.getEndDate())
+                            && newEndDate.isAfter(existingSprint.getStartDate())) {
+                        throw new SprintConflictException("Sprint dates overlap with an existing sprint.");
+                    }
+                }
+                sprint.setStartDate(newStartDate);
+                sprint.setEndDate(newEndDate);
+            }
+        }
 
         Sprint updatedSprint = sprintRepository.save(sprint);
-        return modelMapper.map(updatedSprint, SprintResponse.class);
+        SprintResponse sprintResponse = mapToSprintResponse(updatedSprint);
+        return sprintResponse;
     }
 
     @Override
     public void deleteSprint(Long sprintId) {
+        User user = authService.getUserLogin();
         Sprint sprint = sprintRepository.findById(sprintId)
-                .orElseThrow(() -> new RuntimeException("Sprint not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Sprint", "id", sprintId));
+        Team team = sprint.getTeam();
+
+        checkSprintManagementPermission(user, team, "delete");
 
         if (!sprint.getStartDate().isAfter(LocalDate.now())) {
-            throw new SprintUpdateException("Chỉ có thể xóa sprint chưa bắt đầu.");
+            throw new SprintUpdateException("Cannot delete a sprint that has already started or ended.");
         }
 
         sprintRepository.deleteById(sprintId);
     }
 
     @Override
-    public PagedResponse<SprintResponse> getSprintsByTeam(Integer teamId, int page, int size) {
-        teamRepository.findById(teamId)
-                .orElseThrow(() -> new ProgramNotFoundException("Team not found"));
+    public List<SprintResponse> getSprintsByTeam(Integer teamId) {
+        User user = authService.getUserLogin();
+        Team team = teamRepository.findById(teamId)
+                .orElseThrow(() -> new ResourceNotFoundException("Team", "id", teamId));
 
-        Pageable pageable = PageRequest.of(page, size, Sort.by("startDate").descending());
+        checkSprintManagementPermission(user, team, "view");
 
-        Page<Sprint> sprintPage = sprintRepository.findByTeamId(teamId, pageable);
+        List<Sprint> sprints = sprintRepository.findByTeamId(teamId);
 
-        List<SprintResponse> sprintResponses = sprintPage.getContent().stream()
-                .map(sprint -> modelMapper.map(sprint, SprintResponse.class))
+        return sprints.stream()
+                .map(sprint -> mapToSprintResponse(sprint))
                 .collect(Collectors.toList());
-
-        return new PagedResponse<>(
-                sprintResponses,
-                sprintPage.getNumber(),
-                sprintPage.getTotalElements(),
-                sprintPage.getTotalPages(),
-                sprintPage.hasNext(),
-                sprintPage.hasPrevious()
-        );
     }
 
     @Override
     public SprintResponse getSprintById(Long sprintId) {
+        User user = authService.getUserLogin();
         Sprint sprint = sprintRepository.findById(sprintId)
-                .orElseThrow(() -> new RuntimeException("Sprint not found"));
-        return modelMapper.map(sprint, SprintResponse.class);
+                .orElseThrow(() -> new ResourceNotFoundException("Sprint", "id", sprintId));
+        Team team = sprint.getTeam();
+
+        checkSprintManagementPermission(user, team, "view");
+
+        SprintResponse sprintResponse = mapToSprintResponse(sprint);
+        return sprintResponse;
     }
 }

@@ -7,12 +7,9 @@ import com.example.InternShip.entity.Intern;
 import com.example.InternShip.entity.Mentor;
 import com.example.InternShip.entity.Sprint;
 import com.example.InternShip.entity.Task;
-import com.example.InternShip.entity.Team;
 import com.example.InternShip.entity.User;
 import com.example.InternShip.entity.enums.Role;
 import com.example.InternShip.entity.enums.TaskStatus;
-import com.example.InternShip.exception.ErrorCode;
-import com.example.InternShip.exception.UserNotFoundException;
 import com.example.InternShip.repository.InternRepository;
 import com.example.InternShip.repository.MentorRepository;
 import com.example.InternShip.repository.SprintRepository;
@@ -21,16 +18,19 @@ import com.example.InternShip.service.AuthService;
 import com.example.InternShip.service.TaskService;
 import lombok.RequiredArgsConstructor;
 
-import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import jakarta.persistence.criteria.Predicate;
+
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
+import com.example.InternShip.exception.BadRequestException;
+import com.example.InternShip.exception.ForbiddenException;
+import com.example.InternShip.exception.ResourceNotFoundException;
+import com.example.InternShip.exception.SprintExpiredException;
 
 @Service
 @RequiredArgsConstructor
@@ -40,134 +40,177 @@ public class TaskServiceImpl implements TaskService {
     private final SprintRepository sprintRepository;
     private final InternRepository internRepository;
     private final MentorRepository mentorRepository;
-    private final ModelMapper modelMapper;
     private final AuthService authService;
 
     @Override
     public TaskResponse createTask(CreateTaskRequest request) {
-        User user = authService.getUserLogin();
-        try {
-            if (!user.getRole().equals(Role.INTERN) && !user.getRole().equals(Role.MENTOR)) {
-                throw new RuntimeException(ErrorCode.VERIFICATION_FAILED.getMessage());
+        User creator = authService.getUserLogin();
+
+        Sprint sprint = sprintRepository.findById(request.getSprintId())
+                .orElseThrow(() -> new ResourceNotFoundException("Sprint", "id", request.getSprintId()));
+        // kiểm tra spirnt đã hết hạn chưa
+        if (!sprint.getEndDate().isAfter(LocalDate.now())) {
+            throw new SprintExpiredException(
+                    String.format("Sprint '%s' (ID: %d) has already ended on %s.",
+                            sprint.getName(), sprint.getId(), sprint.getEndDate()));
+        }
+        checkTaskManagementPermission(creator, sprint, "create");
+
+        validateTaskDeadline(request.getDeadline(), sprint);
+
+        Intern assignedIntern = null; // Assignee is optional
+        if (request.getAssigneeId() != null) {
+            assignedIntern = internRepository.findById(request.getAssigneeId())
+                    .orElseThrow(() -> new ResourceNotFoundException("Intern to be assigned", "id",
+                            request.getAssigneeId()));
+
+            // Validate that the assigned intern is part of the sprint's team
+            if (assignedIntern.getTeam() == null
+                    || !assignedIntern.getTeam().getId().equals(sprint.getTeam().getId())) {
+                throw new BadRequestException("The assigned intern is not a member of the sprint's team.");
             }
-
-            Sprint sprint = sprintRepository.findById(request.getSprintId())
-                    .orElseThrow(() -> new RuntimeException("Sprint not found"));
-            if (user.getRole().equals(Role.INTERN)) {
-                Intern intern = internRepository.findByUser(user)
-                        .orElseThrow(() -> new UserNotFoundException("Intern not found"));
-
-                if (!sprint.getTeam().getId().equals(intern.getTeam().getId())) {
-                    throw new RuntimeException("You are not in this team");
-                }
-            }
-            if (user.getRole().equals(Role.MENTOR)) {
-                Mentor mentor = mentorRepository.findByUser(user)
-                        .orElseThrow(() -> new UserNotFoundException("Mentor not found"));
-                if (mentor.getTeams().stream().noneMatch(team -> team.getId().equals(sprint.getTeam().getId()))) {
-                    throw new RuntimeException("You are not in this team");
-                }
-            }
-
-            Intern intern = internRepository.findById(request.getInternId())
-                    .orElseThrow(() -> new UserNotFoundException("Intern not found"));
-
-            Mentor mentor = mentorRepository.findByUser(user)
-                    .orElseThrow(() -> new UserNotFoundException("Mentor not found"));
-
-            Task task = new Task();
-            task.setName(request.getName());
-            task.setDescription(request.getDescription());
-            task.setSprint(sprint);
-            task.setIntern(intern);
-            task.setMentor(mentor);
-            task.setDeadline(request.getDeadline() == null ? sprint.getEndDate() : request.getDeadline());
-            task.setStatus(TaskStatus.TODO);
-            Task savedTask = taskRepository.save(task);
-            return modelMapper.map(savedTask, TaskResponse.class);
-        } catch (Exception e) {
-            // TODO: handle exception
-            throw new RuntimeException(e);
         }
 
-    }
-
-    @Override
-    public TaskResponse updateTask(Long taskId, UpdateTaskRequest request) {
-        User user = authService.getUserLogin();
-        ;
-        try {
-            if (!user.getRole().equals(Role.INTERN) && !user.getRole().equals(Role.MENTOR)) {
-                throw new RuntimeException(ErrorCode.VERIFICATION_FAILED.getMessage());
-            }
-            Task task = taskRepository.findById(taskId)
-                    .orElseThrow(() -> new RuntimeException("Task not found"));
-            Sprint sprint = sprintRepository.findById(task.getSprint().getId())
-                    .orElseThrow(() -> new RuntimeException("Sprint not found"));
-            if (user.getRole().equals(Role.INTERN)) {
-                Intern intern = internRepository.findByUser(user)
-                        .orElseThrow(() -> new UserNotFoundException("Intern not found"));
-                if (!sprint.getTeam().getId().equals(intern.getTeam().getId())) {
-                    throw new RuntimeException("You are not in this team");
-                }
-            }
-
-            if (user.getRole().equals(Role.MENTOR)) {
-                Mentor mentor = mentorRepository.findByUser(user)
-                        .orElseThrow(() -> new UserNotFoundException("Mentor not found"));
-                if (mentor.getTeams().stream().noneMatch(team -> team.getId().equals(sprint.getTeam().getId()))) {
-                    throw new RuntimeException("You are not in this team");
-                }
-
-            }
-
-            task.setName(request.getName());
-            task.setDescription(request.getDescription());
-            task.setStatus(request.getStatus());
-            task.setDeadline(request.getDeadline());
-
-            Task updatedTask = taskRepository.save(task);
-            return modelMapper.map(updatedTask, TaskResponse.class);
-        } catch (Exception e) {
-            // TODO: handle exception
-            throw new RuntimeException(e);
+        Mentor teamMentor = sprint.getTeam().getMentor();
+        if (teamMentor == null) {
+            throw new IllegalStateException("The team for this sprint does not have an assigned mentor.");
         }
 
+        Task task = new Task();
+        task.setName(request.getName());
+        task.setDescription(request.getDescription());
+        task.setSprint(sprint);
+        task.setAssignee(assignedIntern); // Can be null
+        task.setMentor(teamMentor);
+        task.setCreatedBy(creator);
+        task.setDeadline(request.getDeadline() == null ? sprint.getEndDate() : request.getDeadline());
+        task.setStatus(TaskStatus.TODO);
+        Task savedTask = taskRepository.save(task);
+        TaskResponse taskResponse = mapToTaskResponse(savedTask);
+        return taskResponse;
     }
 
-    @Override
-    public void deleteTask(Long taskId) {
-        User user = authService.getUserLogin();
+    public TaskResponse mapToTaskResponse(Task task) {
+        TaskResponse response = new TaskResponse();
+        response.setId(task.getId());
+        response.setName(task.getName());
+        response.setDescription(task.getDescription());
+        response.setStatus(task.getStatus());
+        response.setDeadline(task.getDeadline());
+        response.setSprint_Id(task.getSprint().getId());
+        response.setAssignee_Id(task.getAssignee() != null ? task.getAssignee().getId() : null);
+        response.setMentorId(task.getMentor() != null ? task.getMentor().getId() : null);
+        response.setCreatedById(task.getCreatedBy() != null ? task.getCreatedBy().getId() : null);
+        return response;
+    }
+
+    // hàm kiểm tra người dùng hiện tại có quyền không
+    private void checkTaskManagementPermission(User user, Sprint sprint, String action) {
         if (!user.getRole().equals(Role.INTERN) && !user.getRole().equals(Role.MENTOR)) {
-            throw new RuntimeException(ErrorCode.VERIFICATION_FAILED.getMessage());
+            throw new ForbiddenException(
+                    "You do not have permission to " + action + " tasks. Required role: INTERN or MENTOR.");
         }
-
-        Task task = taskRepository.findById(taskId)
-                .orElseThrow(() -> new RuntimeException("Task not found"));
-
-        Sprint sprint = task.getSprint();
 
         if (user.getRole().equals(Role.INTERN)) {
             Intern intern = internRepository.findByUser(user)
-                    .orElseThrow(() -> new UserNotFoundException("Intern not found"));
+                    .orElseThrow(() -> new ResourceNotFoundException("Intern profile not found for the current user."));
+
             if (!sprint.getTeam().getId().equals(intern.getTeam().getId())) {
-                throw new RuntimeException("You are not in this team");
+                throw new ForbiddenException("You can only " + action + " tasks for the team you are a member of.");
             }
         }
 
         if (user.getRole().equals(Role.MENTOR)) {
             Mentor mentor = mentorRepository.findByUser(user)
-                    .orElseThrow(() -> new UserNotFoundException("Mentor not found"));
+                    .orElseThrow(() -> new ResourceNotFoundException("Mentor profile not found for the current user."));
+
             if (mentor.getTeams().stream().noneMatch(team -> team.getId().equals(sprint.getTeam().getId()))) {
-                throw new RuntimeException("You are not the mentor of this team");
+                throw new ForbiddenException("You can only " + action + " tasks for a team that you are mentoring.");
             }
         }
+    }
+
+    @Override
+    public TaskResponse updateTask(Long taskId, UpdateTaskRequest request) {
+        User user = authService.getUserLogin();
+
+        Task task = taskRepository.findById(taskId)
+                .orElseThrow(() -> new ResourceNotFoundException("Task", "id", taskId));
+
+        Sprint sprint = task.getSprint();
+
+        // Check if the sprint has expired
+        if (!sprint.getEndDate().isAfter(LocalDate.now())) {
+            throw new SprintExpiredException(
+                    String.format("Cannot update task. Sprint '%s' (ID: %d) has already ended on %s.",
+                            sprint.getName(), sprint.getId(), sprint.getEndDate()));
+        }
+
+        checkTaskManagementPermission(user, sprint, "update");
+
+        // Validate deadline only if it's provided in the request
+        if (request.getDeadline() != null) {
+            validateTaskDeadline(request.getDeadline(), sprint);
+        }
+
+        // Apply partial updates: only update fields that are not null in the request
+        if (request.getName() != null) {
+            task.setName(request.getName());
+        }
+        if (request.getDescription() != null) {
+            task.setDescription(request.getDescription());
+        }
+        if (request.getStatus() != null) {
+            task.setStatus(request.getStatus());
+        }
+        if (request.getDeadline() != null) {
+            task.setDeadline(request.getDeadline());
+        }
+
+        Task updatedTask = taskRepository.save(task);
+        TaskResponse taskResponse = mapToTaskResponse(updatedTask);
+        return taskResponse;
+    }
+
+    // hàm kiểm tra deadline của task có hợp lệ không
+    private void validateTaskDeadline(java.time.LocalDate deadline, Sprint sprint) {
+        if (deadline != null) {
+            if (deadline.isBefore(sprint.getStartDate()) || deadline.isAfter(sprint.getEndDate())) {
+                throw new BadRequestException(
+                        "Task deadline must be within the sprint's date range: " +
+                                sprint.getStartDate() + " to " + sprint.getEndDate() + ".");
+            }
+        }
+    }
+
+    @Override
+    public void deleteTask(Long taskId) {
+        User user = authService.getUserLogin();
+
+        Task task = taskRepository.findById(taskId)
+                .orElseThrow(() -> new ResourceNotFoundException("Task", "id", taskId));
+
+        Sprint sprint = task.getSprint();
+
+        if (!sprint.getEndDate().isAfter(LocalDate.now())) {
+            throw new SprintExpiredException(
+                    String.format("Sprint '%s' (ID: %d) has already ended on %s.",
+                            sprint.getName(), sprint.getId(), sprint.getEndDate()));
+        }
+
+        checkTaskManagementPermission(user, sprint, "delete");
 
         taskRepository.delete(task);
     }
 
     @Override
-    public Page<TaskResponse> getTasksBySprint(Long sprintId, TaskStatus status, Integer internId, Pageable pageable) {
+    public List<TaskResponse> getTasksBySprint(Long sprintId, TaskStatus status, Integer assigneeId) {
+        User user = authService.getUserLogin();
+        Sprint sprint = sprintRepository.findById(sprintId)
+                .orElseThrow(() -> new ResourceNotFoundException("Sprint", "id", sprintId));
+
+        checkTaskManagementPermission(user, sprint, "view");
+
         Specification<Task> spec = (root, query, criteriaBuilder) -> {
             List<Predicate> predicates = new ArrayList<>();
             predicates.add(criteriaBuilder.equal(root.get("sprint").get("id"), sprintId));
@@ -175,52 +218,37 @@ public class TaskServiceImpl implements TaskService {
             if (status != null) {
                 predicates.add(criteriaBuilder.equal(root.get("status"), status));
             }
-            if (internId != null) {
-                predicates.add(criteriaBuilder.equal(root.get("intern").get("id"), internId));
+            if (assigneeId != null) {
+                predicates.add(criteriaBuilder.equal(root.get("assignee").get("id"), assigneeId));
             }
             return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
         };
 
-        Page<Task> tasksPage = taskRepository.findAll(spec, pageable);
-        return tasksPage.map(task -> modelMapper.map(task, TaskResponse.class));
+        List<Task> tasks = taskRepository.findAll(spec);
+        return tasks.stream()
+                .map(task -> mapToTaskResponse(task))
+                .collect(Collectors.toList());
     }
 
     @Override
-    public List<TaskResponse> getTasksByIntern(Integer internId) {
-        List<Task> tasks = taskRepository.findByInternId(internId);
+    public List<TaskResponse> getTasksByAssignee(Integer assigneeId) {
+        List<Task> tasks = taskRepository.findByAssigneeId(assigneeId);
         return tasks.stream()
-                .map(task -> modelMapper.map(task, TaskResponse.class))
+                .map(task -> mapToTaskResponse(task))
                 .collect(Collectors.toList());
     }
 
     @Override
     public TaskResponse getTaskById(Long taskId) {
         User user = authService.getUserLogin();
-        if (!user.getRole().equals(Role.INTERN) && !user.getRole().equals(Role.MENTOR)) {
-            throw new SecurityException("You do not have permission to view this task.");
-        }
 
         Task task = taskRepository.findById(taskId)
-                .orElseThrow(() -> new RuntimeException("Task not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Task", "id", taskId));
 
         Sprint sprint = task.getSprint();
 
-        if (user.getRole().equals(Role.INTERN)) {
-            Intern intern = internRepository.findByUser(user)
-                    .orElseThrow(() -> new UserNotFoundException("Intern not found"));
-            if (!sprint.getTeam().getId().equals(intern.getTeam().getId())) {
-                throw new SecurityException("You are not a member of the team that owns this task.");
-            }
-        }
+        checkTaskManagementPermission(user, sprint, "view");
 
-        if (user.getRole().equals(Role.MENTOR)) {
-            Mentor mentor = mentorRepository.findByUser(user)
-                    .orElseThrow(() -> new UserNotFoundException("Mentor not found"));
-            if (mentor.getTeams().stream().noneMatch(team -> team.getId().equals(sprint.getTeam().getId()))) {
-                throw new SecurityException("You are not the mentor of the team that owns this task.");
-            }
-        }
-
-        return modelMapper.map(task, TaskResponse.class);
+        return mapToTaskResponse(task);
     }
 }

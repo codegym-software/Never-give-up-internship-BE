@@ -268,7 +268,7 @@ public class MentorServiceImpl implements MentorService {
 
         return mentor.getTeams().stream()
 
-                .flatMap(team -> team.getSprints().stream())`
+                .flatMap(team -> team.getSprints().stream())
 
                 .map(sprint -> {
 

@@ -14,7 +14,7 @@ public interface TaskService {
     TaskResponse createTask(CreateTaskRequest request);
     TaskResponse updateTask(Long taskId, UpdateTaskRequest request);
     void deleteTask(Long taskId);
-    Page<TaskResponse> getTasksBySprint(Long sprintId, TaskStatus status, Integer internId, Pageable pageable);
-    List<TaskResponse> getTasksByIntern(Integer internId);
+    List<TaskResponse> getTasksBySprint(Long sprintId, TaskStatus status, Integer assigneeId);
+    List<TaskResponse> getTasksByAssignee(Integer assigneeId);
     TaskResponse getTaskById(Long taskId);
 }

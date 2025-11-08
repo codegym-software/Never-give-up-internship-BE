@@ -12,5 +12,4 @@ public class SprintResponse {
     private LocalDate startDate;
     private LocalDate endDate;
     private Integer teamId;
-    private String teamName;
 }

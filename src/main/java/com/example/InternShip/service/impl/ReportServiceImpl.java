@@ -10,7 +10,6 @@ import com.example.InternShip.repository.InternRepository;
 import com.example.InternShip.service.ReportService;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
-import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;

@@ -47,7 +47,7 @@ public class Intern {
     @OneToMany(mappedBy = "intern")
     private List<LeaveRequest> leaveRequests;
 
-    @OneToMany(mappedBy = "intern")
+    @OneToMany(mappedBy = "assignee")
     private List<Task> tasks;
 
     public enum Status {

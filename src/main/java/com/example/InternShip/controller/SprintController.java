@@ -7,6 +7,9 @@ import com.example.InternShip.dto.response.PagedResponse;
 import com.example.InternShip.dto.response.SprintResponse;
 import com.example.InternShip.service.SprintService;
 import lombok.RequiredArgsConstructor;
+
+import java.util.List;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -26,10 +29,8 @@ public class SprintController {
     }
 
     @GetMapping("/teams/{teamId}/sprints")
-    public ResponseEntity<ApiResponse> getSprintsByTeam(@PathVariable Integer teamId,
-                                                      @RequestParam(defaultValue = "0") int page,
-                                                      @RequestParam(defaultValue = "10") int size) {
-        PagedResponse<SprintResponse> sprints = sprintService.getSprintsByTeam(teamId, page, size);
+    public ResponseEntity<ApiResponse> getSprintsByTeam(@PathVariable Integer teamId) {
+        List<SprintResponse> sprints = sprintService.getSprintsByTeam(teamId);
         ApiResponse response = new ApiResponse(HttpStatus.OK.value(), "Sprints retrieved successfully", sprints);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }

@@ -12,7 +12,8 @@ public class TaskResponse {
     private String description;
     private TaskStatus status;
     private LocalDate deadline;
-    private Long sprintId;
-    private Integer internId;
+    private Long sprint_Id;
+    private Integer assignee_Id;
     private Integer mentorId;
+    private Integer createdById;
 }

@@ -4,7 +4,6 @@ import com.example.InternShip.dto.request.CreateTaskRequest;
 import com.example.InternShip.dto.request.UpdateTaskRequest;
 import com.example.InternShip.dto.response.ApiResponse;
 import com.example.InternShip.dto.response.TaskResponse;
-import com.example.InternShip.service.AuthService;
 import com.example.InternShip.service.TaskService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -18,16 +17,17 @@ import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
-
+import jakarta.validation.Valid;
 @RestController
 @RequestMapping("/api/v1")
 @RequiredArgsConstructor
 public class TaskController {
 
     private final TaskService taskService;
-    private final AuthService authService;
+
+
     @PostMapping("/sprints/{sprintId}/tasks")
-    public ResponseEntity<ApiResponse> createTask(@PathVariable Long sprintId, @RequestBody CreateTaskRequest request) {
+    public ResponseEntity<ApiResponse> createTask(@PathVariable Long sprintId, @RequestBody @Valid CreateTaskRequest request) {
         request.setSprintId(sprintId);
         TaskResponse taskResponse = taskService.createTask(request);
         ApiResponse response = new ApiResponse(HttpStatus.CREATED.value(), "Task created successfully", taskResponse);
@@ -38,16 +38,15 @@ public class TaskController {
     public ResponseEntity<ApiResponse> getTasksBySprint(
             @PathVariable Long sprintId,
             @RequestParam(required = false) TaskStatus status,
-            @RequestParam(required = false) Integer internId,
-            @PageableDefault(size = 10) Pageable pageable) {
-        Page<TaskResponse> tasks = taskService.getTasksBySprint(sprintId, status, internId, pageable);
+            @RequestParam(required = false) Integer assigneeId) {
+        List<TaskResponse> tasks = taskService.getTasksBySprint(sprintId, status, assigneeId);
         ApiResponse response = new ApiResponse(HttpStatus.OK.value(), "Tasks retrieved successfully", tasks);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-    @GetMapping("/interns/{internId}/tasks")
-    public ResponseEntity<ApiResponse> getTasksByIntern(@PathVariable Integer internId) {
-        List<TaskResponse> tasks = taskService.getTasksByIntern(internId);
+    @GetMapping("/assignees/{assigneeId}/tasks")
+    public ResponseEntity<ApiResponse> getTasksByAssignee(@PathVariable Integer assigneeId) {
+        List<TaskResponse> tasks = taskService.getTasksByAssignee(assigneeId);
         ApiResponse response = new ApiResponse(HttpStatus.OK.value(), "Tasks retrieved successfully", tasks);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
