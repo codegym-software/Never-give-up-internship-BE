@@ -30,12 +30,21 @@ import org.springframework.web.bind.annotation.PathVariable;
 
 import java.util.List; // Added
 
+import com.example.InternShip.dto.response.MyProfileResponse;
+import org.springframework.security.access.prepost.PreAuthorize;
+
 @RestController
 @RequestMapping("/api/v1/interns")
 @RequiredArgsConstructor
 public class InternController {
     private final InternService internService;
     private final WorkScheduleService workScheduleService; // Added
+
+    @GetMapping("/me")
+    @PreAuthorize("hasAuthority('SCOPE_INTERN')")
+    public ResponseEntity<MyProfileResponse> getMyProfile() {
+        return ResponseEntity.ok(internService.getMyProfile());
+    }
 
     @PutMapping("/{id}")
     public ResponseEntity<GetInternResponse> UpdateInternById(@PathVariable Integer id, @RequestBody @Valid UpdateInternRequest updateInternRequest) {

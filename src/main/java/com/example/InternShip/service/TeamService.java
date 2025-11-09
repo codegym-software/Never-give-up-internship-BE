@@ -6,6 +6,7 @@ import com.example.InternShip.dto.request.UpdateTeamRequest;
 import com.example.InternShip.dto.response.GetAllTeamResponse;
 import com.example.InternShip.dto.response.PagedResponse;
 import com.example.InternShip.dto.response.TeamDetailResponse;
+import com.example.InternShip.entity.Team;
 
 import java.util.List;
 
@@ -17,4 +18,6 @@ public interface TeamService {
     PagedResponse<TeamDetailResponse> getTeams(Integer internshipTerm, Integer mentor, String keyword, int page);
     public TeamDetailResponse updateTeam(Integer teamId, UpdateTeamRequest request);
     List<GetAllTeamResponse> getAllTeam();
+    List<TeamDetailResponse> getTeamsByCurrentMentor();
+    TeamDetailResponse mapToTeamDetailResponse(Team team);
 }

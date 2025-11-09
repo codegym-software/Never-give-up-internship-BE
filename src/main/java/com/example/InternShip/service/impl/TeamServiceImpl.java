@@ -23,6 +23,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import com.example.InternShip.service.AuthService;
+import com.example.InternShip.entity.User;
+import com.example.InternShip.entity.enums.Role;
+import com.example.InternShip.exception.ForbiddenException;
+import com.example.InternShip.exception.ResourceNotFoundException;
+
 @Service
 @RequiredArgsConstructor
 public class TeamServiceImpl implements TeamService {
@@ -32,6 +38,7 @@ public class TeamServiceImpl implements TeamService {
     private final InternshipProgramRepository programRepository;
     private final MentorRepository mentorRepository;
     private final ModelMapper modelMapper;
+    private final AuthService authService;
 
     @Override
     @Transactional
@@ -157,7 +164,23 @@ public class TeamServiceImpl implements TeamService {
                 }).toList();
     }
 
-    private TeamDetailResponse mapToTeamDetailResponse(Team team) {
+    @Override
+    public List<TeamDetailResponse> getTeamsByCurrentMentor() {
+        User currentUser = authService.getUserLogin();
+        if (currentUser.getRole() != Role.MENTOR) {
+            throw new ForbiddenException("You are not authorized to perform this action. Required role: MENTOR.");
+        }
+
+        Mentor mentor = mentorRepository.findByUser(currentUser)
+                .orElseThrow(() -> new ResourceNotFoundException("Mentor profile not found for the current user."));
+
+        return mentor.getTeams().stream()
+                .map(this::mapToTeamDetailResponse)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public TeamDetailResponse mapToTeamDetailResponse(Team team) {
         TeamDetailResponse response = new TeamDetailResponse();
         response.setId(team.getId());
         response.setTeamName(team.getName());
@@ -180,4 +203,4 @@ public class TeamServiceImpl implements TeamService {
         dto.setUniversity(intern.getUniversity().getName());
         return dto;
     }
-}
+    }

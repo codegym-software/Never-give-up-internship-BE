@@ -11,4 +11,5 @@ public class UpdateTaskRequest {
     private String description;
     private TaskStatus status;
     private LocalDate deadline;
+    private Integer assigneeId;
 }

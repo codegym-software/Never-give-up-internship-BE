@@ -3,7 +3,6 @@ package com.example.InternShip.controller;
 import com.example.InternShip.dto.request.CreateSprintRequest;
 import com.example.InternShip.dto.request.UpdateSprintRequest;
 import com.example.InternShip.dto.response.ApiResponse;
-import com.example.InternShip.dto.response.PagedResponse;
 import com.example.InternShip.dto.response.SprintResponse;
 import com.example.InternShip.service.SprintService;
 import lombok.RequiredArgsConstructor;

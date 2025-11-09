@@ -27,6 +27,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
+import com.example.InternShip.service.TeamService;
+import com.example.InternShip.dto.response.MyProfileResponse;
+import com.example.InternShip.dto.response.TeamDetailResponse;
+
 @Service
 @RequiredArgsConstructor
 public class InternServiceImpl implements InternService {
@@ -37,7 +41,8 @@ public class InternServiceImpl implements InternService {
         private final MajorRepository majorRepository;
         private final InternshipProgramRepository internshipProgramRepository;
         private final TeamRepository teamRepository;
-       private final AuthService authService;
+        private final AuthService authService;
+        private final TeamService teamService;
         private final ModelMapper modelMapper;
 
         @Override
@@ -51,6 +56,34 @@ public class InternServiceImpl implements InternService {
                 response.setInternshipProgram(intern.getInternshipProgram().getName());
                 response.setStatus(intern.getStatus());
                 return response;
+        }
+
+        @Override
+        public MyProfileResponse getMyProfile() {
+                User currentUser = authService.getUserLogin();
+                Intern intern = internRepository.findByUser(currentUser)
+                                .orElseThrow(() -> new EntityNotFoundException(ErrorCode.INTERN_NOT_EXISTED.getMessage()));
+
+                // Map Intern details
+                GetInternResponse internResponse = modelMapper.map(intern.getUser(), GetInternResponse.class);
+                internResponse.setId(intern.getId());
+                internResponse.setUniversity(intern.getUniversity().getName());
+                internResponse.setMajor(intern.getMajor().getName());
+                internResponse.setInternshipProgram(intern.getInternshipProgram().getName());
+                internResponse.setStatus(intern.getStatus());
+
+                // Map Team details
+                TeamDetailResponse teamResponse = null;
+                if (intern.getTeam() != null) {
+                        teamResponse = teamService.mapToTeamDetailResponse(intern.getTeam());
+                }
+
+                // Combine into MyProfileResponse
+                MyProfileResponse myProfileResponse = new MyProfileResponse();
+                myProfileResponse.setInternDetails(internResponse);
+                myProfileResponse.setTeamDetails(teamResponse);
+
+                return myProfileResponse;
         }
 
         @Override

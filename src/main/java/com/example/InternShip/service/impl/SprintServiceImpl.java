@@ -25,14 +25,17 @@ import com.example.InternShip.entity.User;
 import com.example.InternShip.entity.enums.Role;
 import com.example.InternShip.service.AuthService;
 
+import com.example.InternShip.repository.InternRepository;
+import com.example.InternShip.entity.Intern;
+
 @Service
 @RequiredArgsConstructor
 public class SprintServiceImpl implements SprintService {
 
     private final SprintRepository sprintRepository;
     private final TeamRepository teamRepository;
-    private final ModelMapper modelMapper;
     private final AuthService authService;
+    private final InternRepository internRepository;
 
     @Override
     public SprintResponse createSprint(Integer teamId, CreateSprintRequest request) {
@@ -95,15 +98,25 @@ public class SprintServiceImpl implements SprintService {
             return;
         }
 
-        // For other actions or if not HR, apply mentor-specific checks
-        if (!user.getRole().equals(Role.MENTOR)) {
-            throw new com.example.InternShip.exception.ForbiddenException(
-                    "You do not have permission to " + action + " sprints. Required role: MENTOR (or HR for viewing).");
+        // Interns can view sprints of their own team
+        if (action.equals("view") && user.getRole().equals(Role.INTERN)) {
+            Intern intern = internRepository.findByUser(user)
+                    .orElseThrow(() -> new ResourceNotFoundException("Intern profile not found for the current user."));
+            if (intern.getTeam() != null && intern.getTeam().getId().equals(team.getId())) {
+                return; // Allowed
+            }
         }
-        if (team.getMentor() == null || !team.getMentor().getUser().getId().equals(user.getId())) {
-            throw new com.example.InternShip.exception.ForbiddenException(
-                    "You can only " + action + " sprints for a team that you are mentoring.");
+
+        // Mentor can manage sprints of their own team
+        if (user.getRole().equals(Role.MENTOR)) {
+            if (team.getMentor() != null && team.getMentor().getUser().getId().equals(user.getId())) {
+                return; // Allowed
+            }
         }
+        
+        // If no permission rule matched, deny access.
+        throw new com.example.InternShip.exception.ForbiddenException(
+                "You do not have permission to " + action + " sprints for this team.");
     }
 
     @Override
@@ -178,6 +191,7 @@ public class SprintServiceImpl implements SprintService {
         SprintResponse sprintResponse = mapToSprintResponse(updatedSprint);
         return sprintResponse;
     }
+
 
     @Override
     public void deleteSprint(Long sprintId) {

@@ -98,9 +98,26 @@ public class TaskServiceImpl implements TaskService {
         response.setStatus(task.getStatus());
         response.setDeadline(task.getDeadline());
         response.setSprint_Id(task.getSprint().getId());
-        response.setAssignee_Id(task.getAssignee() != null ? task.getAssignee().getId() : null);
-        response.setMentorId(task.getMentor() != null ? task.getMentor().getId() : null);
-        response.setCreatedById(task.getCreatedBy() != null ? task.getCreatedBy().getId() : null);
+
+        if (task.getAssignee() != null) {
+            response.setAssignee_Id(task.getAssignee().getId());
+            if (task.getAssignee().getUser() != null) {
+                response.setAssigneeName(task.getAssignee().getUser().getFullName());
+            }
+        }
+
+        if (task.getMentor() != null) {
+            response.setMentorId(task.getMentor().getId());
+            if (task.getMentor().getUser() != null) {
+                response.setMentorName(task.getMentor().getUser().getFullName());
+            }
+        }
+
+        if (task.getCreatedBy() != null) {
+            response.setCreatedById(task.getCreatedBy().getId());
+            response.setCreatedByName(task.getCreatedBy().getFullName());
+        }
+
         return response;
     }
 
@@ -164,7 +181,22 @@ public class TaskServiceImpl implements TaskService {
             task.setStatus(request.getStatus());
         }
         if (request.getDeadline() != null) {
+            validateTaskDeadline(request.getDeadline(), sprint);
             task.setDeadline(request.getDeadline());
+        }
+
+        // Handle assignee update
+        if (request.getAssigneeId() != null) {
+            Intern assignedIntern = internRepository.findById(request.getAssigneeId())
+                    .orElseThrow(() -> new ResourceNotFoundException("Intern to be assigned", "id", request.getAssigneeId()));
+            // Validate that the assigned intern is part of the sprint's team
+            if (assignedIntern.getTeam() == null || !assignedIntern.getTeam().getId().equals(sprint.getTeam().getId())) {
+                throw new BadRequestException("The assigned intern is not a member of the sprint's team.");
+            }
+            task.setAssignee(assignedIntern);
+        } else {
+            // If the assigneeId is explicitly passed as null, un-assign the task
+            task.setAssignee(null);
         }
 
         Task updatedTask = taskRepository.save(task);
