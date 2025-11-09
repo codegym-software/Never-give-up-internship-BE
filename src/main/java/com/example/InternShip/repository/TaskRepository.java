@@ -3,6 +3,8 @@ package com.example.InternShip.repository;
 import com.example.InternShip.entity.Task;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -11,4 +13,7 @@ import java.util.List;
 public interface TaskRepository extends JpaRepository<Task, Long>, JpaSpecificationExecutor<Task> {
     List<Task> findBySprintId(Long sprintId);
     List<Task> findByAssigneeId(Integer assigneeId);
+
+    @Query("SELECT t FROM Task t WHERE t.sprint.team.id = :teamId OR (t.sprint IS NULL AND t.mentor.id IN (SELECT m.id FROM Mentor m JOIN m.teams team WHERE team.id = :teamId))")
+    List<Task> findByTeamId(@Param("teamId") String teamId);
 }

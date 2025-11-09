@@ -9,26 +9,58 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import com.example.InternShip.dto.request.BatchTaskUpdateRequest;
 
 import com.example.InternShip.entity.enums.TaskStatus;
 
 import java.util.List;
 
 import jakarta.validation.Valid;
+
+
+
 @RestController
+
 @RequestMapping("/api/v1")
+
 @RequiredArgsConstructor
+
 public class TaskController {
+
+
 
     private final TaskService taskService;
 
 
+
+    @GetMapping("/teams/{teamId}/tasks")
+
+    public ResponseEntity<ApiResponse> getTasksByTeam(@PathVariable String teamId) {
+
+        List<TaskResponse> tasks = taskService.getTasksByTeam(teamId);
+
+        ApiResponse response = new ApiResponse(HttpStatus.OK.value(), "Tasks for team retrieved successfully", tasks);
+
+        return new ResponseEntity<>(response, HttpStatus.OK);
+
+    }
+
+
+
+
+
     @PostMapping("/sprints/{sprintId}/tasks")
+
     public ResponseEntity<ApiResponse> createTask(@PathVariable Long sprintId, @RequestBody @Valid CreateTaskRequest request) {
+
         request.setSprintId(sprintId);
+
         TaskResponse taskResponse = taskService.createTask(request);
+
         ApiResponse response = new ApiResponse(HttpStatus.CREATED.value(), "Task created successfully", taskResponse);
+
         return new ResponseEntity<>(response, HttpStatus.CREATED);
+
     }
 
     @GetMapping("/sprints/{sprintId}/tasks")
@@ -66,6 +98,13 @@ public class TaskController {
     public ResponseEntity<ApiResponse> getTaskById(@PathVariable Long taskId) {
         TaskResponse taskResponse = taskService.getTaskById(taskId);
         ApiResponse response = new ApiResponse(HttpStatus.OK.value(), "Task retrieved successfully", taskResponse);
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @PostMapping("/tasks/batch-update")
+    public ResponseEntity<ApiResponse> batchUpdateTasks(@RequestBody @Valid BatchTaskUpdateRequest request) {
+        taskService.batchUpdateTasks(request);
+        ApiResponse response = new ApiResponse(HttpStatus.OK.value(), "Tasks updated successfully", null);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 }

@@ -28,9 +28,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import com.example.InternShip.exception.BadRequestException;
+import com.example.InternShip.dto.request.BatchTaskUpdateRequest;
 import com.example.InternShip.exception.ForbiddenException;
 import com.example.InternShip.exception.ResourceNotFoundException;
 import com.example.InternShip.exception.SprintExpiredException;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -41,6 +43,49 @@ public class TaskServiceImpl implements TaskService {
     private final InternRepository internRepository;
     private final MentorRepository mentorRepository;
     private final AuthService authService;
+
+    @Override
+    @Transactional
+    public void batchUpdateTasks(BatchTaskUpdateRequest request) {
+        List<Task> tasksToUpdate = taskRepository.findAllById(request.getTaskIds());
+        if (tasksToUpdate.size() != request.getTaskIds().size()) {
+            throw new ResourceNotFoundException("One or more tasks not found.");
+        }
+
+        // Simple permission check: for now, only the mentor of the first task's team can perform this.
+        // A more robust check might be needed depending on requirements.
+        if (!tasksToUpdate.isEmpty()) {
+            User user = authService.getUserLogin();
+            Sprint firstTaskSprint = tasksToUpdate.get(0).getSprint();
+            if (firstTaskSprint != null) { // Tasks might be in backlog (sprint is null)
+                 checkTaskManagementPermission(user, firstTaskSprint, "manage");
+            } else if (user.getRole() != Role.MENTOR) {
+                throw new ForbiddenException("Only mentors can manage backlog tasks.");
+            }
+        }
+
+
+        switch (request.getAction()) {
+            case "MOVE_TO_SPRINT":
+                if (request.getTargetSprintId() == null) {
+                    throw new BadRequestException("Target sprint ID is required for MOVE_TO_SPRINT action.");
+                }
+                Sprint targetSprint = sprintRepository.findById(request.getTargetSprintId())
+                        .orElseThrow(() -> new ResourceNotFoundException("Sprint", "id", request.getTargetSprintId()));
+                tasksToUpdate.forEach(task -> task.setSprint(targetSprint));
+                break;
+            case "MOVE_TO_BACKLOG":
+                tasksToUpdate.forEach(task -> task.setSprint(null));
+                break;
+            case "CANCEL":
+                tasksToUpdate.forEach(task -> task.setStatus(TaskStatus.CANCELLED));
+                break;
+            default:
+                throw new IllegalArgumentException("Invalid action: " + request.getAction());
+        }
+
+        taskRepository.saveAll(tasksToUpdate);
+    }
 
     @Override
     public TaskResponse createTask(CreateTaskRequest request) {
@@ -282,5 +327,14 @@ public class TaskServiceImpl implements TaskService {
         checkTaskManagementPermission(user, sprint, "view");
 
         return mapToTaskResponse(task);
+    }
+
+    @Override
+    public List<TaskResponse> getTasksByTeam(String teamId) {
+        // Optional: Add permission check to ensure user is part of the team
+        List<Task> tasks = taskRepository.findByTeamId(teamId);
+        return tasks.stream()
+                .map(this::mapToTaskResponse)
+                .collect(Collectors.toList());
     }
 }
