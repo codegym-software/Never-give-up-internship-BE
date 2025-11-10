@@ -14,6 +14,6 @@ public interface TaskRepository extends JpaRepository<Task, Long>, JpaSpecificat
     List<Task> findBySprintId(Long sprintId);
     List<Task> findByAssigneeId(Integer assigneeId);
 
-    @Query("SELECT t FROM Task t WHERE t.sprint.team.id = :teamId OR (t.sprint IS NULL AND t.mentor.id IN (SELECT m.id FROM Mentor m JOIN m.teams team WHERE team.id = :teamId))")
+    @Query("SELECT t FROM Task t WHERE t.team.id = :teamId")
     List<Task> findByTeamId(@Param("teamId") String teamId);
 }

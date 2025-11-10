@@ -125,6 +125,7 @@ public class TaskServiceImpl implements TaskService {
         task.setName(request.getName());
         task.setDescription(request.getDescription());
         task.setSprint(sprint);
+        task.setTeam(sprint.getTeam()); // Permanently stamp the team
         task.setAssignee(assignedIntern); // Can be null
         task.setMentor(teamMentor);
         task.setCreatedBy(creator);
@@ -142,7 +143,7 @@ public class TaskServiceImpl implements TaskService {
         response.setDescription(task.getDescription());
         response.setStatus(task.getStatus());
         response.setDeadline(task.getDeadline());
-        response.setSprint_Id(task.getSprint().getId());
+        response.setSprint_Id(task.getSprint()==null?null:task.getSprint().getId());
 
         if (task.getAssignee() != null) {
             response.setAssignee_Id(task.getAssignee().getId());
