@@ -60,6 +60,11 @@ public class TeamController {
         return ResponseEntity.ok(teamService.removeMember(internId));
     }
 
+    @GetMapping("/{id}")
+    public ResponseEntity<TeamDetailResponse> getTeamById(@PathVariable Integer id) {
+        return ResponseEntity.ok(teamService.getTeamById(id));
+    }
+
     @PutMapping("/{id}")
     public ResponseEntity<TeamDetailResponse> updateTeam(
             @PathVariable Integer id,
