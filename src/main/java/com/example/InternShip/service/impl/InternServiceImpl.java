@@ -48,7 +48,7 @@ public class InternServiceImpl implements InternService {
         @Override
         public GetInternResponse getInternById(int id) {
                 Intern intern = internRepository.findById(id)
-                        .orElseThrow(() -> new RuntimeException(ErrorCode.INTERN_NOT_EXISTED.getMessage()));
+                                .orElseThrow(() -> new RuntimeException(ErrorCode.INTERN_NOT_EXISTED.getMessage()));
                 GetInternResponse response = modelMapper.map(intern.getUser(), GetInternResponse.class);
                 response.setId(intern.getId());
                 response.setUniversity(intern.getUniversity().getName());
@@ -62,7 +62,8 @@ public class InternServiceImpl implements InternService {
         public MyProfileResponse getMyProfile() {
                 User currentUser = authService.getUserLogin();
                 Intern intern = internRepository.findByUser(currentUser)
-                                .orElseThrow(() -> new EntityNotFoundException(ErrorCode.INTERN_NOT_EXISTED.getMessage()));
+                                .orElseThrow(() -> new EntityNotFoundException(
+                                                ErrorCode.INTERN_NOT_EXISTED.getMessage()));
 
                 // Map Intern details
                 GetInternResponse internResponse = modelMapper.map(intern.getUser(), GetInternResponse.class);
@@ -124,16 +125,20 @@ public class InternServiceImpl implements InternService {
                         throw new RuntimeException(ErrorCode.EMAIL_EXISTED.getMessage());
                 }
 
-                InternshipProgram internshipProgram = internshipProgramRepository.findById(request.getInternshipProgramId())
-                                .orElseThrow(()-> new EntityNotFoundException(ErrorCode.INTERNSHIP_PROGRAM_NOT_EXISTED.getMessage()));
+                InternshipProgram internshipProgram = internshipProgramRepository
+                                .findById(request.getInternshipProgramId())
+                                .orElseThrow(() -> new EntityNotFoundException(
+                                                ErrorCode.INTERNSHIP_PROGRAM_NOT_EXISTED.getMessage()));
                 if (internshipProgram.getStatus() != InternshipProgram.Status.PUBLISHED) {
-                    throw new RuntimeException(ErrorCode.TIME_APPLY_INVALID.getMessage());
+                        throw new RuntimeException(ErrorCode.TIME_APPLY_INVALID.getMessage());
                 }
 
                 University university = universityRepository.findById(request.getUniversityId())
-                                .orElseThrow(() -> new EntityNotFoundException(ErrorCode.UNIVERSITY_NOT_EXISTED.getMessage()));
+                                .orElseThrow(() -> new EntityNotFoundException(
+                                                ErrorCode.UNIVERSITY_NOT_EXISTED.getMessage()));
                 Major major = majorRepository.findById(request.getMajorId())
-                                .orElseThrow(() -> new EntityNotFoundException(ErrorCode.MAJOR_NOT_EXISTED.getMessage()));
+                                .orElseThrow(() -> new EntityNotFoundException(
+                                                ErrorCode.MAJOR_NOT_EXISTED.getMessage()));
 
                 User user = modelMapper.map(request, User.class);
                 user.setUsername(request.getEmail());
@@ -192,35 +197,55 @@ public class InternServiceImpl implements InternService {
         public List<GetAllInternNoTeamResponse> getAllInternNoTeam(Integer teamId) {
                 // Lấy ra team để lấy ra InternshipProgram
                 Team team = teamRepository.findById(teamId)
-                                .orElseThrow(() -> new EntityNotFoundException(ErrorCode.TEAM_NOT_EXISTED.getMessage()));
+                                .orElseThrow(() -> new EntityNotFoundException(
+                                                ErrorCode.TEAM_NOT_EXISTED.getMessage()));
 
                 InternshipProgram internshipProgram = team.getInternshipProgram();
 
                 // Lấy ra intern thỏa mãn điều kiện
                 List<Intern> interns = internRepository.findAll().stream()
                                 .filter(intern -> intern.getStatus() == Intern.Status.ACTIVE
-                                        && intern.getInternshipProgram() == internshipProgram
-                                        && intern.getTeam() == null)
+                                                && intern.getInternshipProgram() == internshipProgram
+                                                && intern.getTeam() == null)
                                 .toList();
 
                 return interns.stream()
-                                .map(intern ->
-                                {
-                                    GetAllInternNoTeamResponse res = modelMapper.map(intern.getUser(), GetAllInternNoTeamResponse.class);
-                                    res.setId(intern.getId());
-                                    return res;
+                                .map(intern -> {
+                                        GetAllInternNoTeamResponse res = modelMapper.map(intern.getUser(),
+                                                        GetAllInternNoTeamResponse.class);
+                                        res.setId(intern.getId());
+                                        return res;
                                 })
                                 .toList();
         }
+
         @Override
         public Integer getAuthenticatedInternTeamId() {
-            User user =authService.getUserLogin();
-            Intern intern = internRepository.findByUser(user)
-                    .orElseThrow(() -> new EntityNotFoundException(ErrorCode.INTERN_NOT_EXISTED.getMessage()));
+                User user = authService.getUserLogin();
+                Intern intern = internRepository.findByUser(user)
+                                .orElseThrow(() -> new EntityNotFoundException(
+                                                ErrorCode.INTERN_NOT_EXISTED.getMessage()));
 
-            if (intern.getTeam() != null) {
-                return intern.getTeam().getId();
-            }
-            return null; // Intern is not assigned to a team
+                if (intern.getTeam() != null) {
+                        return intern.getTeam().getId();
+                }
+                return null; // Intern is not assigned to a team
+        }
+
+        @Override // Hàm lấy intern theo ID nhóm
+        public List<GetInternResponse> getAllInternByTeamId(Integer teamId) {
+                Team team = teamRepository.findById(teamId).orElseThrow(
+                                () -> new EntityNotFoundException(ErrorCode.TEAM_NOT_EXISTED.getMessage()));
+                List<Intern> interns = team.getInterns();                
+                List<GetInternResponse> response = interns.stream().map(intern -> {
+                        GetInternResponse dto = modelMapper.map(intern.getUser(), GetInternResponse.class);
+                        modelMapper.map(intern, dto);
+                        dto.setMajor(intern.getMajor().getName());
+                        dto.setUniversity(intern.getUniversity().getName());
+                        dto.setInternshipProgram(intern.getInternshipProgram().getName());
+                        return dto;
+                }).toList();
+                
+                return response;
         }
 }

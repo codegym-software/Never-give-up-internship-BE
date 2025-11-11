@@ -1,5 +1,7 @@
 package com.example.InternShip.service;
 
+import java.util.List;
+
 import com.example.InternShip.dto.request.CreateInternRequest;
 import com.example.InternShip.dto.request.UpdateInternRequest;
 import com.example.InternShip.dto.request.GetAllInternRequest;
@@ -15,5 +17,6 @@ public interface InternService {
     MyProfileResponse getMyProfile();
     GetInternResponse getInternById(int id);
     Integer getAuthenticatedInternTeamId();
+    List<GetInternResponse> getAllInternByTeamId(Integer teamId);
 }
 
