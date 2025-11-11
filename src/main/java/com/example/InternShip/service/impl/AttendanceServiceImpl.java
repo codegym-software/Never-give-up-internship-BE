@@ -317,8 +317,11 @@ public class AttendanceServiceImpl implements AttendanceService {
     public List<GetAllAttendanceResponse> getInternsAttendance() {
         List<Intern> interns = internRepository.findAllByStatusAndTeamNotNull(Intern.Status.ACTIVE);
         List<GetAllAttendanceResponse> res = new ArrayList<>();
-        for (Intern intern : interns) { 
-            res.add(attendanceRepository.findAttendanceSummaryByInternId(intern.getId()));
+        for (Intern intern : interns) {
+            GetAllAttendanceResponse summary = attendanceRepository.findAttendanceSummaryByInternId(intern.getId());
+            if (summary != null) {
+                res.add(summary);
+            }
         }
         return res;
     }
