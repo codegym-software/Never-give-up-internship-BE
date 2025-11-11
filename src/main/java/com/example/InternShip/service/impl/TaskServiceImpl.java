@@ -10,14 +10,17 @@ import com.example.InternShip.entity.Task;
 import com.example.InternShip.entity.User;
 import com.example.InternShip.entity.enums.Role;
 import com.example.InternShip.entity.enums.TaskStatus;
+import com.example.InternShip.exception.ErrorCode;
 import com.example.InternShip.repository.InternRepository;
 import com.example.InternShip.repository.MentorRepository;
 import com.example.InternShip.repository.SprintRepository;
 import com.example.InternShip.repository.TaskRepository;
 import com.example.InternShip.service.AuthService;
 import com.example.InternShip.service.TaskService;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
 import org.springframework.data.jpa.domain.Specification;
@@ -27,11 +30,8 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
-import com.example.InternShip.exception.BadRequestException;
+
 import com.example.InternShip.dto.request.BatchTaskUpdateRequest;
-import com.example.InternShip.exception.ForbiddenException;
-import com.example.InternShip.exception.ResourceNotFoundException;
-import com.example.InternShip.exception.SprintExpiredException;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
@@ -49,29 +49,28 @@ public class TaskServiceImpl implements TaskService {
     public void batchUpdateTasks(BatchTaskUpdateRequest request) {
         List<Task> tasksToUpdate = taskRepository.findAllById(request.getTaskIds());
         if (tasksToUpdate.size() != request.getTaskIds().size()) {
-            throw new ResourceNotFoundException("One or more tasks not found.");
+            throw new IllegalArgumentException(ErrorCode.LIST_TASK_INVALID.getMessage());
         }
 
         // Simple permission check: for now, only the mentor of the first task's team can perform this.
         // A more robust check might be needed depending on requirements.
         if (!tasksToUpdate.isEmpty()) {
             User user = authService.getUserLogin();
-            Sprint firstTaskSprint = tasksToUpdate.get(0).getSprint();
+            Sprint firstTaskSprint = tasksToUpdate.getFirst().getSprint();
             if (firstTaskSprint != null) { // Tasks might be in backlog (sprint is null)
                  checkTaskManagementPermission(user, firstTaskSprint, "manage");
             } else if (user.getRole() != Role.MENTOR) {
-                throw new ForbiddenException("Only mentors can manage backlog tasks.");
+                throw new AccessDeniedException(ErrorCode.NOT_PERMISSION.getMessage());
             }
         }
-
 
         switch (request.getAction()) {
             case "MOVE_TO_SPRINT":
                 if (request.getTargetSprintId() == null) {
-                    throw new BadRequestException("Target sprint ID is required for MOVE_TO_SPRINT action.");
+                    throw new IllegalArgumentException(ErrorCode.SPRINT_NOT_EXISTS.getMessage());
                 }
                 Sprint targetSprint = sprintRepository.findById(request.getTargetSprintId())
-                        .orElseThrow(() -> new ResourceNotFoundException("Sprint", "id", request.getTargetSprintId()));
+                        .orElseThrow(() -> new EntityNotFoundException(ErrorCode.SPRINT_NOT_EXISTS.getMessage()));
                 tasksToUpdate.forEach(task -> task.setSprint(targetSprint));
                 break;
             case "MOVE_TO_BACKLOG":
@@ -92,12 +91,10 @@ public class TaskServiceImpl implements TaskService {
         User creator = authService.getUserLogin();
 
         Sprint sprint = sprintRepository.findById(request.getSprintId())
-                .orElseThrow(() -> new ResourceNotFoundException("Sprint", "id", request.getSprintId()));
+                .orElseThrow(() -> new EntityNotFoundException(ErrorCode.SPRINT_NOT_EXISTS.getMessage()));
         // kiểm tra spirnt đã hết hạn chưa
         if (!sprint.getEndDate().isAfter(LocalDate.now())) {
-            throw new SprintExpiredException(
-                    String.format("Sprint '%s' (ID: %d) has already ended on %s.",
-                            sprint.getName(), sprint.getId(), sprint.getEndDate()));
+            throw new IllegalArgumentException(ErrorCode.SPRINT_INVALID.getMessage());
         }
         checkTaskManagementPermission(creator, sprint, "create");
 
@@ -106,13 +103,12 @@ public class TaskServiceImpl implements TaskService {
         Intern assignedIntern = null; // Assignee is optional
         if (request.getAssigneeId() != null) {
             assignedIntern = internRepository.findById(request.getAssigneeId())
-                    .orElseThrow(() -> new ResourceNotFoundException("Intern to be assigned", "id",
-                            request.getAssigneeId()));
+                    .orElseThrow(() -> new EntityNotFoundException(ErrorCode.INTERN_NOT_EXISTED.getMessage()));
 
             // Validate that the assigned intern is part of the sprint's team
             if (assignedIntern.getTeam() == null
                     || !assignedIntern.getTeam().getId().equals(sprint.getTeam().getId())) {
-                throw new BadRequestException("The assigned intern is not a member of the sprint's team.");
+                throw new RuntimeException(ErrorCode.INTERN_NOT_IN_THIS_TEAM.getMessage());
             }
         }
 
@@ -132,8 +128,7 @@ public class TaskServiceImpl implements TaskService {
         task.setDeadline(request.getDeadline() == null ? sprint.getEndDate() : request.getDeadline());
         task.setStatus(TaskStatus.TODO);
         Task savedTask = taskRepository.save(task);
-        TaskResponse taskResponse = mapToTaskResponse(savedTask);
-        return taskResponse;
+        return mapToTaskResponse(savedTask);
     }
 
     public TaskResponse mapToTaskResponse(Task task) {
@@ -170,25 +165,24 @@ public class TaskServiceImpl implements TaskService {
     // hàm kiểm tra người dùng hiện tại có quyền không
     private void checkTaskManagementPermission(User user, Sprint sprint, String action) {
         if (!user.getRole().equals(Role.INTERN) && !user.getRole().equals(Role.MENTOR)) {
-            throw new ForbiddenException(
-                    "You do not have permission to " + action + " tasks. Required role: INTERN or MENTOR.");
+            throw new AccessDeniedException(ErrorCode.NOT_PERMISSION.getMessage());
         }
 
         if (user.getRole().equals(Role.INTERN)) {
             Intern intern = internRepository.findByUser(user)
-                    .orElseThrow(() -> new ResourceNotFoundException("Intern profile not found for the current user."));
+                    .orElseThrow(() -> new EntityNotFoundException(ErrorCode.INTERN_NOT_EXISTED.getMessage()));
 
             if (!sprint.getTeam().getId().equals(intern.getTeam().getId())) {
-                throw new ForbiddenException("You can only " + action + " tasks for the team you are a member of.");
+                throw new AccessDeniedException(ErrorCode.NOT_PERMISSION.getMessage());
             }
         }
 
         if (user.getRole().equals(Role.MENTOR)) {
             Mentor mentor = mentorRepository.findByUser(user)
-                    .orElseThrow(() -> new ResourceNotFoundException("Mentor profile not found for the current user."));
+                    .orElseThrow(() -> new EntityNotFoundException(ErrorCode.MENTOR_NOT_EXISTED.getMessage()));
 
             if (mentor.getTeams().stream().noneMatch(team -> team.getId().equals(sprint.getTeam().getId()))) {
-                throw new ForbiddenException("You can only " + action + " tasks for a team that you are mentoring.");
+                throw new AccessDeniedException(ErrorCode.NOT_PERMISSION.getMessage());
             }
         }
     }
@@ -198,15 +192,13 @@ public class TaskServiceImpl implements TaskService {
         User user = authService.getUserLogin();
 
         Task task = taskRepository.findById(taskId)
-                .orElseThrow(() -> new ResourceNotFoundException("Task", "id", taskId));
+                .orElseThrow(() -> new EntityNotFoundException(ErrorCode.TASK_NOT_EXISTS.getMessage()));
 
         Sprint sprint = task.getSprint();
 
         // Check if the sprint has expired
         if (!sprint.getEndDate().isAfter(LocalDate.now())) {
-            throw new SprintExpiredException(
-                    String.format("Cannot update task. Sprint '%s' (ID: %d) has already ended on %s.",
-                            sprint.getName(), sprint.getId(), sprint.getEndDate()));
+            throw new RuntimeException(ErrorCode.UPDATE_TASK_FAILED.getMessage());
         }
 
         checkTaskManagementPermission(user, sprint, "update");
@@ -234,10 +226,10 @@ public class TaskServiceImpl implements TaskService {
         // Handle assignee update
         if (request.getAssigneeId() != null) {
             Intern assignedIntern = internRepository.findById(request.getAssigneeId())
-                    .orElseThrow(() -> new ResourceNotFoundException("Intern to be assigned", "id", request.getAssigneeId()));
+                    .orElseThrow(() -> new EntityNotFoundException(ErrorCode.INTERN_NOT_EXISTED.getMessage()));
             // Validate that the assigned intern is part of the sprint's team
             if (assignedIntern.getTeam() == null || !assignedIntern.getTeam().getId().equals(sprint.getTeam().getId())) {
-                throw new BadRequestException("The assigned intern is not a member of the sprint's team.");
+                throw new RuntimeException(ErrorCode.INTERN_NOT_IN_THIS_TEAM.getMessage());
             }
             task.setAssignee(assignedIntern);
         } else {
@@ -246,17 +238,14 @@ public class TaskServiceImpl implements TaskService {
         }
 
         Task updatedTask = taskRepository.save(task);
-        TaskResponse taskResponse = mapToTaskResponse(updatedTask);
-        return taskResponse;
+        return mapToTaskResponse(updatedTask);
     }
 
     // hàm kiểm tra deadline của task có hợp lệ không
     private void validateTaskDeadline(java.time.LocalDate deadline, Sprint sprint) {
         if (deadline != null) {
             if (deadline.isBefore(sprint.getStartDate()) || deadline.isAfter(sprint.getEndDate())) {
-                throw new BadRequestException(
-                        "Task deadline must be within the sprint's date range: " +
-                                sprint.getStartDate() + " to " + sprint.getEndDate() + ".");
+                throw new IllegalArgumentException(ErrorCode.TIME_END_INVALID.getMessage());
             }
         }
     }
@@ -266,14 +255,12 @@ public class TaskServiceImpl implements TaskService {
         User user = authService.getUserLogin();
 
         Task task = taskRepository.findById(taskId)
-                .orElseThrow(() -> new ResourceNotFoundException("Task", "id", taskId));
+                .orElseThrow(() -> new EntityNotFoundException(ErrorCode.TASK_NOT_EXISTS.getMessage()));
 
         Sprint sprint = task.getSprint();
 
         if (!sprint.getEndDate().isAfter(LocalDate.now())) {
-            throw new SprintExpiredException(
-                    String.format("Sprint '%s' (ID: %d) has already ended on %s.",
-                            sprint.getName(), sprint.getId(), sprint.getEndDate()));
+            throw new RuntimeException(ErrorCode.DELETE_TASK_FAILED.getMessage());
         }
 
         checkTaskManagementPermission(user, sprint, "delete");
@@ -285,7 +272,7 @@ public class TaskServiceImpl implements TaskService {
     public List<TaskResponse> getTasksBySprint(Long sprintId, TaskStatus status, Integer assigneeId) {
         User user = authService.getUserLogin();
         Sprint sprint = sprintRepository.findById(sprintId)
-                .orElseThrow(() -> new ResourceNotFoundException("Sprint", "id", sprintId));
+                .orElseThrow(() -> new EntityNotFoundException(ErrorCode.SPRINT_NOT_EXISTS.getMessage()));
 
         checkTaskManagementPermission(user, sprint, "view");
 
@@ -304,7 +291,7 @@ public class TaskServiceImpl implements TaskService {
 
         List<Task> tasks = taskRepository.findAll(spec);
         return tasks.stream()
-                .map(task -> mapToTaskResponse(task))
+                .map(this::mapToTaskResponse)
                 .collect(Collectors.toList());
     }
 
@@ -312,7 +299,7 @@ public class TaskServiceImpl implements TaskService {
     public List<TaskResponse> getTasksByAssignee(Integer assigneeId) {
         List<Task> tasks = taskRepository.findByAssigneeId(assigneeId);
         return tasks.stream()
-                .map(task -> mapToTaskResponse(task))
+                .map(this::mapToTaskResponse)
                 .collect(Collectors.toList());
     }
 
@@ -321,7 +308,7 @@ public class TaskServiceImpl implements TaskService {
         User user = authService.getUserLogin();
 
         Task task = taskRepository.findById(taskId)
-                .orElseThrow(() -> new ResourceNotFoundException("Task", "id", taskId));
+                .orElseThrow(() -> new EntityNotFoundException(ErrorCode.SPRINT_NOT_EXISTS.getMessage()));
 
         Sprint sprint = task.getSprint();
 

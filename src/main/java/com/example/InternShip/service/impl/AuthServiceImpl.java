@@ -8,7 +8,6 @@ import com.example.InternShip.dto.response.TokenResponse;
 import com.example.InternShip.entity.PendingUser;
 import com.example.InternShip.entity.User;
 import com.example.InternShip.entity.enums.Role;
-import com.example.InternShip.exception.AccountConflictException;
 import com.example.InternShip.exception.ErrorCode;
 import com.example.InternShip.repository.PendingUserRepository;
 import com.example.InternShip.repository.UserRepository;
@@ -51,7 +50,7 @@ public class AuthServiceImpl implements AuthService {
     private String singerKey;
 
     @Transactional
-    public TokenResponse loginWithGoogle(GoogleLoginRequest request) throws Exception, AccountConflictException {
+    public TokenResponse loginWithGoogle(GoogleLoginRequest request) throws Exception {
         // 1. Verify Google ID Token
         GoogleIdToken.Payload payload = googleAuthService.verifyGoogleIdToken(request.getIdToken());
 
@@ -65,7 +64,7 @@ public class AuthServiceImpl implements AuthService {
         return new TokenResponse(accessToken, refreshToken);
     }
 
-    private User processOAuthPostLogin(GoogleIdToken.Payload payload) throws AccountConflictException {
+    private User processOAuthPostLogin(GoogleIdToken.Payload payload) {
         Optional<User> userOptional = userRepository.findByEmail(payload.getEmail());
 
         if (userOptional.isPresent()) {

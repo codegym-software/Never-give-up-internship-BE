@@ -10,8 +10,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
 
 @RestController
 @RequestMapping("/api/v1/teams")
@@ -45,11 +43,6 @@ public class TeamController {
                 page));
     }
 
-    @GetMapping("/my-teams")
-    public ResponseEntity<List<TeamDetailResponse>> getMyTeams() {
-        return ResponseEntity.ok(teamService.getTeamsByCurrentMentor());
-    }
-
     @GetMapping("/getAll")
     public ResponseEntity<?> getAllTeam(){
         return ResponseEntity.ok(teamService.getAllTeam());
@@ -58,11 +51,6 @@ public class TeamController {
     @PatchMapping("/remove/{internId}")
     public ResponseEntity<?> removeMember(@PathVariable Integer internId) {
         return ResponseEntity.ok(teamService.removeMember(internId));
-    }
-
-    @GetMapping("/{id}")
-    public ResponseEntity<TeamDetailResponse> getTeamById(@PathVariable Integer id) {
-        return ResponseEntity.ok(teamService.getTeamById(id));
     }
 
     @PutMapping("/{id}")

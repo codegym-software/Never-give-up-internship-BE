@@ -32,10 +32,15 @@ public enum ErrorCode {
     PROGRAM_INVALID("Kì thực tập không hợp lệ"),
     TEAM_NAME_INVALID("Tên nhóm không hợp lệ"),
     LIST_INTERN_INVALID("Danh sách thực tập sinh không hợp lệ"),
+    LIST_TASK_INVALID("Danh sách nhiệm vụ không hợp lệ"),
     NAME_INTERN_PROGRAM_INVALID("Tên kì thực tập không hợp lệ"),
     TIME_START_INVALID("Thời gian bắt đầu không hợp lệ"),
     TIME_END_INVALID("Thời gian kết thúc không hợp lệ"),
     TYPE_LEAVE_APPLICATION_INVALID("Loại đơn nghỉ phép không hợp lệ"),
+    SPRINT_INVALID("Sprint không hợp lệ"),
+    FILE_INVALID("Tệp quá lớn! Kích thước tối đa: 10MB"),
+    TYPE_FILE_INVALID("Chỉ chấp nhận file .pdf, .docx, .doc, png, jpg, jpeg"),
+    TYPE_AVATAR_FILE_INVALID("Chỉ chấp nhận file ảnh (PNG, JPG, GIF)!"),
 
     //EXISTED
     USERNAME_EXISTED("Tên đăng nhập đã tồn tại."),
@@ -59,6 +64,9 @@ public enum ErrorCode {
     WORK_SCHEDULE_NOT_EXISTED("Lịch làm việc không tồn tại"),
     HR_NOT_EXISTS("HR không tồn tại"),
     LEAVE_APPLICATION_NOT_EXISTS("Đơn xin nghỉ phép không tồn tại"),
+    SPRINT_NOT_EXISTS("Sprint không tồn tại"),
+    TASK_NOT_EXISTS("Task không tồn tại"),
+    CONVERSATION_NOT_EXISTS("Cuộc hội thoại không tồn tại"),
 
     //NOT_NULL
     UNIVERSITY_NOT_NULL ("Trường học không được để trống"),
@@ -72,6 +80,7 @@ public enum ErrorCode {
     HR_NOT_NULL("Phải chọn ít nhất 1 HR"),
     ID_NOT_NULL("Mày, mày tính làm gì?"),
     REASON_REJECT_NOT_NULL("Phải có ít nhất 1 lý do chứ?"),
+    FILE_NOT_NULL("Tệp không được để trống"),
     
     //FAILED
     VERIFICATION_FAILED("Xác thực thất bại"),
@@ -79,11 +88,17 @@ public enum ErrorCode {
     SUBMIT_FAILED("Gửi thất bại"),
     WITHDRAWAL_FAILED("Rút đơn thất bại"),
     SCHEDULER_FAILED("Lập lịch thất bại"),
+    UPDATE_SPRINT_FAILED("Sửa thông tin sprint thất bại"),
+    DELETE_SPRINT_FAILED("Xóa sprint thất bại"),
+    UPDATE_TASK_FAILED("Không thể sửa task"),
+    DELETE_TASK_FAILED("Không thể xóa task"),
+    UPLOAD_FILE_FAILED("Tải lên tệp thất bại"),
 
     //UNAUTHENTICATED
     UNAUTHENTICATED("Đăng nhập thất bại"),
     USER_INACTIVE("Tài khoản đã bị vô hiệu hóa"), 
     UNAUTHORIZED_ACTION("Hành động không được phép"),
+    NOT_PERMISSION("Bạn không có quyền thực hiện hành động này"),
 
     //OTHER
     INTERN_NOT_IN_TEAM("Thực tập sinh hiện không thuộc nhóm nào"),
@@ -94,6 +109,7 @@ public enum ErrorCode {
     INTERN_NOT_TEAM("Bạn chưa được gán vào nhóm nào, không thể chấm công"),
     SCHEDULE_NOT_SET_TODAY("Lịch chưa được thiết lập hôm nay"),
     CANNOT_CHECK_IN("Không thể check-in"),
+    INTERN_NOT_IN_THIS_TEAM("Thực tập sinh hiện không thuộc nhóm này"),
     ;
     private final String message;
 }

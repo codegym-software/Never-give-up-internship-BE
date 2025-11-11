@@ -7,16 +7,16 @@ import com.example.InternShip.dto.response.ConversationResponse;
 import com.example.InternShip.entity.ChatMessage;
 import com.example.InternShip.entity.Conversation;
 import com.example.InternShip.entity.User;
-import com.example.InternShip.exception.ConversationNotFoundException;
-import com.example.InternShip.exception.UnauthorizedException;
-import com.example.InternShip.exception.UserNotFoundException;
+import com.example.InternShip.exception.ErrorCode;
 import com.example.InternShip.repository.ChatMessageRepository;
 import com.example.InternShip.repository.ConversationRepository;
 import com.example.InternShip.repository.UserRepository;
 import com.example.InternShip.service.ChatService;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -35,7 +35,7 @@ public class ChatServiceImpl implements ChatService {
     @Override
     public ConversationListResponse getConversationsForHr(String hrUsername) {
         User hrUser = userRepository.findByUsername(hrUsername)
-                .orElseThrow(() -> new UserNotFoundException("HR user not found with email: " + hrUsername));
+                .orElseThrow(() -> new EntityNotFoundException(ErrorCode.USER_NOT_EXISTED.getMessage()));
 
         List<Conversation> assigned = conversationRepository.findByHr(hrUser);
         List<Conversation> unassigned = conversationRepository.findByHrIsNull();
@@ -65,7 +65,7 @@ public class ChatServiceImpl implements ChatService {
     @Override
     public ChatMessageResponse saveMessage(ChatMessageRequest request, String senderIdentifier) {
         Conversation conversation = conversationRepository.findById(request.getConversationId())
-                .orElseThrow(() -> new ConversationNotFoundException("Conversation not found with id: " + request.getConversationId()));
+                .orElseThrow(() -> new EntityNotFoundException(ErrorCode.MENTOR_NOT_EXISTED.getMessage()));
 
         ChatMessage chatMessage = new ChatMessage();
         chatMessage.setConversation(conversation);
@@ -87,7 +87,7 @@ public class ChatServiceImpl implements ChatService {
     @Override
     public Conversation findOrCreateConversation(String candidateUsername) {
         User candidate = userRepository.findByUsername(candidateUsername)
-                .orElseThrow(() -> new UserNotFoundException("Candidate not found with user: " + candidateUsername));
+                .orElseThrow(() -> new EntityNotFoundException(ErrorCode.USER_NOT_EXISTED.getMessage()));
 
         return conversationRepository.findByCandidate(candidate)
                 .orElseGet(() -> {
@@ -123,7 +123,7 @@ public class ChatServiceImpl implements ChatService {
     @Transactional
     public Conversation claimConversation(Long conversationId, String hrEmail) {
         Conversation conversation = conversationRepository.findById(conversationId)
-                .orElseThrow(() -> new ConversationNotFoundException("Conversation not found with id: " + conversationId));
+                .orElseThrow(() -> new EntityNotFoundException(ErrorCode.CONVERSATION_NOT_EXISTS.getMessage()));
 
         if (conversation.getHr() != null) {
             // Conversation already claimed
@@ -131,7 +131,7 @@ public class ChatServiceImpl implements ChatService {
         }
 
         User hrUser = userRepository.findByUsername(hrEmail)
-                .orElseThrow(() -> new UserNotFoundException("HR user not found with email: " + hrEmail));
+                .orElseThrow(() -> new EntityNotFoundException(ErrorCode.USER_NOT_EXISTED.getMessage()));
 
         conversation.setHr(hrUser);
         Conversation claimedConversation = conversationRepository.save(conversation);
@@ -146,14 +146,14 @@ public class ChatServiceImpl implements ChatService {
     @Transactional
     public void deleteConversation(Long conversationId, String hrUsername) {
         Conversation conversation = conversationRepository.findById(conversationId)
-                .orElseThrow(() -> new ConversationNotFoundException("Conversation not found with id: " + conversationId));
+                .orElseThrow(() -> new EntityNotFoundException(ErrorCode.CONVERSATION_NOT_EXISTS.getMessage()));
 
         User hrUser = userRepository.findByUsername(hrUsername)
-                .orElseThrow(() -> new UserNotFoundException("HR user not found with username: " + hrUsername));
+                .orElseThrow(() -> new EntityNotFoundException(ErrorCode.USER_NOT_EXISTED.getMessage()));
 
         // Ensure the HR user owns this conversation
         if (conversation.getHr() == null || !conversation.getHr().getId().equals(hrUser.getId())) {
-            throw new UnauthorizedException("You are not authorized to delete this conversation.");
+            throw new AccessDeniedException(ErrorCode.NOT_PERMISSION.getMessage());
         }
 
         // Delete all messages in the conversation first

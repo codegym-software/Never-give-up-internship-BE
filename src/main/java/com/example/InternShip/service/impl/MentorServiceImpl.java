@@ -24,11 +24,7 @@ import java.util.stream.Collectors;
 
 import com.example.InternShip.dto.response.SprintResponse;
 
-import com.example.InternShip.exception.UserNotFoundException;
-
 import com.example.InternShip.service.AuthService;
-
-import java.util.ArrayList;
 
 import com.example.InternShip.dto.response.TeamMemberResponse;
 
@@ -264,7 +260,7 @@ public class MentorServiceImpl implements MentorService {
 
         Mentor mentor = mentorRepository.findByUser(user)
 
-                .orElseThrow(() -> new UserNotFoundException("Mentor not found for the current user"));
+                .orElseThrow(() -> new EntityNotFoundException(ErrorCode.MENTOR_NOT_EXISTED.getMessage()));
 
         return mentor.getTeams().stream()
 
@@ -306,8 +302,7 @@ public class MentorServiceImpl implements MentorService {
         }
 
         Mentor mentor = mentorRepository.findByUser(user)
-
-                .orElseThrow(() -> new UserNotFoundException("Mentor not found for the current user"));
+                .orElseThrow(() -> new EntityNotFoundException(ErrorCode.MENTOR_NOT_EXISTED.getMessage()));
 
         return mentor.getTeams().stream()
 

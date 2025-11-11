@@ -214,8 +214,7 @@ public class InternServiceImpl implements InternService {
         }
         @Override
         public Integer getAuthenticatedInternTeamId() {
-           
-                User user =authService.getUserLogin();
+            User user =authService.getUserLogin();
             Intern intern = internRepository.findByUser(user)
                     .orElseThrow(() -> new EntityNotFoundException(ErrorCode.INTERN_NOT_EXISTED.getMessage()));
 

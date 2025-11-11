@@ -1,7 +1,6 @@
 package com.example.InternShip.controller;
 
 import com.example.InternShip.dto.request.ForgetPasswordRequest;
-import com.example.InternShip.exception.AccountConflictException;
 import com.example.InternShip.dto.request.GoogleLoginRequest;
 import com.example.InternShip.dto.request.LoginRequest;
 import com.example.InternShip.dto.request.RefreshTokenRequest;
@@ -22,6 +21,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import com.example.InternShip.dto.request.ChangeMyPasswordRequest;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.text.ParseException;
 
@@ -48,8 +48,8 @@ public class AuthController {
         try {
             TokenResponse tokenResponse = authService.loginWithGoogle(request);
             return ResponseEntity.ok(tokenResponse);
-        } catch (AccountConflictException e) {
-            return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
+        } catch (ResponseStatusException e) {
+            return ResponseEntity.status(e.getStatusCode()).body(e.getReason());
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Authentication failed: " + e.getMessage());
         }
