@@ -62,9 +62,7 @@ public class LeaveRequestServiceImpl implements LeaveRequestService {
         if (request.getDate() == null || request.getDate().isBefore(LocalDate.now())) {
             throw new IllegalArgumentException("Ngày nghỉ không hợp lệ");
         }
-        // Kiểm tra HR tồn tại
-        User hr = userRepository.findByIdAndRole(request.getHrId(), Role.HR)
-                .orElseThrow(() -> new EntityNotFoundException(ErrorCode.HR_NOT_EXISTS.getMessage()));
+
         // Tạo LeaveRequest
         LeaveRequest leaveRequest = new LeaveRequest();
         leaveRequest.setType(LeaveRequest.Type.valueOf(request.getType()));
@@ -75,7 +73,6 @@ public class LeaveRequestServiceImpl implements LeaveRequestService {
                     "Leave Application Attached File");
             leaveRequest.setAttachedFileUrl(fileResponse.getFileUrl());
         }
-        leaveRequest.setHr(hr);
         leaveRequest.setIntern(intern);
         leaveRequestRepository.save(leaveRequest);
     }
@@ -116,7 +113,6 @@ public class LeaveRequestServiceImpl implements LeaveRequestService {
                         dto.setApproved(lr.getApproved());
                     }
                     dto.setReasonReject(lr.getReasonReject());
-                    dto.setHrId(lr.getHr().getId());
                     return dto;
                 }).toList();
 

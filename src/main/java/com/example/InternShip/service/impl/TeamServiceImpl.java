@@ -45,7 +45,7 @@ public class TeamServiceImpl implements TeamService {
         InternshipProgram program = programRepository.findById(request.getInternshipProgramId())
                 .orElseThrow(() -> new EntityNotFoundException(ErrorCode.PROGRAM_NOT_EXISTED.getMessage()));
 
-        if (program.getStatus() != InternshipProgram.Status.ONGOING){
+        if (program.getStatus() != InternshipProgram.Status.ONGOING) {
             throw new IllegalArgumentException(ErrorCode.STATUS_INTERNSHIP_PROGRAM_INVALID.getMessage());
         }
         Mentor mentor = mentorRepository.findById(request.getMentorId())
@@ -123,7 +123,7 @@ public class TeamServiceImpl implements TeamService {
         Intern intern = internRepository.findById(internId)
                 .orElseThrow(() -> new EntityNotFoundException(ErrorCode.INTERN_NOT_EXISTED.getMessage()));
         Team team = intern.getTeam();
-        if (team == null){
+        if (team == null) {
             throw new IllegalArgumentException(ErrorCode.INTERN_NOT_IN_TEAM.getMessage());
         }
         team.getInterns().remove(intern);
@@ -134,7 +134,8 @@ public class TeamServiceImpl implements TeamService {
     }
 
     @Override
-    public PagedResponse<TeamDetailResponse> getTeams(Integer internshipProgram, Integer mentor, String keyword, int page) {
+    public PagedResponse<TeamDetailResponse> getTeams(Integer internshipProgram, Integer mentor, String keyword,
+            int page) {
         page = Math.max(0, page - 1);
         PageRequest pageable = PageRequest.of(page, 10);
 
@@ -153,11 +154,11 @@ public class TeamServiceImpl implements TeamService {
                 teams.hasPrevious());
     }
 
-    public List<GetAllTeamResponse> getAllTeam(){
+    public List<GetAllTeamResponse> getAllTeam() {
         List<Team> teams = teamRepository.findAll();
         return teams.stream()
                 .map(team -> {
-                    GetAllTeamResponse response = modelMapper.map(team,GetAllTeamResponse.class);
+                    GetAllTeamResponse response = modelMapper.map(team, GetAllTeamResponse.class);
                     response.setInternshipProgramName(team.getInternshipProgram().getName());
                     return response;
                 }).toList();
@@ -202,4 +203,10 @@ public class TeamServiceImpl implements TeamService {
         dto.setUniversity(intern.getUniversity().getName());
         return dto;
     }
+
+    @Override
+    public List<GetAllTeamResponse> getAllTeamByIP(Integer internshipProgramId) {
+        List<Team> teams = teamRepository.findAllByInternshipProgram_id(internshipProgramId);
+        return teams.stream().map(team -> modelMapper.map(team, GetAllTeamResponse.class)).toList();
     }
+}

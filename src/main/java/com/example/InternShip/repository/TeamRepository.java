@@ -38,4 +38,5 @@ public interface TeamRepository extends JpaRepository<Team, Integer> {
 
     @Query("SELECT t.id from Team t")
     List<Integer> getAllTeamId();
+    List<Team> findAllByInternshipProgram_id(Integer internshipProgramId);
 }

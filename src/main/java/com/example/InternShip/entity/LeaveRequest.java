@@ -18,10 +18,6 @@ public class LeaveRequest {
     @JoinColumn(name = "intern_id", nullable = false)
     private Intern intern;
 
-    @ManyToOne
-    @JoinColumn(name = "hr_id", nullable = false)
-    private User hr;
-
     private LocalDate date;
 
     private String reason;

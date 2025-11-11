@@ -21,7 +21,4 @@ public class CreateLeaveApplicationRequest {
     private String reason;
 
     private MultipartFile attachedFile;
-
-    @NotNull(message = "HR_NOT_NULL")
-    private Integer hrId;
 }

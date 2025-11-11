@@ -20,4 +20,5 @@ public interface TeamService {
     List<GetAllTeamResponse> getAllTeam();
     List<TeamDetailResponse> getTeamsByCurrentMentor();
     TeamDetailResponse mapToTeamDetailResponse(Team team);
+    List<GetAllTeamResponse> getAllTeamByIP(Integer internshipProgramId);
 }

@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -41,7 +42,8 @@ public class AttendanceController {
     }
 
     @GetMapping
-    public ResponseEntity<?> getInternsAttendance(){
-        return ResponseEntity.ok(attendanceService.getInternsAttendance());
+    public ResponseEntity<?> getInternsAttendance(
+            @RequestParam(required = false, defaultValue = "") Integer teamId) {
+        return ResponseEntity.ok(attendanceService.getInternsAttendance(teamId));
     }
 }

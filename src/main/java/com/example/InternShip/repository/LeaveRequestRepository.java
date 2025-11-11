@@ -26,7 +26,6 @@ public interface LeaveRequestRepository extends JpaRepository<LeaveRequest, Inte
             SELECT lr
             FROM LeaveRequest lr
             JOIN lr.intern i
-            JOIN lr.hr u
             WHERE (:approved IS NULL OR lr.approved = :approved)
               AND (:type IS NULL OR lr.type = :type)
               AND (:keyword IS NULL OR :keyword = '' OR

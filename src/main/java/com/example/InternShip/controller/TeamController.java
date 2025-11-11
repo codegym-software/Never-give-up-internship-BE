@@ -9,9 +9,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
-
 
 @RestController
 @RequestMapping("/api/v1/teams")
@@ -70,5 +68,10 @@ public class TeamController {
             @PathVariable Integer id,
             @RequestBody @Valid UpdateTeamRequest request) {
         return ResponseEntity.ok(teamService.updateTeam(id, request));
+    }
+
+    @GetMapping("/by/{internshipProgramId}")
+    public ResponseEntity<?> getAllTeamByIP(@PathVariable Integer internshipProgramId) {
+        return ResponseEntity.ok(teamService.getAllTeamByIP(internshipProgramId));
     }
 }

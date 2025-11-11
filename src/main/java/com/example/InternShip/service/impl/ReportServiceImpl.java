@@ -80,10 +80,6 @@ public class ReportServiceImpl implements ReportService {
                     entry.setType(log.getType().name());
                     entry.setReason(log.getReason());
 
-                    if (log.getHr() != null) {
-                        entry.setApproverName(log.getHr().getFullName());
-                    }
-
                     if (log.getApproved() == null) {
                         entry.setLeaveStatus("Chờ duyệt");
                     } else if (log.getApproved() == true) {

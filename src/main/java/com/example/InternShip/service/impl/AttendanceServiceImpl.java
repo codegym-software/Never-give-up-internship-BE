@@ -53,11 +53,11 @@ public class AttendanceServiceImpl implements AttendanceService {
         LocalDate today = LocalDate.now();
         LocalTime now = LocalTime.now();
 
-        //Kiểm tra xem đã check-in hôm nay chưa
+        // Kiểm tra xem đã check-in hôm nay chưa
         if (attendanceRepository.findByInternAndDate(intern, today).isPresent()) {
             throw new IllegalStateException(ErrorCode.ALREADY_CHECKED_IN_TODAY.getMessage());
         }
-        //Lấy lịch làm việc của nhóm
+        // Lấy lịch làm việc của nhóm
         WorkSchedule schedule = getWorkScheduleForIntern(intern, today.getDayOfWeek());
 
         if (now.isAfter(schedule.getTimeEnd()) ||
@@ -65,7 +65,7 @@ public class AttendanceServiceImpl implements AttendanceService {
             throw new IllegalStateException(ErrorCode.CANNOT_CHECK_IN.getMessage());
         }
 
-        //Tạo bản ghi chấm công mới
+        // Tạo bản ghi chấm công mới
         Attendance newAttendance = new Attendance();
         newAttendance.setIntern(intern);
         newAttendance.setTeam(intern.getTeam());
@@ -73,7 +73,7 @@ public class AttendanceServiceImpl implements AttendanceService {
         newAttendance.setCheckIn(now);
         newAttendance.setStatus(Attendance.Status.CHECKED_IN); // Trạng thái ban đầu
 
-        //Lưu lại giờ làm việc dự kiến
+        // Lưu lại giờ làm việc dự kiến
         newAttendance.setTimeStart(schedule.getTimeStart());
         newAttendance.setTimeEnd(schedule.getTimeEnd());
 
@@ -92,14 +92,14 @@ public class AttendanceServiceImpl implements AttendanceService {
         LocalDate today = LocalDate.now();
         LocalTime now = LocalTime.now();
 
-        //Tìm bản ghi check-in của hôm nay
+        // Tìm bản ghi check-in của hôm nay
         Attendance attendance = attendanceRepository.findByInternAndDate(intern, today)
                 .orElseThrow(() -> new IllegalStateException(ErrorCode.NOT_CHECKED_IN_TODAY.getMessage()));
 
-        //Cập nhật tg check-out
+        // Cập nhật tg check-out
         attendance.setCheckOut(now);
 
-        //Tính toán và xét trạng thái cuối cùng
+        // Tính toán và xét trạng thái cuối cùng
         Attendance.Status finalStatus = calculateAttendanceStatus(intern, attendance);
         attendance.setStatus(finalStatus);
 
@@ -107,7 +107,7 @@ public class AttendanceServiceImpl implements AttendanceService {
         return mapToResponse(savedAttendance);
     }
 
-    //Lấy lịch làm việc của Intern (theo nhóm)
+    // Lấy lịch làm việc của Intern (theo nhóm)
     private WorkSchedule getWorkScheduleForIntern(Intern intern, DayOfWeek day) {
         if (intern.getTeam() == null) {
             throw new IllegalStateException(ErrorCode.INTERN_NOT_TEAM.getMessage());
@@ -120,37 +120,37 @@ public class AttendanceServiceImpl implements AttendanceService {
         LocalTime checkIn = attendance.getCheckIn();
         LocalTime checkOut = attendance.getCheckOut();
 
-        //Lấy giờ làm việc dự kiến đã được lưu lúc check-in
+        // Lấy giờ làm việc dự kiến đã được lưu lúc check-in
         LocalTime expectedStartTime = attendance.getTimeStart();
         LocalTime expectedEndTime = attendance.getTimeEnd();
 
         LocalTime allowedCheckInTime = expectedStartTime.plusMinutes(30);
 
-        //Kiểm tra đơn nghỉ phép (chỉ lấy đơn đã APPROVED)
+        // Kiểm tra đơn nghỉ phép (chỉ lấy đơn đã APPROVED)
         Optional<LeaveRequest> leaveOpt = leaveRequestRepository.findByInternAndDateAndApproved(
                 intern, attendance.getDate(), true);
 
         if (leaveOpt.isPresent()) {
             LeaveRequest leave = leaveOpt.get();
-            //Nghỉ cả ngày
+            // Nghỉ cả ngày
             if (leave.getType() == LeaveRequest.Type.ON_LEAVE) {
                 return Attendance.Status.ON_LEAVE;
             }
-            //Xin đi muộn
+            // Xin đi muộn
             if (leave.getType() == LeaveRequest.Type.LATE) {
-                //kiểm tra có về sớm không
+                // kiểm tra có về sớm không
                 boolean isEarlyLeave = checkOut.isBefore(expectedEndTime);
                 return isEarlyLeave ? Attendance.Status.EARLY_LEAVE : Attendance.Status.LATE;
             }
-            //Xin về sớm
+            // Xin về sớm
             if (leave.getType() == LeaveRequest.Type.EARLY_LEAVE) {
-                //kiểm tra có đi muộn không
+                // kiểm tra có đi muộn không
                 boolean isLate = checkIn.isAfter(allowedCheckInTime);
                 return isLate ? Attendance.Status.LATE : Attendance.Status.EARLY_LEAVE;
             }
         }
 
-        //Nếu không có đơn, xét trạng thái dựa trên giờ
+        // Nếu không có đơn, xét trạng thái dựa trên giờ
         boolean isLate = checkIn.isAfter(allowedCheckInTime);
         boolean isEarlyLeave = checkOut.isBefore(expectedEndTime);
 
@@ -215,8 +215,8 @@ public class AttendanceServiceImpl implements AttendanceService {
     }
 
     public List<GetTeamScheduleResponse> getTeamSchedule(int teamId) {
-        Team team = teamRepository.findById(teamId).
-                orElseThrow(() -> new EntityNotFoundException(ErrorCode.TEAM_NOT_EXISTED.getMessage()));
+        Team team = teamRepository.findById(teamId)
+                .orElseThrow(() -> new EntityNotFoundException(ErrorCode.TEAM_NOT_EXISTED.getMessage()));
 
         List<WorkSchedule> workSchedules = team.getWorkSchedules();
 
@@ -224,9 +224,7 @@ public class AttendanceServiceImpl implements AttendanceService {
         LocalDate date = LocalDate.now();
 
         Map<List<Object>, List<Attendance>> grouped = attendances.stream()
-                .collect(Collectors.groupingBy(a ->
-                        List.of(a.getTimeStart(), a.getTimeEnd(), a.getDate())
-                ));
+                .collect(Collectors.groupingBy(a -> List.of(a.getTimeStart(), a.getTimeEnd(), a.getDate())));
 
         List<GetTeamScheduleResponse> responses = new ArrayList<>();
 
@@ -246,8 +244,8 @@ public class AttendanceServiceImpl implements AttendanceService {
             // Map từng Attendance trong nhóm sang DetailTeamSchedule
             List<GetTeamScheduleResponse.DetailTeamSchedule> detailList = group.stream()
                     .map(attendance -> {
-                        GetTeamScheduleResponse.DetailTeamSchedule detailTeamSchedule =
-                                modelMapper.map(attendance, GetTeamScheduleResponse.DetailTeamSchedule.class);
+                        GetTeamScheduleResponse.DetailTeamSchedule detailTeamSchedule = modelMapper.map(attendance,
+                                GetTeamScheduleResponse.DetailTeamSchedule.class);
                         detailTeamSchedule.setFullName(attendance.getIntern().getUser().getFullName());
                         detailTeamSchedule.setEmail(attendance.getIntern().getUser().getEmail());
                         return detailTeamSchedule;
@@ -295,7 +293,8 @@ public class AttendanceServiceImpl implements AttendanceService {
                     .filter(ws -> ws.getDayOfWeek() == today.getDayOfWeek())
                     .findFirst()
                     .orElse(null);
-            if (todaySchedule == null) continue;
+            if (todaySchedule == null)
+                continue;
 
             // Kiểm tra xem intern đã có attendance hôm nay chưa
             boolean hasAttendanceToday = intern.getAttendances().stream()
@@ -314,15 +313,25 @@ public class AttendanceServiceImpl implements AttendanceService {
     }
 
     @Override
-    public List<GetAllAttendanceResponse> getInternsAttendance() {
-        List<Intern> interns = internRepository.findAllByStatusAndTeamNotNull(Intern.Status.ACTIVE);
+    public List<GetAllAttendanceResponse> getInternsAttendance(Integer teamId) {
+        List<Intern> interns;
+
+        if (teamId != null) {
+            interns = internRepository.findAllByStatusAndTeam_id(Intern.Status.ACTIVE, teamId);
+        } else {
+            interns = internRepository.findAllByStatus(Intern.Status.ACTIVE);
+        }
+
         List<GetAllAttendanceResponse> res = new ArrayList<>();
+
         for (Intern intern : interns) {
             GetAllAttendanceResponse summary = attendanceRepository.findAttendanceSummaryByInternId(intern.getId());
-            if (summary != null) {
+            if (summary != null) { // ✅ chỉ thêm nếu có dữ liệu
                 res.add(summary);
             }
         }
+
         return res;
     }
+
 }
