@@ -14,7 +14,6 @@ import com.example.InternShip.dto.response.WorkScheduleResponse; // Added
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
-
 import org.springframework.http.ResponseEntity;
 
 import org.springframework.web.bind.annotation.PostMapping;
@@ -38,7 +37,8 @@ public class InternController {
     private final WorkScheduleService workScheduleService; // Added
 
     @PutMapping("/{id}")
-    public ResponseEntity<GetInternResponse> UpdateInternById(@PathVariable Integer id, @RequestBody @Valid UpdateInternRequest updateInternRequest) {
+    public ResponseEntity<GetInternResponse> UpdateInternById(@PathVariable Integer id,
+            @RequestBody @Valid UpdateInternRequest updateInternRequest) {
         return ResponseEntity.ok(internService.updateIntern(id, updateInternRequest));
     }
 
@@ -48,13 +48,18 @@ public class InternController {
     }
 
     @GetMapping
-    public ResponseEntity<PagedResponse<GetInternResponse>> getAllIntern (GetAllInternRequest request){
+    public ResponseEntity<PagedResponse<GetInternResponse>> getAllIntern(GetAllInternRequest request) {
         return ResponseEntity.ok(internService.getAllIntern(request));
     }
 
-    @GetMapping("/{teamId}") // Hàm lấy ra danh sách intern chưa có nhóm, status ACTIVE, và có kỳ thực tập trùng với nhóm
-    public ResponseEntity<?> getAllInternNoTeam(@PathVariable Integer teamId){
+    @GetMapping("/{teamId}")
+    public ResponseEntity<?> getAllInternNoTeam(@PathVariable Integer teamId) {
         return ResponseEntity.ok(internService.getAllInternNoTeam(teamId));
+    }
+
+    @GetMapping("/in/{teamId}")
+    public ResponseEntity<?> getAllInternByTeamId(@PathVariable Integer teamId) {
+        return ResponseEntity.ok(internService.getAllInternByTeamId(teamId));
     }
 
     @GetMapping("/my-team-schedule") // New endpoint
@@ -62,7 +67,8 @@ public class InternController {
         Integer internTeamId = internService.getAuthenticatedInternTeamId();
 
         if (internTeamId == null) {
-            // If the intern is not associated with a team or not found, return 404 Not Found
+            // If the intern is not associated with a team or not found, return 404 Not
+            // Found
             // Or 403 Forbidden, depending on desired error handling
             return ResponseEntity.notFound().build();
         }
