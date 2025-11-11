@@ -126,7 +126,7 @@ public class LeaveRequestServiceImpl implements LeaveRequestService {
     }
 
     @Override
-    public InternGetAllLeaveApplicationResponse getAllLeaveApplicationByIntern() {
+    public InternGetAllLeaveApplicationResponse getAllLeaveApplicationByIntern(String status) {
         User user = authService.getUserLogin();
         Intern intern = user.getIntern();
 
@@ -138,7 +138,7 @@ public class LeaveRequestServiceImpl implements LeaveRequestService {
         response.setCountReject(leaveRequestRepository.countRejectedByInternId(intern.getId()));
 
         List<InternGetAllLeaveApplicationResponseSupport> leaveApps = leaveRequestRepository
-                .findAllByInternId(intern.getId())
+                .findAllByInternIdAndApproved(intern.getId(), status)
                 .stream()
                 .map(l -> {
                     InternGetAllLeaveApplicationResponseSupport dto = new InternGetAllLeaveApplicationResponseSupport();
@@ -175,7 +175,7 @@ public class LeaveRequestServiceImpl implements LeaveRequestService {
     }
 
     @Override
-    public void approveLeaveAppication(Integer id) {
+    public void approveLeaveApplication(Integer id) {
         // User user = authService.getUserLogin();
         // if (user.getRole() != Role.HR) {
         //     throw new IllegalArgumentException();
@@ -191,7 +191,7 @@ public class LeaveRequestServiceImpl implements LeaveRequestService {
     }
 
     @Override
-    public void rejectLeaveAppication(RejectLeaveApplicationRequest request) {
+    public void rejectLeaveApplication(RejectLeaveApplicationRequest request) {
         // User user = authService.getUserLogin();
         // if (user.getRole() != Role.HR) {
         //     throw new IllegalArgumentException();

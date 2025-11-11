@@ -33,8 +33,10 @@ public class LeaveRequestController {
     }
 
     @GetMapping("/me") // Get cho intern
-    public ResponseEntity<?> getAllLeaveApplicationByIntern() {
-        return ResponseEntity.ok(leaveRequestService.getAllLeaveApplicationByIntern());
+    public ResponseEntity<?> getAllLeaveApplicationByIntern(
+            @RequestParam(required = false, defaultValue = "ALL") String status
+    ) {
+        return ResponseEntity.ok(leaveRequestService.getAllLeaveApplicationByIntern(status));
     }
 
     @GetMapping // Get cho riêng hr
@@ -65,14 +67,14 @@ public class LeaveRequestController {
     }
 
     @PatchMapping("/approve/{id}")
-    public ResponseEntity<?> approveLeaveAppication(@PathVariable Integer id) {
-        leaveRequestService.approveLeaveAppication(id);
+    public ResponseEntity<?> approveLeaveApplication(@PathVariable Integer id) {
+        leaveRequestService.approveLeaveApplication(id);
         return ResponseEntity.ok().build();
     }
 
     @PatchMapping("/reject")
-    public ResponseEntity<?> rejectLeaveAppication(@RequestBody @Valid RejectLeaveApplicationRequest request) {
-        leaveRequestService.rejectLeaveAppication(request);
+    public ResponseEntity<?> rejectLeaveApplication(@RequestBody @Valid RejectLeaveApplicationRequest request) {
+        leaveRequestService.rejectLeaveApplication(request);
         return ResponseEntity.ok().build();
     }
 }
