@@ -18,9 +18,9 @@ public interface LeaveRequestService {
 
     void cancelLeaveApplication(Integer id);
 
-    void approveLeaveAppication(Integer id);
+    void approveLeaveApplication(Integer id);
 
-    void rejectLeaveAppication(RejectLeaveApplicationRequest request);
+    void rejectLeaveApplication(RejectLeaveApplicationRequest request);
 
-    InternGetAllLeaveApplicationResponse getAllLeaveApplicationByIntern();
+    InternGetAllLeaveApplicationResponse getAllLeaveApplicationByIntern(String status);
 }
