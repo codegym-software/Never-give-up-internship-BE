@@ -16,7 +16,7 @@ public interface TeamService {
     TeamDetailResponse addMember(Integer teamId, AddMemberRequest request);
     TeamDetailResponse removeMember(Integer internId);
     PagedResponse<TeamDetailResponse> getTeams(Integer internshipTerm, Integer mentor, String keyword, int page);
-    public TeamDetailResponse updateTeam(Integer teamId, UpdateTeamRequest request);
+    TeamDetailResponse updateTeam(Integer teamId, UpdateTeamRequest request);
     List<GetAllTeamResponse> getAllTeam();
     List<TeamDetailResponse> getTeamsByCurrentMentor();
     TeamDetailResponse mapToTeamDetailResponse(Team team);

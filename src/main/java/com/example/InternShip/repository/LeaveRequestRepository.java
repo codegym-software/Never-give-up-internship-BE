@@ -39,8 +39,25 @@ public interface LeaveRequestRepository extends JpaRepository<LeaveRequest, Inte
             Pageable pageable);
 
     // Lấy tất cả đơn nghỉ của 1 intern
-    @Query("SELECT l FROM LeaveRequest l WHERE l.intern.id = :internId ORDER BY l.date DESC")
-    List<LeaveRequest> findAllByInternId(Integer internId);
+    @Query("""
+    SELECT l
+    FROM LeaveRequest l
+    WHERE l.intern.id = :internId
+      AND (
+            :status IS NULL
+         OR :status = '' 
+         OR UPPER(:status) = 'ALL'
+         OR (UPPER(:status) = 'APPROVED' AND l.approved = TRUE)
+         OR (UPPER(:status) = 'REJECTED' AND l.approved = FALSE)
+         OR (UPPER(:status) = 'PENDING' AND l.approved IS NULL)
+      )
+    ORDER BY l.date DESC
+""")
+    List<LeaveRequest> findAllByInternIdAndApproved(
+            @Param("internId") Integer internId,
+            @Param("status") String status
+    );
+
 
     // Đếm tổng số đơn
     @Query("SELECT COUNT(l) FROM LeaveRequest l WHERE l.intern.id = :internId")
