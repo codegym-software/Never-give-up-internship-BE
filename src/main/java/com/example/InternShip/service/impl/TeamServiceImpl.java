@@ -17,6 +17,7 @@ import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -26,8 +27,6 @@ import java.util.stream.Collectors;
 import com.example.InternShip.service.AuthService;
 import com.example.InternShip.entity.User;
 import com.example.InternShip.entity.enums.Role;
-import com.example.InternShip.exception.ForbiddenException;
-import com.example.InternShip.exception.ResourceNotFoundException;
 
 @Service
 @RequiredArgsConstructor
@@ -168,11 +167,11 @@ public class TeamServiceImpl implements TeamService {
     public List<TeamDetailResponse> getTeamsByCurrentMentor() {
         User currentUser = authService.getUserLogin();
         if (currentUser.getRole() != Role.MENTOR) {
-            throw new ForbiddenException("You are not authorized to perform this action. Required role: MENTOR.");
+            throw new AccessDeniedException(ErrorCode.NOT_PERMISSION.getMessage());
         }
 
         Mentor mentor = mentorRepository.findByUser(currentUser)
-                .orElseThrow(() -> new ResourceNotFoundException("Mentor profile not found for the current user."));
+                .orElseThrow(() -> new EntityNotFoundException(ErrorCode.MENTOR_NOT_EXISTED.getMessage()));
 
         return mentor.getTeams().stream()
                 .map(this::mapToTeamDetailResponse)
