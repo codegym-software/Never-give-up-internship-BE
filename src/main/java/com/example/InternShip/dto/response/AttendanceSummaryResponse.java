@@ -6,7 +6,6 @@ import lombok.Data;
 public class AttendanceSummaryResponse {
     private Integer internId;
     private String fullName;
-    private String email;
     private String teamName;
 
     //Tổng ngày làm (đủ, sớm, muộn)

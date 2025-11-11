@@ -31,18 +31,17 @@ public interface AttendanceRepository extends JpaRepository<Attendance, Integer>
 
     @Query("SELECT " +
             "    a.intern.id as internId, " +
-            "    SUM(CASE WHEN a.status IN ('PRESENT', 'LATE', 'EARLY_LEAVE', 'LATE_AND_EARLY_LEAVE') THEN 1 ELSE 0 END) as totalWorkingDays, "
-            +
+            "    SUM(CASE WHEN a.status IN ('PRESENT', 'LATE', 'EARLY_LEAVE', 'LATE_AND_EARLY_LEAVE') THEN 1 ELSE 0 END) as totalWorkingDays, " +
             "    SUM(CASE WHEN a.status = 'ON_LEAVE' THEN 1 ELSE 0 END) as totalOnLeaveDays, " +
             "    SUM(CASE WHEN a.status = 'ABSENT' THEN 1 ELSE 0 END) as totalAbsentDays " +
             "FROM Attendance a " +
-            "WHERE a.date BETWEEN :startDate AND :endDate " +
-            "AND (:teamId IS NULL OR a.team.id = :teamId) " +
+            "JOIN a.team t " +
+            "WHERE (:teamId IS NULL OR t.id = :teamId) " +
+            "AND (:internshipProgramId IS NULL OR t.internshipProgram.id = :internshipProgramId) " +
             "GROUP BY a.intern.id")
     List<AttendanceSummaryProjection> getAttendanceSummary(
-            @Param("startDate") LocalDate startDate,
-            @Param("endDate") LocalDate endDate,
-            @Param("teamId") Integer teamId);
+            @Param("teamId") Integer teamId,
+            @Param("internshipProgramId") Integer internshipProgramId);
 
     @Query(value = """
                 SELECT

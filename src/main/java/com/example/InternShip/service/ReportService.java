@@ -7,7 +7,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 public interface ReportService {
-    List<AttendanceSummaryResponse> getAttendanceSummaryReport(LocalDate startDate, LocalDate endDate, Integer teamId);
+    List<AttendanceSummaryResponse> getAttendanceSummaryReport(Integer teamId, Integer internshipProgramId);
 
-    InternAttendanceDetailResponse getInternAttendanceDetail(Integer internId, LocalDate startDate, LocalDate endDate);
+    InternAttendanceDetailResponse getInternAttendanceDetail(Integer internId, Integer internshipProgramId);
 }

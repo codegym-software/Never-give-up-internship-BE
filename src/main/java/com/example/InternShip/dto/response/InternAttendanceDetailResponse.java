@@ -11,15 +11,17 @@ public class InternAttendanceDetailResponse {
     private String email;
     private String teamName;
 
-    private AttendanceSummary summary;
-
     private List<DailyLogEntry> dailyLogs;
 
+    private List<LeaveLogEntry> leaveLogs;
+
     @Data
-    public static class AttendanceSummary {
-        private long totalWorkingDays;
-        private long totalOnLeaveDays;
-        private long totalAbsentDays;
+    public static class LeaveLogEntry {
+        private java.time.LocalDate date;
+        private String type;
+        private String reason;
+        private String leaveStatus;
+        private String approverName;
     }
 
     @Data

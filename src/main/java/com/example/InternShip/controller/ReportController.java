@@ -20,21 +20,20 @@ public class ReportController {
 
     @GetMapping("/attendance-summary")
     public ResponseEntity<List<AttendanceSummaryResponse>> getAttendanceSummaryReport(
-            @RequestParam("startDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
-            @RequestParam("endDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate,
-            @RequestParam(required = false) Integer teamId) {
+            @RequestParam(required = false) Integer teamId,
+            @RequestParam(required = false) Integer internshipProgramId) {
 
-        List<AttendanceSummaryResponse> report = reportService.getAttendanceSummaryReport(startDate, endDate, teamId);
+        List<AttendanceSummaryResponse> report = reportService.getAttendanceSummaryReport(teamId, internshipProgramId);
         return ResponseEntity.ok(report);
     }
 
     @GetMapping("/interns/{internId}/attendance")
     public ResponseEntity<InternAttendanceDetailResponse> getInternAttendanceDetail(
             @PathVariable Integer internId,
-            @RequestParam("startDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
-            @RequestParam("endDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) {
+            @RequestParam("internshipProgramId") Integer internshipProgramId) {
 
-        InternAttendanceDetailResponse report = reportService.getInternAttendanceDetail(internId, startDate, endDate);
+        // Đã bỏ startDate và endDate
+        InternAttendanceDetailResponse report = reportService.getInternAttendanceDetail(internId, internshipProgramId);
         return ResponseEntity.ok(report);
     }
 }

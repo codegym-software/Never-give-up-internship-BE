@@ -4,9 +4,13 @@ import com.example.InternShip.dto.response.AttendanceSummaryResponse;
 import com.example.InternShip.dto.response.InternAttendanceDetailResponse;
 import com.example.InternShip.entity.Attendance;
 import com.example.InternShip.entity.Intern;
+import com.example.InternShip.entity.InternshipProgram;
+import com.example.InternShip.entity.LeaveRequest;
 import com.example.InternShip.exception.ErrorCode;
 import com.example.InternShip.repository.AttendanceRepository;
 import com.example.InternShip.repository.InternRepository;
+import com.example.InternShip.repository.InternshipProgramRepository;
+import com.example.InternShip.repository.LeaveRequestRepository;
 import com.example.InternShip.service.ReportService;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -25,71 +29,37 @@ public class ReportServiceImpl implements ReportService {
 
     private final AttendanceRepository attendanceRepository;
     private final InternRepository internRepository;
+    private final InternshipProgramRepository internshipProgramRepository;
+    private final LeaveRequestRepository leaveRequestRepository;
 
     @Override
-    public List<AttendanceSummaryResponse> getAttendanceSummaryReport(LocalDate startDate, LocalDate endDate, Integer teamId) {
+    public List<AttendanceSummaryResponse> getAttendanceSummaryReport(Integer teamId, Integer internshipProgramId) {
 
-        //Lấy dữ liệu tổng hợp từ csdl
-        List<AttendanceRepository.AttendanceSummaryProjection> projections = attendanceRepository.getAttendanceSummary(startDate, endDate, teamId);
-
-        //Lấy danh sách ID các Intern liên quan
-        List<Integer> internIds = projections.stream()
-                .map(AttendanceRepository.AttendanceSummaryProjection::getInternId)
-                .collect(Collectors.toList());
-
-        if (internIds.isEmpty()) {
-            return new ArrayList<>();
-        }
-
-        //Lấy thông tin chi tiết (Tên, Email, Nhóm) của các Intern này
-        Map<Integer, Intern> internMap = internRepository.findAllById(internIds).stream()
-                .collect(Collectors.toMap(Intern::getId, Function.identity()));
-
-        //Kết hợp dữ liệu và trả về
-        return projections.stream().map(p -> {
-            Intern intern = internMap.get(p.getInternId());
-
-            AttendanceSummaryResponse res = new AttendanceSummaryResponse();
-            res.setInternId(intern.getId());
-            res.setFullName(intern.getUser().getFullName());
-            res.setEmail(intern.getUser().getEmail());
-            res.setTeamName(intern.getTeam() != null ? intern.getTeam().getName() : ErrorCode.INTERN_NOT_IN_TEAM.getMessage());
-
-            res.setTotalWorkingDays(p.getTotalWorkingDays());
-            res.setTotalOnLeaveDays(p.getTotalOnLeaveDays());
-            res.setTotalAbsentDays(p.getTotalAbsentDays());
-
-            return res;
-        }).collect(Collectors.toList());
+        return this.fetchAndMapSummaryData(teamId, internshipProgramId);
     }
 
     @Override
-    public InternAttendanceDetailResponse getInternAttendanceDetail(Integer internId, LocalDate startDate, LocalDate endDate) {
+    public InternAttendanceDetailResponse getInternAttendanceDetail(Integer internId, Integer internshipProgramId) {
+
+        //Lấy thông tin Intern
         Intern intern = internRepository.findById(internId)
                 .orElseThrow(() -> new EntityNotFoundException(ErrorCode.INTERN_NOT_FOUND.getMessage()));
+
+        //Lấy thông tin Kỳ thực tập để có startDate và endDate
+        InternshipProgram program = internshipProgramRepository.findById(internshipProgramId)
+                .orElseThrow(() -> new EntityNotFoundException(ErrorCode.INTERNSHIP_PROGRAM_NOT_EXISTED.getMessage()));
+
+        //Lấy ngày bắt đầu và kết thúc từ kỳ thực tập
+        LocalDate startDate = program.getTimeStart().toLocalDate();
+        LocalDate endDate = program.getTimeEnd().toLocalDate();
+
+        //Lịch sử chấm công (dùng startDate, endDate)
         List<Attendance> attendanceLogs = attendanceRepository.findByInternAndDateBetweenOrderByDateAsc(intern, startDate, endDate);
 
-        long working = 0, onLeave = 0, absent = 0;
-        for (Attendance log : attendanceLogs) {
-            switch (log.getStatus()) {
-                case PRESENT, LATE, EARLY_LEAVE, LATE_AND_EARLY_LEAVE:
-                    working++;
-                    break;
-                case ON_LEAVE:
-                    onLeave++;
-                    break;
-                case ABSENT:
-                    absent++;
-                    break;
-                default:
-                    break;
-            }
-        }
-        InternAttendanceDetailResponse.AttendanceSummary summary = new InternAttendanceDetailResponse.AttendanceSummary();
-        summary.setTotalWorkingDays(working);
-        summary.setTotalOnLeaveDays(onLeave);
-        summary.setTotalAbsentDays(absent);
+        //Lịch sử nghỉ phép (dùng startDate, endDate)
+        List<LeaveRequest> leaveRequestLogs = leaveRequestRepository.findByInternAndDateBetweenOrderByDateAsc(intern, startDate, endDate);
 
+        //Map dữ liệu Lịch sử chấm công
         List<InternAttendanceDetailResponse.DailyLogEntry> dailyLogs = attendanceLogs.stream()
                 .map(log -> {
                     InternAttendanceDetailResponse.DailyLogEntry entry = new InternAttendanceDetailResponse.DailyLogEntry();
@@ -102,14 +72,67 @@ public class ReportServiceImpl implements ReportService {
                     return entry;
                 }).collect(Collectors.toList());
 
+        //Map dữ liệu Lịch sử nghỉ phép
+        List<InternAttendanceDetailResponse.LeaveLogEntry> leaveLogs = leaveRequestLogs.stream()
+                .map(log -> {
+                    InternAttendanceDetailResponse.LeaveLogEntry entry = new InternAttendanceDetailResponse.LeaveLogEntry();
+                    entry.setDate(log.getDate());
+                    entry.setType(log.getType().name());
+                    entry.setReason(log.getReason());
+
+                    if (log.getHr() != null) {
+                        entry.setApproverName(log.getHr().getFullName());
+                    }
+
+                    if (log.getApproved() == null) {
+                        entry.setLeaveStatus("Chờ duyệt");
+                    } else if (log.getApproved() == true) {
+                        entry.setLeaveStatus("Đã duyệt");
+                    } else {
+                        entry.setLeaveStatus("Đã từ chối" + (log.getReasonReject() != null ? ": " + log.getReasonReject() : ""));
+                    }
+                    return entry;
+                }).collect(Collectors.toList());
+
+        //Tạo đối tượng Response hoàn chỉnh
         InternAttendanceDetailResponse response = new InternAttendanceDetailResponse();
         response.setInternId(intern.getId());
         response.setFullName(intern.getUser().getFullName());
         response.setEmail(intern.getUser().getEmail());
         response.setTeamName(intern.getTeam() != null ? intern.getTeam().getName() : ErrorCode.INTERN_NOT_IN_TEAM.getMessage());
-        response.setSummary(summary);
         response.setDailyLogs(dailyLogs);
+        response.setLeaveLogs(leaveLogs);
 
         return response;
+    }
+
+    private List<AttendanceSummaryResponse> fetchAndMapSummaryData(Integer teamId, Integer internshipProgramId) {
+
+        //Lấy dữ liệu tổng hợp từ CSDL
+        List<AttendanceRepository.AttendanceSummaryProjection> projections =
+                attendanceRepository.getAttendanceSummary(teamId, internshipProgramId);
+
+        List<Integer> internIds = projections.stream()
+                .map(AttendanceRepository.AttendanceSummaryProjection::getInternId)
+                .collect(Collectors.toList());
+
+        if (internIds.isEmpty()) {
+            return new ArrayList<>();
+        }
+
+        Map<Integer, Intern> internMap = internRepository.findAllById(internIds).stream()
+                .collect(Collectors.toMap(Intern::getId, Function.identity()));
+
+        return projections.stream().map(p -> {
+            Intern intern = internMap.get(p.getInternId());
+            AttendanceSummaryResponse res = new AttendanceSummaryResponse();
+            res.setInternId(intern.getId());
+            res.setFullName(intern.getUser().getFullName());
+            res.setTeamName(intern.getTeam() != null ? intern.getTeam().getName() : ErrorCode.INTERN_NOT_IN_TEAM.getMessage());
+            res.setTotalWorkingDays(p.getTotalWorkingDays());
+            res.setTotalOnLeaveDays(p.getTotalOnLeaveDays());
+            res.setTotalAbsentDays(p.getTotalAbsentDays());
+            return res;
+        }).collect(Collectors.toList());
     }
 }
