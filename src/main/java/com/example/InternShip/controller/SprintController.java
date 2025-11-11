@@ -61,4 +61,9 @@ public class SprintController {
             @RequestBody EvaluateSprintRequest request) {
         sprintService.evaluateSprint(sprintId, request);
     }
+
+    @GetMapping("/sprints/evaluate/{sprintId}")
+    public ResponseEntity<?> getEvaluateSprint(@PathVariable Long sprintId) {
+        return ResponseEntity.ok(sprintService.getEvaluateSprint(sprintId));
+    }
 }

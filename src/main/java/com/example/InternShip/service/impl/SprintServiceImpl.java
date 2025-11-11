@@ -4,6 +4,7 @@ import com.example.InternShip.dto.request.CreateSprintRequest;
 import com.example.InternShip.dto.request.EvaluateSprintRequest;
 import com.example.InternShip.dto.request.UpdateSprintRequest;
 import com.example.InternShip.dto.response.FileResponse;
+import com.example.InternShip.dto.response.GetEvaluateSprintResponse;
 import com.example.InternShip.dto.response.SprintReportResponse;
 import com.example.InternShip.dto.response.SprintResponse;
 import com.example.InternShip.entity.Team;
@@ -278,5 +279,12 @@ public class SprintServiceImpl implements SprintService {
         sprint.setFeedbackBad(request.getFeedbackBad());
         sprint.setFeedbackImprove(request.getFeedbackImprove());
         sprintRepository.save(sprint);        
+    }
+
+    @Override
+    public GetEvaluateSprintResponse getEvaluateSprint(Long sprintId) {
+        Sprint sprint = sprintRepository.findById(sprintId)
+                .orElseThrow(() -> new EntityNotFoundException(ErrorCode.SPRINT_NOT_EXISTS.getMessage()));
+        return modelMapper.map(sprint, GetEvaluateSprintResponse.class);        
     }
 }

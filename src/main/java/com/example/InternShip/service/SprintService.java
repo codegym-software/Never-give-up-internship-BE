@@ -24,4 +24,6 @@ public interface SprintService {
     SprintReportResponse submitReport(Long sprintId, MultipartFile file);
 
     void evaluateSprint(Long sprintId, EvaluateSprintRequest request);
+
+    Object getEvaluateSprint(Long sprintId);
 }
