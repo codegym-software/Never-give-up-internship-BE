@@ -1,6 +1,7 @@
 package com.example.InternShip.service.impl;
 
 import com.example.InternShip.dto.request.CreateSprintRequest;
+import com.example.InternShip.dto.request.EvaluateSprintRequest;
 import com.example.InternShip.dto.request.UpdateSprintRequest;
 import com.example.InternShip.dto.response.FileResponse;
 import com.example.InternShip.dto.response.SprintReportResponse;
@@ -16,6 +17,7 @@ import jakarta.persistence.EntityNotFoundException;
 import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 
+import org.apache.coyote.BadRequestException;
 import org.modelmapper.ModelMapper;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
@@ -117,7 +119,7 @@ public class SprintServiceImpl implements SprintService {
                 return; // Allowed
             }
         }
-        
+
         // If no permission rule matched, deny access.
         throw new AccessDeniedException(ErrorCode.NOT_PERMISSION.getMessage());
     }
@@ -192,7 +194,6 @@ public class SprintServiceImpl implements SprintService {
         return mapToSprintResponse(updatedSprint);
     }
 
-
     @Override
     public void deleteSprint(Long sprintId) {
         User user = authService.getUserLogin();
@@ -243,7 +244,7 @@ public class SprintServiceImpl implements SprintService {
         Intern intern = internRepository.findByUser(user)
                 .orElseThrow(() -> new EntityNotFoundException(ErrorCode.INTERN_NOT_FOUND.getMessage()));
 
-        //Tìm Sprint muốn nộp
+        // Tìm Sprint muốn nộp
         Sprint sprint = sprintRepository.findById(sprintId)
                 .orElseThrow(() -> new EntityNotFoundException(ErrorCode.SPRINT_NOT_EXISTS.getMessage()));
 
@@ -251,15 +252,31 @@ public class SprintServiceImpl implements SprintService {
             throw new AccessDeniedException("Bạn không thuộc nhóm của sprint này và không có quyền nộp báo cáo.");
         }
 
-        FileResponse fileResponse = cloudinaryService.uploadFile(file ,"Submit Week Report");
+        FileResponse fileResponse = cloudinaryService.uploadFile(file, "Submit Week Report");
 
-        //Cập nhật thông tin báo cáo vào sprint
+        // Cập nhật thông tin báo cáo vào sprint
         sprint.setReportUrl(fileResponse.getFileUrl());
         sprint.setReportStatus(Sprint.ReportStatus.SUBMITTED);
-        sprint.setMentorFeedback(null); // Xóa phản hồi cũ khi nộp lại
+        // Xóa phản hồi cũ khi nộp lại
+        sprint.setFeedbackGood(null);
+        sprint.setFeedbackBad(null);
+        sprint.setFeedbackImprove(null);
 
         Sprint savedSprint = sprintRepository.save(sprint);
 
         return modelMapper.map(savedSprint, SprintReportResponse.class);
+    }
+
+    @Override
+    public void evaluateSprint(Long sprintId, EvaluateSprintRequest request) {
+        Sprint sprint = sprintRepository.findById(sprintId)
+                .orElseThrow(() -> new EntityNotFoundException(ErrorCode.SPRINT_NOT_EXISTS.getMessage()));
+        if (sprint.getReportUrl() == null) {
+            throw new IllegalArgumentException(ErrorCode.CANNOT_EVALUATE_SPRINT.getMessage());
+        }
+        sprint.setFeedbackGood(request.getFeedbackGood());
+        sprint.setFeedbackBad(request.getFeedbackBad());
+        sprint.setFeedbackImprove(request.getFeedbackImprove());
+        sprintRepository.save(sprint);        
     }
 }

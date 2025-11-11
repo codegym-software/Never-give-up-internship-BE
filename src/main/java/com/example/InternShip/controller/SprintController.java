@@ -1,6 +1,7 @@
 package com.example.InternShip.controller;
 
 import com.example.InternShip.dto.request.CreateSprintRequest;
+import com.example.InternShip.dto.request.EvaluateSprintRequest;
 import com.example.InternShip.dto.request.UpdateSprintRequest;
 import com.example.InternShip.dto.response.SprintReportResponse;
 import com.example.InternShip.dto.response.SprintResponse;
@@ -53,5 +54,11 @@ public class SprintController {
 
         SprintReportResponse response = sprintService.submitReport(id, file);
         return ResponseEntity.ok(response);
+    }
+
+    @PutMapping("/sprints/evaluate/{sprintId}")
+    public void evaluateSprint(@PathVariable Long sprintId,
+            @RequestBody EvaluateSprintRequest request) {
+        sprintService.evaluateSprint(sprintId, request);
     }
 }

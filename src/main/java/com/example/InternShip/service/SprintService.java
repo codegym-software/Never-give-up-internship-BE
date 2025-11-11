@@ -3,6 +3,7 @@ package com.example.InternShip.service;
 import java.util.List;
 
 import com.example.InternShip.dto.request.CreateSprintRequest;
+import com.example.InternShip.dto.request.EvaluateSprintRequest;
 import com.example.InternShip.dto.request.UpdateSprintRequest;
 import com.example.InternShip.dto.response.PagedResponse;
 import com.example.InternShip.dto.response.SprintReportResponse;
@@ -21,4 +22,6 @@ public interface SprintService {
     SprintResponse getSprintById(Long sprintId);
 
     SprintReportResponse submitReport(Long sprintId, MultipartFile file);
+
+    void evaluateSprint(Long sprintId, EvaluateSprintRequest request);
 }

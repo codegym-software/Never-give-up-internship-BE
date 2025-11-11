@@ -109,6 +109,7 @@ public enum ErrorCode {
     INTERN_NOT_TEAM("Bạn chưa được gán vào nhóm nào, không thể chấm công"),
     SCHEDULE_NOT_SET_TODAY("Lịch chưa được thiết lập hôm nay"),
     CANNOT_CHECK_IN("Không thể check-in"),
+    CANNOT_EVALUATE_SPRINT("Chưa có báo cáo chưa thể đánh giá sprint"),
     INTERN_NOT_IN_THIS_TEAM("Thực tập sinh hiện không thuộc nhóm này"),
     ;
     private final String message;

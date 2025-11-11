@@ -31,8 +31,11 @@ public class Sprint {
     @Column(length = 512)
     private String reportUrl;
 
-    @Column(columnDefinition = "TEXT")
-    private String mentorFeedback;
+    private String feedbackGood;
+
+    private String feedbackBad;
+
+    private String feedbackImprove;
 
     @Enumerated(EnumType.STRING)
     private ReportStatus reportStatus;
