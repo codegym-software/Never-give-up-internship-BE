@@ -2,16 +2,21 @@ package com.example.InternShip.service.impl;
 
 import com.example.InternShip.dto.request.CreateSprintRequest;
 import com.example.InternShip.dto.request.UpdateSprintRequest;
+import com.example.InternShip.dto.response.FileResponse;
+import com.example.InternShip.dto.response.SprintReportResponse;
 import com.example.InternShip.dto.response.SprintResponse;
 import com.example.InternShip.entity.Team;
 import com.example.InternShip.entity.Sprint;
 import com.example.InternShip.exception.ErrorCode;
 import com.example.InternShip.repository.TeamRepository;
 import com.example.InternShip.repository.SprintRepository;
+import com.example.InternShip.service.CloudinaryService;
 import com.example.InternShip.service.SprintService;
 import jakarta.persistence.EntityNotFoundException;
+import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 
+import org.modelmapper.ModelMapper;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
@@ -25,6 +30,7 @@ import com.example.InternShip.service.AuthService;
 
 import com.example.InternShip.repository.InternRepository;
 import com.example.InternShip.entity.Intern;
+import org.springframework.web.multipart.MultipartFile;
 
 @Service
 @RequiredArgsConstructor
@@ -34,6 +40,8 @@ public class SprintServiceImpl implements SprintService {
     private final TeamRepository teamRepository;
     private final AuthService authService;
     private final InternRepository internRepository;
+    private final CloudinaryService cloudinaryService;
+    private final ModelMapper modelMapper;
 
     @Override
     public SprintResponse createSprint(Integer teamId, CreateSprintRequest request) {
@@ -226,5 +234,32 @@ public class SprintServiceImpl implements SprintService {
         checkSprintManagementPermission(user, team, "view");
 
         return mapToSprintResponse(sprint);
+    }
+
+    @Override
+    @Transactional
+    public SprintReportResponse submitReport(Long sprintId, MultipartFile file) {
+        User user = authService.getUserLogin();
+        Intern intern = internRepository.findByUser(user)
+                .orElseThrow(() -> new EntityNotFoundException(ErrorCode.INTERN_NOT_FOUND.getMessage()));
+
+        //Tìm Sprint muốn nộp
+        Sprint sprint = sprintRepository.findById(sprintId)
+                .orElseThrow(() -> new EntityNotFoundException(ErrorCode.SPRINT_NOT_EXISTS.getMessage()));
+
+        if (intern.getTeam() == null || !intern.getTeam().getId().equals(sprint.getTeam().getId())) {
+            throw new AccessDeniedException("Bạn không thuộc nhóm của sprint này và không có quyền nộp báo cáo.");
+        }
+
+        FileResponse fileResponse = cloudinaryService.uploadFile(file ,"Submit Week Report");
+
+        //Cập nhật thông tin báo cáo vào sprint
+        sprint.setReportUrl(fileResponse.getFileUrl());
+        sprint.setReportStatus(Sprint.ReportStatus.SUBMITTED);
+        sprint.setMentorFeedback(null); // Xóa phản hồi cũ khi nộp lại
+
+        Sprint savedSprint = sprintRepository.save(sprint);
+
+        return modelMapper.map(savedSprint, SprintReportResponse.class);
     }
 }

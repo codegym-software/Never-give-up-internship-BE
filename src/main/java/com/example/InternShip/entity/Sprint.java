@@ -28,6 +28,21 @@ public class Sprint {
 
     private LocalDate endDate;
 
+    @Column(length = 512)
+    private String reportUrl;
+
+    @Column(columnDefinition = "TEXT")
+    private String mentorFeedback;
+
+    @Enumerated(EnumType.STRING)
+    private ReportStatus reportStatus;
+
+    public enum ReportStatus {
+        PENDING,   // Chưa nộp
+        SUBMITTED, // Đã nộp (chờ mentor review)
+        REVIEWED   // Mentor đã review
+    }
+
     @ManyToOne
     @JoinColumn(name = "team_id")
     private Team team;

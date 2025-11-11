@@ -12,7 +12,9 @@ import java.util.Optional;
 
 @Repository
 public interface SprintRepository extends JpaRepository<Sprint, Long> {
-   List<Sprint> findByTeamId(Integer teamId);
+    List<Sprint> findByTeamId(Integer teamId);
+
     Optional<Sprint> findById(Long id);
+
     List<Task> getTasksById(Long sprintId);
 }

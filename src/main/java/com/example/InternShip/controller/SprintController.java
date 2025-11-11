@@ -2,6 +2,7 @@ package com.example.InternShip.controller;
 
 import com.example.InternShip.dto.request.CreateSprintRequest;
 import com.example.InternShip.dto.request.UpdateSprintRequest;
+import com.example.InternShip.dto.response.SprintReportResponse;
 import com.example.InternShip.dto.response.SprintResponse;
 import com.example.InternShip.service.SprintService;
 import lombok.RequiredArgsConstructor;
@@ -11,6 +12,7 @@ import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequestMapping("/api/v1")
@@ -42,5 +44,14 @@ public class SprintController {
     public ResponseEntity<?> deleteSprint(@PathVariable Long sprintId) {
         sprintService.deleteSprint(sprintId);
         return ResponseEntity.ok().build();
+    }
+
+    @PostMapping(value = "/{id}/report", consumes = "multipart/form-data")
+    public ResponseEntity<SprintReportResponse> submitSprintReport(
+            @PathVariable("id") Long id,
+            @RequestParam("file") MultipartFile file) {
+
+        SprintReportResponse response = sprintService.submitReport(id, file);
+        return ResponseEntity.ok(response);
     }
 }
