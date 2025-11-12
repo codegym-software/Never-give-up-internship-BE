@@ -82,6 +82,7 @@ public class SprintServiceImpl implements SprintService {
         sprint.setStartDate(request.getStartDate());
         sprint.setEndDate(request.getEndDate());
         sprint.setTeam(team);
+        sprint.setReportStatus(Sprint.ReportStatus.PENDING);
 
         Sprint savedSprint = sprintRepository.save(sprint);
         return mapToSprintResponse(savedSprint);
