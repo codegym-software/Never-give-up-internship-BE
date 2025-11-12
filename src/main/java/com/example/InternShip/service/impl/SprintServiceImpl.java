@@ -269,6 +269,7 @@ public class SprintServiceImpl implements SprintService {
     }
 
     @Override
+    @Transactional
     public void evaluateSprint(Long sprintId, EvaluateSprintRequest request) {
         Sprint sprint = sprintRepository.findById(sprintId)
                 .orElseThrow(() -> new EntityNotFoundException(ErrorCode.SPRINT_NOT_EXISTS.getMessage()));
@@ -278,7 +279,8 @@ public class SprintServiceImpl implements SprintService {
         sprint.setFeedbackGood(request.getFeedbackGood());
         sprint.setFeedbackBad(request.getFeedbackBad());
         sprint.setFeedbackImprove(request.getFeedbackImprove());
-        sprintRepository.save(sprint);        
+        sprint.setReportStatus(Sprint.ReportStatus.REVIEWED);
+        sprintRepository.save(sprint);
     }
 
     @Override
