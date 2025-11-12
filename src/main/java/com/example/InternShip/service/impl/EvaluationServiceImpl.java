@@ -10,12 +10,16 @@ import com.example.InternShip.repository.InternRepository;
 import com.example.InternShip.repository.MentorRepository;
 import com.example.InternShip.service.AuthService;
 import com.example.InternShip.service.EvaluationService;
+import com.example.InternShip.service.ExcelExportService;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.io.ByteArrayInputStream;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -25,6 +29,7 @@ public class EvaluationServiceImpl implements EvaluationService {
     private final MentorRepository mentorRepository;
     private final AuthService authService;
     private final ModelMapper modelMapper;
+    private final ExcelExportService excelExportService;
 
     @Override
     @Transactional
@@ -65,5 +70,14 @@ public class EvaluationServiceImpl implements EvaluationService {
         EvaluationResponse response = modelMapper.map(intern, EvaluationResponse.class);
         response.setInternId(intern.getId());
         return response;
+    }
+
+    @Override
+    public ByteArrayInputStream exportEvaluations(Integer teamId, Integer programId) {
+
+        //Lấy danh sách Intern đã lọc
+        List<Intern> internsToExport = internRepository.findForEvaluationReport(programId, teamId);
+
+        return excelExportService.exportInternEvaluations(internsToExport);
     }
 }
