@@ -177,9 +177,10 @@ public class LeaveRequestServiceImpl implements LeaveRequestService {
         // Tính làm cái check đơn của người dùng nhưng mà thôi
         LeaveRequest leaveRequest = leaveRequestRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException(ErrorCode.LEAVE_APPLICATION_NOT_EXISTS.getMessage()));
-        if (!leaveRequest.getApproved()) {
-            leaveRequestRepository.delete(leaveRequest);
+        if (leaveRequest.getApproved() != null) {
+            throw new RuntimeException(ErrorCode.CANCEL_REQUEST_FAILED.getMessage());
         }
+        leaveRequestRepository.delete(leaveRequest);
     }
 
     @Override

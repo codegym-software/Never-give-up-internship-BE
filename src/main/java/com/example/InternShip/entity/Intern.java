@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @Setter
@@ -49,6 +50,27 @@ public class Intern {
 
     @OneToMany(mappedBy = "assignee")
     private List<Task> tasks;
+
+    @Column(precision = 4, scale = 2)
+    private BigDecimal expertiseScore;
+
+    @Column(precision = 4, scale = 2)
+    private BigDecimal qualityScore;
+
+    @Column(precision = 4, scale = 2)
+    private BigDecimal problemSolvingScore;
+
+    @Column(precision = 4, scale = 2)
+    private BigDecimal technologyLearningScore;
+
+    private SoftSkill softSkill;
+
+    public enum SoftSkill {
+        GOOD,
+        FAIR,
+        AVERAGE,
+        POOR
+    }
 
     public enum Status {
         ACTIVE, // đang thực tập

@@ -92,6 +92,7 @@ public enum ErrorCode {
     DELETE_SPRINT_FAILED("Xóa sprint thất bại"),
     UPDATE_TASK_FAILED("Không thể sửa task"),
     DELETE_TASK_FAILED("Không thể xóa task"),
+    CANCEL_REQUEST_FAILED("Không thể hủy yêu cầu"),
     UPLOAD_FILE_FAILED("Tải lên tệp thất bại"),
 
     //UNAUTHENTICATED
