@@ -52,24 +52,28 @@ public class Intern {
     private List<Task> tasks;
 
     @Column(precision = 4, scale = 2)
-    private BigDecimal expertiseScore;
+    private BigDecimal expertiseScore; //điểm chuyên môn
 
     @Column(precision = 4, scale = 2)
-    private BigDecimal qualityScore;
+    private BigDecimal qualityScore;//điểm chất lượng
 
     @Column(precision = 4, scale = 2)
-    private BigDecimal problemSolvingScore;
+    private BigDecimal problemSolvingScore;//điểm giải quyết vấn đề
 
     @Column(precision = 4, scale = 2)
-    private BigDecimal technologyLearningScore;
+    private BigDecimal technologyLearningScore;//điểm học công nghệ mới
 
-    private SoftSkill softSkill;
+    @Enumerated(EnumType.STRING)
+    private SoftSkill softSkill;//kĩ năng mềm
+
+    @Column(columnDefinition = "TEXT")
+    private String assessment;//nhận xét
 
     public enum SoftSkill {
-        GOOD,
-        FAIR,
-        AVERAGE,
-        POOR
+        GOOD, //tốt
+        FAIR, //khá
+        AVERAGE, //trung bình
+        POOR //kém
     }
 
     public enum Status {
