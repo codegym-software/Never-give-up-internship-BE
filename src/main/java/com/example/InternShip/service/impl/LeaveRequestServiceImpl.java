@@ -146,7 +146,7 @@ public class LeaveRequestServiceImpl implements LeaveRequestService {
                     dto.setType(l.getType());
                     dto.setDate(l.getDate());
                     dto.setReason(l.getReason());
-                    dto.setApproved(l.getApproved() != null ? l.getApproved() : false);
+                    dto.setApproved(l.getApproved());
                     return dto;
                 })
                 .toList();

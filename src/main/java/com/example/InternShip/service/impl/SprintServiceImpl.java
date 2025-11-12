@@ -97,6 +97,7 @@ public class SprintServiceImpl implements SprintService {
         response.setStartDate(sprint.getStartDate());
         response.setEndDate(sprint.getEndDate());
         response.setTeamId(sprint.getTeam().getId());
+        response.setReportUrl(sprint.getReportUrl());
         return response;
     }
 

@@ -14,5 +14,5 @@ public class InternGetAllLeaveApplicationResponseSupport {
     @JsonFormat(pattern = "dd-MM-yyyy")
     private LocalDate date;
     private String reason;
-    private boolean approved;
+    private Boolean approved;
 }

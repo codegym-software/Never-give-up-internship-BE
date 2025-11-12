@@ -6,6 +6,7 @@ import com.example.InternShip.dto.request.CreateInternRequest;
 
 import com.example.InternShip.dto.request.GetAllInternRequest;
 import com.example.InternShip.dto.response.GetInternResponse;
+import com.example.InternShip.dto.response.MyProfileResponse;
 import com.example.InternShip.dto.response.PagedResponse;
 
 import com.example.InternShip.service.InternService;
@@ -75,5 +76,11 @@ public class InternController {
 
         List<WorkScheduleResponse> teamSchedule = workScheduleService.getWorkSchedule(internTeamId);
         return ResponseEntity.ok(teamSchedule);
+    }
+
+    @GetMapping("/me")
+    //@PreAuthorize("hasAuthority('SCOPE_INTERN')")
+    public ResponseEntity<MyProfileResponse> getMyProfile() {
+        return ResponseEntity.ok(internService.getMyProfile());
     }
 }

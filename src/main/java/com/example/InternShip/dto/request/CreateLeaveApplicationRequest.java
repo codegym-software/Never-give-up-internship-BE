@@ -16,7 +16,6 @@ public class CreateLeaveApplicationRequest {
     @NotNull(message = "DATE_LEAVE_NOT_NULL")
     private LocalDate date;
 
-    @Size(min = 20, message = "Lý do quá ngắn")
     @NotNull(message = "REASON_NOT_NULL")
     private String reason;
 
