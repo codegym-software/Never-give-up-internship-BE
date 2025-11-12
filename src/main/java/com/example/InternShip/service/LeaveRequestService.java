@@ -2,14 +2,11 @@ package com.example.InternShip.service;
 
 import com.example.InternShip.dto.request.CreateLeaveApplicationRequest;
 import com.example.InternShip.dto.request.RejectLeaveApplicationRequest;
-import com.example.InternShip.dto.response.GetAllLeaveApplicationResponse;
-import com.example.InternShip.dto.response.GetLeaveApplicationResponse;
-import com.example.InternShip.dto.response.InternGetAllLeaveApplicationResponse;
-import com.example.InternShip.dto.response.PagedResponse;
+import com.example.InternShip.dto.response.*;
 
 public interface LeaveRequestService {
 
-    void createLeaveRequest(CreateLeaveApplicationRequest request);
+    InternGetAllLeaveApplicationResponseSupport createLeaveRequest(CreateLeaveApplicationRequest request);
 
     PagedResponse<GetAllLeaveApplicationResponse> getAllLeaveApplication(Boolean approved, String keyword, String type,
             int page, int size);

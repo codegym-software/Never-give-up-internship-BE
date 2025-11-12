@@ -27,9 +27,8 @@ public class LeaveRequestController {
     private final LeaveRequestService leaveRequestService;
 
     @PostMapping(consumes = "multipart/form-data")
-    public ResponseEntity<Void> createLeaveRequest(@ModelAttribute @Valid CreateLeaveApplicationRequest request) {
-        leaveRequestService.createLeaveRequest(request);
-        return ResponseEntity.ok().build();
+    public ResponseEntity<?> createLeaveRequest(@ModelAttribute @Valid CreateLeaveApplicationRequest request) {
+        return ResponseEntity.ok(leaveRequestService.createLeaveRequest(request));
     }
 
     @GetMapping("/me") // Get cho intern

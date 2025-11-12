@@ -11,7 +11,6 @@ import com.example.InternShip.dto.response.PagedResponse;
 import com.example.InternShip.entity.Intern;
 import com.example.InternShip.entity.LeaveRequest;
 import com.example.InternShip.entity.User;
-import com.example.InternShip.entity.enums.Role;
 import com.example.InternShip.exception.ErrorCode;
 import com.example.InternShip.repository.LeaveRequestRepository;
 import com.example.InternShip.repository.UserRepository;
@@ -46,8 +45,8 @@ public class LeaveRequestServiceImpl implements LeaveRequestService {
 
     private final ModelMapper modelMapper;
 
-    @Override
-    public void createLeaveRequest(CreateLeaveApplicationRequest request) {
+        @Override
+    public InternGetAllLeaveApplicationResponseSupport createLeaveRequest(CreateLeaveApplicationRequest request) {
         // Lấy ra thằng intern request
         User user = authService.getUserLogin();
         Intern intern = user.getIntern();
@@ -75,6 +74,15 @@ public class LeaveRequestServiceImpl implements LeaveRequestService {
         }
         leaveRequest.setIntern(intern);
         leaveRequestRepository.save(leaveRequest);
+
+        InternGetAllLeaveApplicationResponseSupport response = new InternGetAllLeaveApplicationResponseSupport();
+        response.setId(leaveRequest.getId());
+        response.setType(leaveRequest.getType());
+        response.setDate(leaveRequest.getDate());
+        response.setReason(leaveRequest.getReason());
+        response.setApproved(leaveRequest.getApproved());
+
+        return response;
     }
 
     @Override
