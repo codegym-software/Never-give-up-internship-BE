@@ -7,4 +7,5 @@ public interface GetAllAttendanceResponse {
     Integer getPresentDay();
     Integer getAbsentDay();
     Integer getLateAndLeaveDay();
+    Integer getInternshipProgramId();
 }

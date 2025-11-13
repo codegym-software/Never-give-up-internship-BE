@@ -46,6 +46,7 @@ public interface AttendanceRepository extends JpaRepository<Attendance, Integer>
     @Query(value = """
                 SELECT
                     i.id AS internId,
+                    i.internship_program_id AS internship_program_id,
                     u.full_name AS internName,
                     t.name AS teamName,
                     SUM(CASE WHEN a.status = 'PRESENT' THEN 1 ELSE 0 END) AS presentDay,
