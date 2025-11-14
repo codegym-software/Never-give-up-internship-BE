@@ -13,12 +13,15 @@ import com.example.InternShip.exception.ErrorCode;
 import com.example.InternShip.repository.TeamRepository;
 import com.example.InternShip.repository.SprintRepository;
 import com.example.InternShip.service.CloudinaryService;
+import com.example.InternShip.service.SprintCompletionService;
 import com.example.InternShip.service.SprintService;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 import org.modelmapper.ModelMapper;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
@@ -36,6 +39,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class SprintServiceImpl implements SprintService {
 
     private final SprintRepository sprintRepository;
@@ -44,6 +48,8 @@ public class SprintServiceImpl implements SprintService {
     private final InternRepository internRepository;
     private final CloudinaryService cloudinaryService;
     private final ModelMapper modelMapper;
+        private final SprintCompletionService sprintCompletionService;
+
 
     @Override
     public SprintResponse createSprint(Integer teamId, CreateSprintRequest request) {
@@ -289,5 +295,11 @@ public class SprintServiceImpl implements SprintService {
         Sprint sprint = sprintRepository.findById(sprintId)
                 .orElseThrow(() -> new EntityNotFoundException(ErrorCode.SPRINT_NOT_EXISTS.getMessage()));
         return modelMapper.map(sprint, GetEvaluateSprintResponse.class);        
+    }
+
+    @Scheduled(cron = "0 0 23 * * *")
+    public void scheduleSprintCompletionCheck() {
+        log.info("Scheduler activated: Checking for finished sprints.");
+        sprintCompletionService.processAndNotifyFinishedSprints();
     }
 }
