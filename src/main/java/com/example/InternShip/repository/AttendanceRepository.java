@@ -1,6 +1,6 @@
 package com.example.InternShip.repository;
 
-import com.example.InternShip.dto.response.GetAllAttendanceResponse;
+import com.example.InternShip.dto.attendance.response.GetAllAttendanceResponse;
 import com.example.InternShip.entity.Attendance;
 import com.example.InternShip.entity.Intern;
 import org.springframework.data.jpa.repository.JpaRepository;

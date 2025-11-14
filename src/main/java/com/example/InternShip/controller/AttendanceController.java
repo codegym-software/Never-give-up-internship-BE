@@ -1,6 +1,6 @@
 package com.example.InternShip.controller;
 
-import com.example.InternShip.dto.response.GetMyScheduleResponse;
+import com.example.InternShip.dto.attendance.response.GetMyScheduleResponse;
 import com.example.InternShip.service.AttendanceService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;

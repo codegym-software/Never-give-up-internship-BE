@@ -1,17 +1,15 @@
 package com.example.InternShip.controller;
 
-import com.example.InternShip.dto.request.UpdateInternRequest;
-
-import com.example.InternShip.dto.request.CreateInternRequest;
-
-import com.example.InternShip.dto.request.GetAllInternRequest;
-import com.example.InternShip.dto.response.GetInternResponse;
-import com.example.InternShip.dto.response.MyProfileResponse;
+import com.example.InternShip.dto.intern.request.CreateInternRequest;
+import com.example.InternShip.dto.intern.request.GetAllInternRequest;
+import com.example.InternShip.dto.intern.request.UpdateInternRequest;
+import com.example.InternShip.dto.intern.response.GetInternResponse;
+import com.example.InternShip.dto.intern.response.MyProfileResponse;
 import com.example.InternShip.dto.response.PagedResponse;
-
+import com.example.InternShip.dto.workSchedule.response.WorkScheduleResponse;
 import com.example.InternShip.service.InternService;
 import com.example.InternShip.service.WorkScheduleService; // Added
-import com.example.InternShip.dto.response.WorkScheduleResponse; // Added
+
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
@@ -79,7 +77,7 @@ public class InternController {
     }
 
     @GetMapping("/me")
-    //@PreAuthorize("hasAuthority('SCOPE_INTERN')")
+    // @PreAuthorize("hasAuthority('SCOPE_INTERN')")
     public ResponseEntity<MyProfileResponse> getMyProfile() {
         return ResponseEntity.ok(internService.getMyProfile());
     }

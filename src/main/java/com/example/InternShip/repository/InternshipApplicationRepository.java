@@ -1,7 +1,6 @@
 package com.example.InternShip.repository;
 
 import com.example.InternShip.entity.InternshipApplication;
-import com.example.InternShip.entity.InternshipApplication.Status;
 
 import java.util.Optional;
 
@@ -13,7 +12,6 @@ import org.springframework.data.repository.query.Param;
 import java.util.List;
 
 public interface InternshipApplicationRepository extends JpaRepository<InternshipApplication, Integer> {
-    boolean existsByUserId(Integer userId);
     Optional<InternshipApplication> findByUserIdAndStatus(Integer userId, InternshipApplication.Status status);
     List<InternshipApplication> findAllByUserId(Integer userId);
 
@@ -43,5 +41,4 @@ public interface InternshipApplicationRepository extends JpaRepository<Internshi
                 @Param("status") InternshipApplication.Status status,
                 Pageable pageable
                 );
-     List<InternshipApplication> findByInternshipProgram_IdAndStatus(Integer internshipProgramId, Status status);
 }

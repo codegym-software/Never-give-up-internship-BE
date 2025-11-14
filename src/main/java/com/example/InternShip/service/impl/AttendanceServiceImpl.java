@@ -1,8 +1,8 @@
 package com.example.InternShip.service.impl;
 
-import com.example.InternShip.dto.response.GetAllAttendanceResponse;
-import com.example.InternShip.dto.response.GetMyScheduleResponse;
-import com.example.InternShip.dto.response.GetTeamScheduleResponse;
+import com.example.InternShip.dto.attendance.response.GetAllAttendanceResponse;
+import com.example.InternShip.dto.attendance.response.GetMyScheduleResponse;
+import com.example.InternShip.dto.attendance.response.GetTeamScheduleResponse;
 import com.example.InternShip.entity.*;
 import com.example.InternShip.exception.ErrorCode;
 import com.example.InternShip.repository.AttendanceRepository;
@@ -61,7 +61,7 @@ public class AttendanceServiceImpl implements AttendanceService {
         WorkSchedule schedule = getWorkScheduleForIntern(intern, today.getDayOfWeek());
 
         if (now.isAfter(schedule.getTimeEnd()) ||
-                now.isBefore(schedule.getTimeStart().minusMinutes(30))) {
+                now.isBefore(schedule.getTimeStart().minusMinutes(15))) {
             throw new IllegalStateException(ErrorCode.CANNOT_CHECK_IN.getMessage());
         }
 

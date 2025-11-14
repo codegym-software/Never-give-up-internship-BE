@@ -1,9 +1,9 @@
 package com.example.InternShip.service;
 
-import com.example.InternShip.dto.request.CreateTaskRequest;
-import com.example.InternShip.dto.request.UpdateTaskRequest;
-import com.example.InternShip.dto.response.TaskResponse;
-import com.example.InternShip.dto.request.BatchTaskUpdateRequest;
+import com.example.InternShip.dto.task.request.BatchTaskUpdateRequest;
+import com.example.InternShip.dto.task.request.CreateTaskRequest;
+import com.example.InternShip.dto.task.request.UpdateTaskRequest;
+import com.example.InternShip.dto.task.response.TaskResponse;
 import com.example.InternShip.entity.enums.TaskStatus;
 
 import java.util.List;
@@ -19,7 +19,7 @@ public interface TaskService {
 
     void batchUpdateTasks(BatchTaskUpdateRequest request);
 
-List<TaskResponse> getTasksBySprint(Long sprintId, TaskStatus status, Integer assigneeId);
+    List<TaskResponse> getTasksBySprint(Long sprintId, TaskStatus status, Integer assigneeId);
 
     List<TaskResponse> getTasksByTeam(String teamId);
 

@@ -1,18 +1,16 @@
 package com.example.InternShip.controller;
 
-import com.example.InternShip.dto.request.CreateMentorRequest;
-import com.example.InternShip.dto.request.UpdateMentorRequest;
-import com.example.InternShip.dto.response.GetMentorResponse;
+import com.example.InternShip.dto.mentor.request.CreateMentorRequest;
+import com.example.InternShip.dto.mentor.request.UpdateMentorRequest;
+import com.example.InternShip.dto.mentor.response.GetMentorResponse;
+import com.example.InternShip.dto.mentor.response.TeamResponse;
+import com.example.InternShip.dto.sprint.response.SprintResponse;
 import com.example.InternShip.service.MentorService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
-
-import com.example.InternShip.dto.response.SprintResponse;
-
-import com.example.InternShip.dto.response.TeamResponse;
 
 @RestController
 @RequestMapping("/api/v1/mentors")
@@ -45,7 +43,7 @@ public class MentorController {
     }
 
     @GetMapping("/getAll")
-    public ResponseEntity<?> getAllMentor(){
+    public ResponseEntity<?> getAllMentor() {
         return ResponseEntity.ok(mentorService.getAllMentor());
     }
 

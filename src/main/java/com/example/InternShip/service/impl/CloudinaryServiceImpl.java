@@ -2,7 +2,7 @@ package com.example.InternShip.service.impl;
 
 import com.cloudinary.Cloudinary;
 import com.cloudinary.utils.ObjectUtils;
-import com.example.InternShip.dto.response.FileResponse;
+import com.example.InternShip.dto.cloudinary.response.FileResponse;
 import com.example.InternShip.entity.User;
 import com.example.InternShip.exception.ErrorCode;
 import com.example.InternShip.service.AuthService;

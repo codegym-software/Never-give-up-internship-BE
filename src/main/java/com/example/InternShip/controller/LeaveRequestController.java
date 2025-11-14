@@ -14,8 +14,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.example.InternShip.dto.request.CreateLeaveApplicationRequest;
-import com.example.InternShip.dto.request.RejectLeaveApplicationRequest;
+import com.example.InternShip.dto.leaveRequest.request.CreateLeaveApplicationRequest;
+import com.example.InternShip.dto.leaveRequest.request.RejectLeaveApplicationRequest;
 import com.example.InternShip.service.LeaveRequestService;
 
 import jakarta.validation.Valid;
@@ -33,8 +33,7 @@ public class LeaveRequestController {
 
     @GetMapping("/me") // Get cho intern
     public ResponseEntity<?> getAllLeaveApplicationByIntern(
-            @RequestParam(required = false, defaultValue = "ALL") String status
-    ) {
+            @RequestParam(required = false, defaultValue = "ALL") String status) {
         return ResponseEntity.ok(leaveRequestService.getAllLeaveApplicationByIntern(status));
     }
 

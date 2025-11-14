@@ -1,8 +1,8 @@
 package com.example.InternShip.service.impl;
 
-import com.example.InternShip.dto.request.CreateWorkScheduleRequest;
-import com.example.InternShip.dto.request.UpdateWorkScheduleRequest;
-import com.example.InternShip.dto.response.WorkScheduleResponse;
+import com.example.InternShip.dto.workSchedule.request.CreateWorkScheduleRequest;
+import com.example.InternShip.dto.workSchedule.request.UpdateWorkScheduleRequest;
+import com.example.InternShip.dto.workSchedule.response.WorkScheduleResponse;
 import com.example.InternShip.entity.Team;
 import com.example.InternShip.entity.WorkSchedule;
 import com.example.InternShip.exception.ErrorCode;

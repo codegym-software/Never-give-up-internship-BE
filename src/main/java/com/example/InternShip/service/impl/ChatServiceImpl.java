@@ -1,9 +1,9 @@
 
 package com.example.InternShip.service.impl;
-import com.example.InternShip.dto.request.ChatMessageRequest;
-import com.example.InternShip.dto.response.ChatMessageResponse;
-import com.example.InternShip.dto.response.ConversationListResponse;
-import com.example.InternShip.dto.response.ConversationResponse;
+import com.example.InternShip.dto.chat.request.ChatMessageRequest;
+import com.example.InternShip.dto.chat.response.ChatMessageResponse;
+import com.example.InternShip.dto.chat.response.ConversationListResponse;
+import com.example.InternShip.dto.chat.response.ConversationResponse;
 import com.example.InternShip.entity.ChatMessage;
 import com.example.InternShip.entity.Conversation;
 import com.example.InternShip.entity.User;

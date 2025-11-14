@@ -1,12 +1,12 @@
 package com.example.InternShip.service.impl;
 
-import com.example.InternShip.dto.request.CreateSprintRequest;
-import com.example.InternShip.dto.request.EvaluateSprintRequest;
-import com.example.InternShip.dto.request.UpdateSprintRequest;
-import com.example.InternShip.dto.response.FileResponse;
-import com.example.InternShip.dto.response.GetEvaluateSprintResponse;
-import com.example.InternShip.dto.response.SprintReportResponse;
-import com.example.InternShip.dto.response.SprintResponse;
+import com.example.InternShip.dto.cloudinary.response.FileResponse;
+import com.example.InternShip.dto.sprint.request.CreateSprintRequest;
+import com.example.InternShip.dto.sprint.request.EvaluateSprintRequest;
+import com.example.InternShip.dto.sprint.request.UpdateSprintRequest;
+import com.example.InternShip.dto.sprint.response.GetEvaluateSprintResponse;
+import com.example.InternShip.dto.sprint.response.SprintReportResponse;
+import com.example.InternShip.dto.sprint.response.SprintResponse;
 import com.example.InternShip.entity.Team;
 import com.example.InternShip.entity.Sprint;
 import com.example.InternShip.exception.ErrorCode;
@@ -18,7 +18,6 @@ import jakarta.persistence.EntityNotFoundException;
 import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 
-import org.apache.coyote.BadRequestException;
 import org.modelmapper.ModelMapper;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;

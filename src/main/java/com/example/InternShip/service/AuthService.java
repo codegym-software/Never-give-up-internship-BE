@@ -1,10 +1,10 @@
 package com.example.InternShip.service;
 
-import com.example.InternShip.dto.request.GoogleLoginRequest;
-import com.example.InternShip.dto.request.LoginRequest;
-import com.example.InternShip.dto.request.RefreshTokenRequest;
-import com.example.InternShip.dto.request.RegisterRequest;
-import com.example.InternShip.dto.response.TokenResponse;
+import com.example.InternShip.dto.auth.request.GoogleLoginRequest;
+import com.example.InternShip.dto.auth.request.LoginRequest;
+import com.example.InternShip.dto.auth.request.RegisterRequest;
+import com.example.InternShip.dto.auth.response.TokenResponse;
+import com.example.InternShip.dto.auth.request.RefreshTokenRequest;
 import com.example.InternShip.entity.User;
 import com.nimbusds.jose.JOSEException;
 

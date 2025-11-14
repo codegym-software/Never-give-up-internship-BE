@@ -1,10 +1,10 @@
 package com.example.InternShip.controller;
 
-import com.example.InternShip.dto.request.CreateInternProgramRequest;
-import com.example.InternShip.dto.request.UpdateInternProgramRequest;
 import jakarta.validation.Valid;
 import org.quartz.SchedulerException;
 
+import com.example.InternShip.dto.internshipProgram.request.CreateInternProgramRequest;
+import com.example.InternShip.dto.internshipProgram.request.UpdateInternProgramRequest;
 import com.example.InternShip.service.InternshipProgramService;
 import lombok.RequiredArgsConstructor;
 import java.util.List;
@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 public class InternshipProgramController {
 
     private final InternshipProgramService internshipProgramService;
+
     @GetMapping // Cái này chắc là cho bên client
     public ResponseEntity<?> getAllPrograms() {
         return ResponseEntity.ok(internshipProgramService.getAllPrograms());
@@ -35,12 +36,14 @@ public class InternshipProgramController {
     }
 
     @PostMapping
-    public ResponseEntity<?> createInternProgram (@RequestBody @Valid CreateInternProgramRequest request) throws SchedulerException {
+    public ResponseEntity<?> createInternProgram(@RequestBody @Valid CreateInternProgramRequest request)
+            throws SchedulerException {
         return ResponseEntity.ok(internshipProgramService.createInternProgram(request));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<?> updateInternProgram(@RequestBody @Valid UpdateInternProgramRequest request, @PathVariable int id) throws SchedulerException {
+    public ResponseEntity<?> updateInternProgram(@RequestBody @Valid UpdateInternProgramRequest request,
+            @PathVariable int id) throws SchedulerException {
         return ResponseEntity.ok(internshipProgramService.updateInternProgram(request, id));
     }
 

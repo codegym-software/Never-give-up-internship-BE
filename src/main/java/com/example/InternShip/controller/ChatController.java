@@ -1,7 +1,7 @@
 package com.example.InternShip.controller;
 
-import com.example.InternShip.dto.request.ChatMessageRequest;
-import com.example.InternShip.dto.response.ChatMessageResponse;
+import com.example.InternShip.dto.chat.request.ChatMessageRequest;
+import com.example.InternShip.dto.chat.response.ChatMessageResponse;
 import com.example.InternShip.entity.Conversation;
 import com.example.InternShip.service.ChatService;
 import lombok.RequiredArgsConstructor;

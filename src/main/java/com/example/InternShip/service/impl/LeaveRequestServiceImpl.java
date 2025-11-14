@@ -1,19 +1,18 @@
 package com.example.InternShip.service.impl;
 
-import com.example.InternShip.dto.request.CreateLeaveApplicationRequest;
-import com.example.InternShip.dto.request.RejectLeaveApplicationRequest;
-import com.example.InternShip.dto.response.FileResponse;
-import com.example.InternShip.dto.response.GetAllLeaveApplicationResponse;
-import com.example.InternShip.dto.response.GetLeaveApplicationResponse;
-import com.example.InternShip.dto.response.InternGetAllLeaveApplicationResponse;
-import com.example.InternShip.dto.response.InternGetAllLeaveApplicationResponseSupport;
+import com.example.InternShip.dto.cloudinary.response.FileResponse;
+import com.example.InternShip.dto.leaveRequest.request.CreateLeaveApplicationRequest;
+import com.example.InternShip.dto.leaveRequest.request.RejectLeaveApplicationRequest;
+import com.example.InternShip.dto.leaveRequest.response.GetAllLeaveApplicationResponse;
+import com.example.InternShip.dto.leaveRequest.response.GetLeaveApplicationResponse;
+import com.example.InternShip.dto.leaveRequest.response.InternGetAllLeaveApplicationResponse;
+import com.example.InternShip.dto.leaveRequest.response.InternGetAllLeaveApplicationResponseSupport;
 import com.example.InternShip.dto.response.PagedResponse;
 import com.example.InternShip.entity.Intern;
 import com.example.InternShip.entity.LeaveRequest;
 import com.example.InternShip.entity.User;
 import com.example.InternShip.exception.ErrorCode;
 import com.example.InternShip.repository.LeaveRequestRepository;
-import com.example.InternShip.repository.UserRepository;
 import com.example.InternShip.service.AuthService;
 import com.example.InternShip.service.CloudinaryService;
 import com.example.InternShip.service.LeaveRequestService;
@@ -36,8 +35,6 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class LeaveRequestServiceImpl implements LeaveRequestService {
     private final LeaveRequestRepository leaveRequestRepository;
-
-    private final UserRepository userRepository;
 
     private final AuthService authService;
 

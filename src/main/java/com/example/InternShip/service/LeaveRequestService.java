@@ -1,7 +1,11 @@
 package com.example.InternShip.service;
 
-import com.example.InternShip.dto.request.CreateLeaveApplicationRequest;
-import com.example.InternShip.dto.request.RejectLeaveApplicationRequest;
+import com.example.InternShip.dto.leaveRequest.request.CreateLeaveApplicationRequest;
+import com.example.InternShip.dto.leaveRequest.request.RejectLeaveApplicationRequest;
+import com.example.InternShip.dto.leaveRequest.response.GetAllLeaveApplicationResponse;
+import com.example.InternShip.dto.leaveRequest.response.GetLeaveApplicationResponse;
+import com.example.InternShip.dto.leaveRequest.response.InternGetAllLeaveApplicationResponse;
+import com.example.InternShip.dto.leaveRequest.response.InternGetAllLeaveApplicationResponseSupport;
 import com.example.InternShip.dto.response.*;
 
 public interface LeaveRequestService {

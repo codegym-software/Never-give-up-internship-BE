@@ -1,9 +1,10 @@
 package com.example.InternShip.service.impl;
 
-import com.example.InternShip.dto.request.CreateMentorRequest;
-import com.example.InternShip.dto.request.UpdateMentorRequest;
-import com.example.InternShip.dto.response.GetAllMentorResponse;
-import com.example.InternShip.dto.response.GetMentorResponse;
+import com.example.InternShip.dto.mentor.request.CreateMentorRequest;
+import com.example.InternShip.dto.mentor.request.UpdateMentorRequest;
+import com.example.InternShip.dto.mentor.response.GetAllMentorResponse;
+import com.example.InternShip.dto.mentor.response.GetMentorResponse;
+import com.example.InternShip.dto.mentor.response.TeamResponse;
 import com.example.InternShip.dto.response.PagedResponse;
 import com.example.InternShip.entity.*;
 import com.example.InternShip.entity.enums.Role;
@@ -22,13 +23,9 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import com.example.InternShip.dto.response.SprintResponse;
-
 import com.example.InternShip.service.AuthService;
-
-import com.example.InternShip.dto.response.TeamMemberResponse;
-
-import com.example.InternShip.dto.response.TeamResponse;
+import com.example.InternShip.dto.sprint.response.SprintResponse;
+import com.example.InternShip.dto.team.response.TeamMemberResponse;
 
 @Service
 
@@ -201,25 +198,6 @@ public class MentorServiceImpl implements MentorService {
     }
 
     @Override
-
-    public GetMentorResponse getMentorById(int id) {
-
-        Mentor mentor = mentorRepository.findById(id)
-
-                .orElseThrow(() -> new EntityNotFoundException(ErrorCode.MENTOR_NOT_EXISTED.getMessage()));
-
-        GetMentorResponse res = modelMapper.map(mentor.getUser(), GetMentorResponse.class);
-
-        res.setId(mentor.getId());
-
-        res.setTotalInternOwn(totalInternInAllGroup(mentor));
-
-        res.setDepartmentName(mentor.getDepartment().getName());
-
-        return res;
-
-    }
-
     public List<GetAllMentorResponse> getAllMentor() {
 
         List<Mentor> mentors = mentorRepository.findAll().stream()

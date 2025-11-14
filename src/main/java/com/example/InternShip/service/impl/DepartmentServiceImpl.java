@@ -6,7 +6,7 @@ import java.util.stream.Collectors;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
-import com.example.InternShip.dto.response.GetAllDepartmentResponse;
+import com.example.InternShip.dto.department.response.GetAllDepartmentResponse;
 import com.example.InternShip.entity.Department;
 import com.example.InternShip.repository.DepartmentRepository;
 import com.example.InternShip.service.DepartmentService;

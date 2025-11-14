@@ -1,8 +1,9 @@
 package com.example.InternShip.service.impl;
 
-import com.example.InternShip.dto.request.CreateTaskRequest;
-import com.example.InternShip.dto.request.UpdateTaskRequest;
-import com.example.InternShip.dto.response.TaskResponse;
+import com.example.InternShip.dto.task.request.BatchTaskUpdateRequest;
+import com.example.InternShip.dto.task.request.CreateTaskRequest;
+import com.example.InternShip.dto.task.request.UpdateTaskRequest;
+import com.example.InternShip.dto.task.response.TaskResponse;
 import com.example.InternShip.entity.Intern;
 import com.example.InternShip.entity.Mentor;
 import com.example.InternShip.entity.Sprint;
@@ -31,7 +32,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import com.example.InternShip.dto.request.BatchTaskUpdateRequest;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
@@ -52,13 +52,14 @@ public class TaskServiceImpl implements TaskService {
             throw new IllegalArgumentException(ErrorCode.LIST_TASK_INVALID.getMessage());
         }
 
-        // Simple permission check: for now, only the mentor of the first task's team can perform this.
+        // Simple permission check: for now, only the mentor of the first task's team
+        // can perform this.
         // A more robust check might be needed depending on requirements.
         if (!tasksToUpdate.isEmpty()) {
             User user = authService.getUserLogin();
             Sprint firstTaskSprint = tasksToUpdate.getFirst().getSprint();
             if (firstTaskSprint != null) { // Tasks might be in backlog (sprint is null)
-                 checkTaskManagementPermission(user, firstTaskSprint, "manage");
+                checkTaskManagementPermission(user, firstTaskSprint, "manage");
             } else if (user.getRole() != Role.MENTOR) {
                 throw new AccessDeniedException(ErrorCode.NOT_PERMISSION.getMessage());
             }
@@ -131,37 +132,6 @@ public class TaskServiceImpl implements TaskService {
         return mapToTaskResponse(savedTask);
     }
 
-    public TaskResponse mapToTaskResponse(Task task) {
-        TaskResponse response = new TaskResponse();
-        response.setId(task.getId());
-        response.setName(task.getName());
-        response.setDescription(task.getDescription());
-        response.setStatus(task.getStatus());
-        response.setDeadline(task.getDeadline());
-        response.setSprint_Id(task.getSprint()==null?null:task.getSprint().getId());
-
-        if (task.getAssignee() != null) {
-            response.setAssignee_Id(task.getAssignee().getId());
-            if (task.getAssignee().getUser() != null) {
-                response.setAssigneeName(task.getAssignee().getUser().getFullName());
-            }
-        }
-
-        if (task.getMentor() != null) {
-            response.setMentorId(task.getMentor().getId());
-            if (task.getMentor().getUser() != null) {
-                response.setMentorName(task.getMentor().getUser().getFullName());
-            }
-        }
-
-        if (task.getCreatedBy() != null) {
-            response.setCreatedById(task.getCreatedBy().getId());
-            response.setCreatedByName(task.getCreatedBy().getFullName());
-        }
-
-        return response;
-    }
-
     // hàm kiểm tra người dùng hiện tại có quyền không
     private void checkTaskManagementPermission(User user, Sprint sprint, String action) {
         if (!user.getRole().equals(Role.INTERN) && !user.getRole().equals(Role.MENTOR)) {
@@ -228,7 +198,8 @@ public class TaskServiceImpl implements TaskService {
             Intern assignedIntern = internRepository.findById(request.getAssigneeId())
                     .orElseThrow(() -> new EntityNotFoundException(ErrorCode.INTERN_NOT_EXISTED.getMessage()));
             // Validate that the assigned intern is part of the sprint's team
-            if (assignedIntern.getTeam() == null || !assignedIntern.getTeam().getId().equals(sprint.getTeam().getId())) {
+            if (assignedIntern.getTeam() == null
+                    || !assignedIntern.getTeam().getId().equals(sprint.getTeam().getId())) {
                 throw new RuntimeException(ErrorCode.INTERN_NOT_IN_THIS_TEAM.getMessage());
             }
             task.setAssignee(assignedIntern);
@@ -293,6 +264,69 @@ public class TaskServiceImpl implements TaskService {
         return tasks.stream()
                 .map(this::mapToTaskResponse)
                 .collect(Collectors.toList());
+    }
+
+    public TaskResponse mapToTaskResponse(Task task) {
+        TaskResponse response = new TaskResponse();
+
+        System.out.println("=== Debug Task ID: " + task.getId() + " ===");
+        System.out.println("Name: " + task.getName());
+        System.out.println("Description: " + task.getDescription());
+        System.out.println("Status: " + task.getStatus());
+        System.out.println("Deadline: " + task.getDeadline());
+        System.out.println("Sprint: " + (task.getSprint() == null ? "null" : task.getSprint().getId()));
+
+        if (task.getAssignee() != null) {
+            System.out.println("Assignee ID: " + task.getAssignee().getId());
+            System.out.println("Assignee User: "
+                    + (task.getAssignee().getUser() == null ? "null" : task.getAssignee().getUser().getFullName()));
+        } else {
+            System.out.println("Assignee: null");
+        }
+
+        if (task.getMentor() != null) {
+            System.out.println("Mentor ID: " + task.getMentor().getId());
+            System.out.println("Mentor User: "
+                    + (task.getMentor().getUser() == null ? "null" : task.getMentor().getUser().getFullName()));
+        } else {
+            System.out.println("Mentor: null");
+        }
+
+        if (task.getCreatedBy() != null) {
+            System.out.println("CreatedBy ID: " + task.getCreatedBy().getId());
+            System.out.println("CreatedBy Name: " + task.getCreatedBy().getFullName());
+        } else {
+            System.out.println("CreatedBy: null");
+        }
+
+        // Gán dữ liệu vào response
+        response.setId(task.getId());
+        response.setName(task.getName());
+        response.setDescription(task.getDescription());
+        response.setStatus(task.getStatus());
+        response.setDeadline(task.getDeadline());
+        response.setSprint_Id(task.getSprint() == null ? null : task.getSprint().getId());
+
+        if (task.getAssignee() != null) {
+            response.setAssignee_Id(task.getAssignee().getId());
+            if (task.getAssignee().getUser() != null) {
+                response.setAssigneeName(task.getAssignee().getUser().getFullName());
+            }
+        }
+
+        if (task.getMentor() != null) {
+            response.setMentorId(task.getMentor().getId());
+            if (task.getMentor().getUser() != null) {
+                response.setMentorName(task.getMentor().getUser().getFullName());
+            }
+        }
+
+        if (task.getCreatedBy() != null) {
+            response.setCreatedById(task.getCreatedBy().getId());
+            response.setCreatedByName(task.getCreatedBy().getFullName());
+        }
+
+        return response;
     }
 
     @Override

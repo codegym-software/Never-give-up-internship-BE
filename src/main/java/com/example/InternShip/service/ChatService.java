@@ -1,8 +1,8 @@
 package com.example.InternShip.service;
 
-import com.example.InternShip.dto.request.ChatMessageRequest;
-import com.example.InternShip.dto.response.ChatMessageResponse;
-import com.example.InternShip.dto.response.ConversationListResponse;
+import com.example.InternShip.dto.chat.request.ChatMessageRequest;
+import com.example.InternShip.dto.chat.response.ChatMessageResponse;
+import com.example.InternShip.dto.chat.response.ConversationListResponse;
 import com.example.InternShip.entity.Conversation;
 
 import java.util.List;

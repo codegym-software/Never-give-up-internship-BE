@@ -1,7 +1,6 @@
 package com.example.InternShip.repository;
 
 import com.example.InternShip.entity.Sprint;
-import com.example.InternShip.entity.Task;
 
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -15,6 +14,4 @@ public interface SprintRepository extends JpaRepository<Sprint, Long> {
     List<Sprint> findByTeamId(Integer teamId);
 
     Optional<Sprint> findById(Long id);
-
-    List<Task> getTasksById(Long sprintId);
 }

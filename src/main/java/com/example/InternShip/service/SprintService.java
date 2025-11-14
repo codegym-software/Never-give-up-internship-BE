@@ -2,12 +2,12 @@ package com.example.InternShip.service;
 
 import java.util.List;
 
-import com.example.InternShip.dto.request.CreateSprintRequest;
-import com.example.InternShip.dto.request.EvaluateSprintRequest;
-import com.example.InternShip.dto.request.UpdateSprintRequest;
-import com.example.InternShip.dto.response.PagedResponse;
-import com.example.InternShip.dto.response.SprintReportResponse;
-import com.example.InternShip.dto.response.SprintResponse;
+import com.example.InternShip.dto.sprint.request.CreateSprintRequest;
+import com.example.InternShip.dto.sprint.request.EvaluateSprintRequest;
+import com.example.InternShip.dto.sprint.request.UpdateSprintRequest;
+import com.example.InternShip.dto.sprint.response.SprintReportResponse;
+import com.example.InternShip.dto.sprint.response.SprintResponse;
+
 import org.springframework.web.multipart.MultipartFile;
 
 public interface SprintService {

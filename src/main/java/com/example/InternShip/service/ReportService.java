@@ -1,10 +1,9 @@
 package com.example.InternShip.service;
 
-import com.example.InternShip.dto.response.AttendanceSummaryResponse;
-import com.example.InternShip.dto.response.InternAttendanceDetailResponse;
-
-import java.time.LocalDate;
 import java.util.List;
+
+import com.example.InternShip.dto.report.response.AttendanceSummaryResponse;
+import com.example.InternShip.dto.report.response.InternAttendanceDetailResponse;
 
 public interface ReportService {
     List<AttendanceSummaryResponse> getAttendanceSummaryReport(Integer teamId, Integer internshipProgramId);

@@ -4,7 +4,6 @@ import java.util.List;
 import java.util.Optional;
 
 import com.example.InternShip.entity.Intern;
-import com.example.InternShip.entity.Intern.Status;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -14,9 +13,6 @@ import org.springframework.data.repository.query.Param;
 import com.example.InternShip.entity.User;
 
 public interface InternRepository extends JpaRepository<Intern, Integer> {
-    Optional<Intern> findAllById(Integer id);
-
-    boolean existsByUser(User user);
 
     @Query("""
                 SELECT i
@@ -38,10 +34,6 @@ public interface InternRepository extends JpaRepository<Intern, Integer> {
             @Param("universityId") Integer universityId,
             @Param("keyword") String keyword,
             Pageable pageable);
-
-    Optional<Intern> findByUser_IdAndStatusAndTeamIsNull(Integer id, Status active);
-
-    int countByTeam_id(Integer id);
 
     Optional<Intern> findByUser(User user);
 

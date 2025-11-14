@@ -1,9 +1,12 @@
 package com.example.InternShip.service.impl;
 
-import com.example.InternShip.dto.request.AddMemberRequest;
-import com.example.InternShip.dto.request.CreateTeamRequest;
-import com.example.InternShip.dto.request.UpdateTeamRequest;
+import com.example.InternShip.dto.intern.response.GetInternResponse;
 import com.example.InternShip.dto.response.*;
+import com.example.InternShip.dto.team.request.AddMemberRequest;
+import com.example.InternShip.dto.team.request.CreateTeamRequest;
+import com.example.InternShip.dto.team.request.UpdateTeamRequest;
+import com.example.InternShip.dto.team.response.GetAllTeamResponse;
+import com.example.InternShip.dto.team.response.TeamDetailResponse;
 import com.example.InternShip.entity.*;
 import com.example.InternShip.exception.ErrorCode;
 import com.example.InternShip.repository.InternRepository;

@@ -1,7 +1,7 @@
 package com.example.InternShip.service;
 
-import com.example.InternShip.dto.request.EvaluateInternRequest;
-import com.example.InternShip.dto.response.EvaluationResponse;
+import com.example.InternShip.dto.evaluation.request.EvaluateInternRequest;
+import com.example.InternShip.dto.evaluation.response.EvaluationResponse;
 
 import java.io.ByteArrayInputStream;
 

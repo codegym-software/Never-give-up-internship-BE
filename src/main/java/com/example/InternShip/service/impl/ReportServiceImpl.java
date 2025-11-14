@@ -1,7 +1,7 @@
 package com.example.InternShip.service.impl;
 
-import com.example.InternShip.dto.response.AttendanceSummaryResponse;
-import com.example.InternShip.dto.response.InternAttendanceDetailResponse;
+import com.example.InternShip.dto.report.response.AttendanceSummaryResponse;
+import com.example.InternShip.dto.report.response.InternAttendanceDetailResponse;
 import com.example.InternShip.entity.Attendance;
 import com.example.InternShip.entity.Intern;
 import com.example.InternShip.entity.InternshipProgram;

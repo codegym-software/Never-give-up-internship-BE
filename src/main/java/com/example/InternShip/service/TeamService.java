@@ -1,11 +1,11 @@
 package com.example.InternShip.service;
 
-import com.example.InternShip.dto.request.AddMemberRequest;
-import com.example.InternShip.dto.request.CreateTeamRequest;
-import com.example.InternShip.dto.request.UpdateTeamRequest;
-import com.example.InternShip.dto.response.GetAllTeamResponse;
 import com.example.InternShip.dto.response.PagedResponse;
-import com.example.InternShip.dto.response.TeamDetailResponse;
+import com.example.InternShip.dto.team.request.AddMemberRequest;
+import com.example.InternShip.dto.team.request.CreateTeamRequest;
+import com.example.InternShip.dto.team.request.UpdateTeamRequest;
+import com.example.InternShip.dto.team.response.GetAllTeamResponse;
+import com.example.InternShip.dto.team.response.TeamDetailResponse;
 import com.example.InternShip.entity.Team;
 
 import java.util.List;

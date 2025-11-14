@@ -11,7 +11,6 @@ import java.util.List;
 
 @Repository
 public interface TaskRepository extends JpaRepository<Task, Long>, JpaSpecificationExecutor<Task> {
-    List<Task> findBySprintId(Long sprintId);
     List<Task> findByAssigneeId(Integer assigneeId);
 
     @Query("SELECT t FROM Task t WHERE t.team.id = :teamId")

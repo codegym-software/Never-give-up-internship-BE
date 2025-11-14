@@ -1,19 +1,20 @@
 package com.example.InternShip.service.impl;
 
-import com.example.InternShip.dto.request.CreateUserRequest;
-import com.example.InternShip.dto.request.ForgetPasswordRequest;
-import com.example.InternShip.dto.request.GetAllUserRequest;
-import com.example.InternShip.dto.request.UpdateInfoRequest;
-import com.example.InternShip.dto.request.UpdateUserRequest;
-import com.example.InternShip.dto.response.GetUserResponse;
+import com.example.InternShip.dto.cloudinary.response.FileResponse;
 import com.example.InternShip.dto.response.PagedResponse;
+import com.example.InternShip.dto.user.request.ChangeMyPasswordRequest;
+import com.example.InternShip.dto.user.request.CreateUserRequest;
+import com.example.InternShip.dto.user.request.ForgetPasswordRequest;
+import com.example.InternShip.dto.user.request.GetAllUserRequest;
+import com.example.InternShip.dto.user.request.UpdateInfoRequest;
+import com.example.InternShip.dto.user.request.UpdateUserRequest;
+import com.example.InternShip.dto.user.response.GetUserResponse;
 import com.example.InternShip.entity.PendingUser;
 import com.example.InternShip.entity.User;
 import com.example.InternShip.entity.enums.Role;
 import com.example.InternShip.exception.ErrorCode;
 import com.example.InternShip.repository.PendingUserRepository;
 import com.example.InternShip.repository.UserRepository;
-import com.example.InternShip.dto.response.FileResponse;
 import com.example.InternShip.service.CloudinaryService;
 import com.example.InternShip.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -29,7 +30,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
-import com.example.InternShip.dto.request.ChangeMyPasswordRequest;
 
 @Service
 @RequiredArgsConstructor

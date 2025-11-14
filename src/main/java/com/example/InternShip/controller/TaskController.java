@@ -1,22 +1,16 @@
 package com.example.InternShip.controller;
 
-import com.example.InternShip.dto.request.CreateTaskRequest;
-import com.example.InternShip.dto.request.UpdateTaskRequest;
-import com.example.InternShip.dto.response.TaskResponse;
+import com.example.InternShip.dto.task.request.BatchTaskUpdateRequest;
+import com.example.InternShip.dto.task.request.CreateTaskRequest;
+import com.example.InternShip.dto.task.request.UpdateTaskRequest;
 import com.example.InternShip.service.TaskService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import com.example.InternShip.dto.request.BatchTaskUpdateRequest;
 
 import com.example.InternShip.entity.enums.TaskStatus;
 
-import java.util.List;
-
 import jakarta.validation.Valid;
-
-
 
 @RestController
 

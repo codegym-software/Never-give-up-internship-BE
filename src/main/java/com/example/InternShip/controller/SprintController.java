@@ -1,16 +1,13 @@
 package com.example.InternShip.controller;
 
-import com.example.InternShip.dto.request.CreateSprintRequest;
-import com.example.InternShip.dto.request.EvaluateSprintRequest;
-import com.example.InternShip.dto.request.UpdateSprintRequest;
-import com.example.InternShip.dto.response.SprintReportResponse;
+import com.example.InternShip.dto.sprint.request.CreateSprintRequest;
+import com.example.InternShip.dto.sprint.request.EvaluateSprintRequest;
+import com.example.InternShip.dto.sprint.request.UpdateSprintRequest;
+import com.example.InternShip.dto.sprint.response.SprintReportResponse;
 import com.example.InternShip.service.SprintService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
-import java.util.List;
-
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;

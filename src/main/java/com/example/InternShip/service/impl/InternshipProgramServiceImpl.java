@@ -7,10 +7,10 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import com.example.InternShip.dto.request.CreateInternProgramRequest;
-import com.example.InternShip.dto.request.UpdateInternProgramRequest;
-import com.example.InternShip.dto.response.GetInternProgramResponse;
-import com.example.InternShip.dto.response.GetAllInternProgramResponse;
+import com.example.InternShip.dto.internshipProgram.request.CreateInternProgramRequest;
+import com.example.InternShip.dto.internshipProgram.request.UpdateInternProgramRequest;
+import com.example.InternShip.dto.internshipProgram.response.GetAllInternProgramResponse;
+import com.example.InternShip.dto.internshipProgram.response.GetInternProgramResponse;
 import com.example.InternShip.dto.response.PagedResponse;
 import com.example.InternShip.entity.*;
 import com.example.InternShip.entity.enums.Role;
@@ -25,6 +25,7 @@ import jakarta.transaction.Transactional;
 import org.modelmapper.ModelMapper;
 import org.quartz.*;
 import org.quartz.impl.matchers.GroupMatcher;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -91,6 +92,7 @@ public class InternshipProgramServiceImpl implements InternshipProgramService {
     }
 
     // thêm InternProgram
+    @Autowired
     public GetInternProgramResponse createInternProgram (CreateInternProgramRequest request) throws SchedulerException {
         if (!(LocalDateTime.now().isBefore(request.getEndPublishedTime()) &&
                 request.getEndPublishedTime().isBefore(request.getEndReviewingTime()) &&
@@ -123,6 +125,7 @@ public class InternshipProgramServiceImpl implements InternshipProgramService {
     }
 
     // sửa InternProgram
+    @Autowired
     public GetInternProgramResponse updateInternProgram(UpdateInternProgramRequest request, int id) throws SchedulerException {
         if (!(request.getEndPublishedTime().isBefore(request.getEndReviewingTime()) &&
                 request.getEndReviewingTime().isBefore(request.getTimeStart()))) {

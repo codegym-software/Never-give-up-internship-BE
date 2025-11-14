@@ -1,15 +1,17 @@
 package com.example.InternShip.service.impl;
 
-import com.example.InternShip.dto.request.UpdateInternRequest;
-import com.example.InternShip.dto.request.CreateInternRequest;
+import com.example.InternShip.dto.intern.request.CreateInternRequest;
+import com.example.InternShip.dto.intern.request.GetAllInternRequest;
+import com.example.InternShip.dto.intern.request.UpdateInternRequest;
+import com.example.InternShip.dto.intern.response.GetAllInternNoTeamResponse;
+import com.example.InternShip.dto.intern.response.GetInternResponse;
+import com.example.InternShip.dto.intern.response.MyProfileResponse;
 import com.example.InternShip.entity.*;
 import com.example.InternShip.entity.enums.Role;
 import com.example.InternShip.exception.ErrorCode;
 import com.example.InternShip.repository.*;
-import com.example.InternShip.dto.request.GetAllInternRequest;
-import com.example.InternShip.dto.response.GetAllInternNoTeamResponse;
-import com.example.InternShip.dto.response.GetInternResponse;
 import com.example.InternShip.dto.response.PagedResponse;
+import com.example.InternShip.dto.team.response.TeamDetailResponse;
 import com.example.InternShip.service.AuthService;
 import com.example.InternShip.service.InternService;
 
@@ -28,8 +30,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 import com.example.InternShip.service.TeamService;
-import com.example.InternShip.dto.response.MyProfileResponse;
-import com.example.InternShip.dto.response.TeamDetailResponse;
 
 @Service
 @RequiredArgsConstructor
@@ -44,20 +44,7 @@ public class InternServiceImpl implements InternService {
         private final AuthService authService;
         private final TeamService teamService;
         private final ModelMapper modelMapper;
-
-        @Override
-        public GetInternResponse getInternById(int id) {
-                Intern intern = internRepository.findById(id)
-                                .orElseThrow(() -> new RuntimeException(ErrorCode.INTERN_NOT_EXISTED.getMessage()));
-                GetInternResponse response = modelMapper.map(intern.getUser(), GetInternResponse.class);
-                response.setId(intern.getId());
-                response.setUniversity(intern.getUniversity().getName());
-                response.setMajor(intern.getMajor().getName());
-                response.setInternshipProgram(intern.getInternshipProgram().getName());
-                response.setStatus(intern.getStatus());
-                return response;
-        }
-
+        
         @Override
         public MyProfileResponse getMyProfile() {
                 User currentUser = authService.getUserLogin();

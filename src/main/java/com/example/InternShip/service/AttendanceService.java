@@ -1,8 +1,8 @@
 package com.example.InternShip.service;
 
-import com.example.InternShip.dto.response.GetAllAttendanceResponse;
-import com.example.InternShip.dto.response.GetMyScheduleResponse;
-import com.example.InternShip.dto.response.GetTeamScheduleResponse;
+import com.example.InternShip.dto.attendance.response.GetAllAttendanceResponse;
+import com.example.InternShip.dto.attendance.response.GetMyScheduleResponse;
+import com.example.InternShip.dto.attendance.response.GetTeamScheduleResponse;
 
 import java.util.List;
 
