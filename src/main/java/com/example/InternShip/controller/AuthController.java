@@ -1,12 +1,12 @@
 package com.example.InternShip.controller;
 
-import com.example.InternShip.dto.request.ForgetPasswordRequest;
-import com.example.InternShip.exception.AccountConflictException;
-import com.example.InternShip.dto.request.GoogleLoginRequest;
-import com.example.InternShip.dto.request.LoginRequest;
-import com.example.InternShip.dto.request.RefreshTokenRequest;
-import com.example.InternShip.dto.request.RegisterRequest;
-import com.example.InternShip.dto.response.TokenResponse;
+import com.example.InternShip.dto.auth.request.GoogleLoginRequest;
+import com.example.InternShip.dto.auth.request.LoginRequest;
+import com.example.InternShip.dto.auth.request.RegisterRequest;
+import com.example.InternShip.dto.auth.response.TokenResponse;
+import com.example.InternShip.dto.user.request.ChangeMyPasswordRequest;
+import com.example.InternShip.dto.user.request.ForgetPasswordRequest;
+import com.example.InternShip.dto.auth.request.RefreshTokenRequest;
 import com.example.InternShip.service.AuthService;
 import com.example.InternShip.service.UserService;
 import com.nimbusds.jose.JOSEException;
@@ -21,7 +21,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import com.example.InternShip.dto.request.ChangeMyPasswordRequest;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.text.ParseException;
 
@@ -48,8 +48,8 @@ public class AuthController {
         try {
             TokenResponse tokenResponse = authService.loginWithGoogle(request);
             return ResponseEntity.ok(tokenResponse);
-        } catch (AccountConflictException e) {
-            return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
+        } catch (ResponseStatusException e) {
+            return ResponseEntity.status(e.getStatusCode()).body(e.getReason());
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Authentication failed: " + e.getMessage());
         }
@@ -63,8 +63,8 @@ public class AuthController {
 
     @PostMapping("/forgetPassword")
     public ResponseEntity<String> forgetPassword(@RequestBody ForgetPasswordRequest request) {
-            userService.forgetPassword(request);
-            return ResponseEntity.ok().body("Verification code has been sent");
+        userService.forgetPassword(request);
+        return ResponseEntity.ok().body("Verification code has been sent");
     }
 
     @PostMapping("/link-google")
@@ -72,6 +72,7 @@ public class AuthController {
         authService.linkGoogleAccount(request);
         return ResponseEntity.ok().build();
     }
+
     @PutMapping("/changePassword")
     public ResponseEntity<String> changePassword(@RequestBody ChangeMyPasswordRequest request) {
         try {

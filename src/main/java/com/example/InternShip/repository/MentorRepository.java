@@ -1,10 +1,10 @@
 package com.example.InternShip.repository;
 
-import com.example.InternShip.dto.request.CreateMentorRequest;
-import com.example.InternShip.dto.response.MentorResponse;
 import com.example.InternShip.entity.Mentor;
+import com.example.InternShip.entity.User;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -31,4 +31,8 @@ public interface MentorRepository extends JpaRepository<Mentor, Integer> {
       @Param("department") List<Integer> department,
       @Param("keyword") String keyword,
       Pageable pageable);
+
+
+      Optional<Mentor> findByUser(User user);
+  
 }

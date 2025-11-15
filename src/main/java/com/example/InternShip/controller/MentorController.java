@@ -1,9 +1,10 @@
 package com.example.InternShip.controller;
 
-import com.example.InternShip.dto.request.CreateMentorRequest;
-import com.example.InternShip.dto.request.UpdateMentorRequest;
-import com.example.InternShip.dto.response.GetAllMentorResponse;
-import com.example.InternShip.dto.response.GetMentorResponse;
+import com.example.InternShip.dto.mentor.request.CreateMentorRequest;
+import com.example.InternShip.dto.mentor.request.UpdateMentorRequest;
+import com.example.InternShip.dto.mentor.response.GetMentorResponse;
+import com.example.InternShip.dto.mentor.response.TeamResponse;
+import com.example.InternShip.dto.sprint.response.SprintResponse;
 import com.example.InternShip.service.MentorService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -42,7 +43,17 @@ public class MentorController {
     }
 
     @GetMapping("/getAll")
-    public List<GetAllMentorResponse> getAllMentor(){
-        return mentorService.getAllMentor();
+    public ResponseEntity<?> getAllMentor() {
+        return ResponseEntity.ok(mentorService.getAllMentor());
+    }
+
+    @GetMapping("/me/sprints")
+    public ResponseEntity<List<SprintResponse>> getSprintsForCurrentUser() {
+        return ResponseEntity.ok(mentorService.getSprintsForCurrentUser());
+    }
+
+    @GetMapping("/me/teams")
+    public ResponseEntity<List<TeamResponse>> getTeamsForCurrentUser() {
+        return ResponseEntity.ok(mentorService.getTeamsForCurrentUser());
     }
 }

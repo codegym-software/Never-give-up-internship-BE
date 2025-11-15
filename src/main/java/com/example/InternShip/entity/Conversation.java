@@ -21,11 +21,14 @@ public class Conversation {
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "candidate_id", nullable = false)
-    private User candidate;
+    @JoinColumn(name = "candidate_id")
+    private User candidate; // Can be null for guest users
+
+    @Column(name = "guest_id")
+    private String guestId; // For anonymous users
 
     @ManyToOne
-    @JoinColumn(name = "hr_id", nullable = true) // Can be null if unassigned
+    @JoinColumn(name = "hr_id") // Can be null if unassigned
     private User hr;
 
     @CreationTimestamp

@@ -34,4 +34,7 @@ public class Team {
     @OneToMany(mappedBy = "team")
     private List<Attendance> attendances;
 
+    @OneToMany(mappedBy = "team")
+    private List<Sprint> sprints;
+
 }

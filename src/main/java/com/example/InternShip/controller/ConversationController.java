@@ -1,7 +1,7 @@
 package com.example.InternShip.controller;
 
-import com.example.InternShip.dto.response.ChatMessageResponse;
-import com.example.InternShip.dto.response.ConversationListResponse;
+import com.example.InternShip.dto.chat.response.ChatMessageResponse;
+import com.example.InternShip.dto.chat.response.ConversationListResponse;
 import com.example.InternShip.entity.Conversation;
 import com.example.InternShip.service.ChatService;
 import lombok.RequiredArgsConstructor;
@@ -53,7 +53,8 @@ public class ConversationController {
 
     @DeleteMapping("/{conversationId}")
     @PreAuthorize("hasAuthority('SCOPE_ADMIN') or hasAuthority('SCOPE_HR')")
-    public ResponseEntity<Void> deleteConversation(@PathVariable Long conversationId, @AuthenticationPrincipal Jwt jwt) {
+    public ResponseEntity<Void> deleteConversation(@PathVariable Long conversationId,
+            @AuthenticationPrincipal Jwt jwt) {
         String hrEmail = jwt.getSubject();
         chatService.deleteConversation(conversationId, hrEmail);
         return ResponseEntity.noContent().build();

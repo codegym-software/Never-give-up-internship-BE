@@ -1,6 +1,5 @@
 package com.example.InternShip.config;
 
-import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import org.jetbrains.annotations.NotNull;
 import org.quartz.spi.TriggerFiredBundle;

@@ -21,7 +21,8 @@ public class PendingUserController {
         pendingUserService.verify(token);
         response.sendRedirect("http://localhost:3000");
     }
-     @GetMapping("/verifyForgetPassword")
+
+    @GetMapping("/verifyForgetPassword")
     public void verifyForgetPassword(@RequestParam String token, HttpServletResponse response) throws IOException {
         pendingUserService.verifyForgetPassword(token);
         response.sendRedirect("http://localhost:3000");

@@ -24,8 +24,8 @@ public class ChatMessage {
     private Conversation conversation;
 
     @ManyToOne
-    @JoinColumn(name = "sender_id", nullable = false)
-    private User sender;
+    @JoinColumn(name = "sender_id")
+    private User sender; // Null for guest users
 
     @Column(nullable = false, columnDefinition = "TEXT")
     private String content;

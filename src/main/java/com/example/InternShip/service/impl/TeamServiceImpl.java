@@ -1,12 +1,12 @@
 package com.example.InternShip.service.impl;
 
-import com.example.InternShip.dto.request.AddMemberRequest;
-import com.example.InternShip.dto.request.CreateTeamRequest;
-import com.example.InternShip.dto.request.UpdateTeamRequest;
-import com.example.InternShip.dto.response.GetAllTeamResponse;
-import com.example.InternShip.dto.response.GetInternResponse;
-import com.example.InternShip.dto.response.PagedResponse;
-import com.example.InternShip.dto.response.TeamDetailResponse;
+import com.example.InternShip.dto.intern.response.GetInternResponse;
+import com.example.InternShip.dto.response.*;
+import com.example.InternShip.dto.team.request.AddMemberRequest;
+import com.example.InternShip.dto.team.request.CreateTeamRequest;
+import com.example.InternShip.dto.team.request.UpdateTeamRequest;
+import com.example.InternShip.dto.team.response.GetAllTeamResponse;
+import com.example.InternShip.dto.team.response.TeamDetailResponse;
 import com.example.InternShip.entity.*;
 import com.example.InternShip.exception.ErrorCode;
 import com.example.InternShip.repository.InternRepository;
@@ -20,11 +20,16 @@ import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import com.example.InternShip.service.AuthService;
+import com.example.InternShip.entity.User;
+import com.example.InternShip.entity.enums.Role;
 
 @Service
 @RequiredArgsConstructor
@@ -35,6 +40,7 @@ public class TeamServiceImpl implements TeamService {
     private final InternshipProgramRepository programRepository;
     private final MentorRepository mentorRepository;
     private final ModelMapper modelMapper;
+    private final AuthService authService;
 
     @Override
     @Transactional
@@ -42,7 +48,7 @@ public class TeamServiceImpl implements TeamService {
         InternshipProgram program = programRepository.findById(request.getInternshipProgramId())
                 .orElseThrow(() -> new EntityNotFoundException(ErrorCode.PROGRAM_NOT_EXISTED.getMessage()));
 
-        if (program.getStatus() != InternshipProgram.Status.ONGOING){
+        if (program.getStatus() != InternshipProgram.Status.ONGOING) {
             throw new IllegalArgumentException(ErrorCode.STATUS_INTERNSHIP_PROGRAM_INVALID.getMessage());
         }
         Mentor mentor = mentorRepository.findById(request.getMentorId())
@@ -60,6 +66,13 @@ public class TeamServiceImpl implements TeamService {
         Team savedTeam = teamRepository.save(newTeam);
 
         return mapToTeamDetailResponse(savedTeam);
+    }
+
+    @Override
+    public TeamDetailResponse getTeamById(int id) {
+        Team team = teamRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException(ErrorCode.TEAM_NOT_EXISTED.getMessage()));
+        return mapToTeamDetailResponse(team);
     }
 
     @Override
@@ -113,7 +126,7 @@ public class TeamServiceImpl implements TeamService {
         Intern intern = internRepository.findById(internId)
                 .orElseThrow(() -> new EntityNotFoundException(ErrorCode.INTERN_NOT_EXISTED.getMessage()));
         Team team = intern.getTeam();
-        if (team == null){
+        if (team == null) {
             throw new IllegalArgumentException(ErrorCode.INTERN_NOT_IN_TEAM.getMessage());
         }
         team.getInterns().remove(intern);
@@ -124,7 +137,8 @@ public class TeamServiceImpl implements TeamService {
     }
 
     @Override
-    public PagedResponse<TeamDetailResponse> getAllTeam(Integer internshipProgram, Integer mentor, String keyword, int page) {
+    public PagedResponse<TeamDetailResponse> getTeams(Integer internshipProgram, Integer mentor, String keyword,
+            int page) {
         page = Math.max(0, page - 1);
         PageRequest pageable = PageRequest.of(page, 10);
 
@@ -143,7 +157,33 @@ public class TeamServiceImpl implements TeamService {
                 teams.hasPrevious());
     }
 
-    private TeamDetailResponse mapToTeamDetailResponse(Team team) {
+    public List<GetAllTeamResponse> getAllTeam() {
+        List<Team> teams = teamRepository.findAll();
+        return teams.stream()
+                .map(team -> {
+                    GetAllTeamResponse response = modelMapper.map(team, GetAllTeamResponse.class);
+                    response.setInternshipProgramName(team.getInternshipProgram().getName());
+                    return response;
+                }).toList();
+    }
+
+    @Override
+    public List<TeamDetailResponse> getTeamsByCurrentMentor() {
+        User currentUser = authService.getUserLogin();
+        if (currentUser.getRole() != Role.MENTOR) {
+            throw new AccessDeniedException(ErrorCode.NOT_PERMISSION.getMessage());
+        }
+
+        Mentor mentor = mentorRepository.findByUser(currentUser)
+                .orElseThrow(() -> new EntityNotFoundException(ErrorCode.MENTOR_NOT_EXISTED.getMessage()));
+
+        return mentor.getTeams().stream()
+                .map(this::mapToTeamDetailResponse)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public TeamDetailResponse mapToTeamDetailResponse(Team team) {
         TeamDetailResponse response = new TeamDetailResponse();
         response.setId(team.getId());
         response.setTeamName(team.getName());
@@ -165,5 +205,11 @@ public class TeamServiceImpl implements TeamService {
         dto.setMajor(intern.getMajor().getName());
         dto.setUniversity(intern.getUniversity().getName());
         return dto;
+    }
+
+    @Override
+    public List<GetAllTeamResponse> getAllTeamByIP(Integer internshipProgramId) {
+        List<Team> teams = teamRepository.findAllByInternshipProgram_id(internshipProgramId);
+        return teams.stream().map(team -> modelMapper.map(team, GetAllTeamResponse.class)).toList();
     }
 }

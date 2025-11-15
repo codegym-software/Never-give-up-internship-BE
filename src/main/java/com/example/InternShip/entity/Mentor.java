@@ -24,4 +24,7 @@ public class Mentor {
 
     @OneToMany(mappedBy = "mentor")
     private List<Team> teams;
+
+    @OneToMany(mappedBy = "mentor")
+    private List<Task> tasks;
 }

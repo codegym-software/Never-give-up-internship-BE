@@ -1,22 +1,25 @@
 package com.example.InternShip.service.impl;
 
-import com.example.InternShip.dto.request.CreateUserRequest;
-import com.example.InternShip.dto.request.ForgetPasswordRequest;
-import com.example.InternShip.dto.request.GetAllUserRequest;
-import com.example.InternShip.dto.request.UpdateInfoRequest;
-import com.example.InternShip.dto.request.UpdateUserRequest;
-import com.example.InternShip.dto.response.GetUserResponse;
+import com.example.InternShip.dto.cloudinary.response.FileResponse;
 import com.example.InternShip.dto.response.PagedResponse;
+import com.example.InternShip.dto.user.request.ChangeMyPasswordRequest;
+import com.example.InternShip.dto.user.request.CreateUserRequest;
+import com.example.InternShip.dto.user.request.ForgetPasswordRequest;
+import com.example.InternShip.dto.user.request.GetAllUserRequest;
+import com.example.InternShip.dto.user.request.UpdateInfoRequest;
+import com.example.InternShip.dto.user.request.UpdateUserRequest;
+import com.example.InternShip.dto.user.response.GetUserResponse;
 import com.example.InternShip.entity.PendingUser;
 import com.example.InternShip.entity.User;
 import com.example.InternShip.entity.enums.Role;
 import com.example.InternShip.exception.ErrorCode;
 import com.example.InternShip.repository.PendingUserRepository;
 import com.example.InternShip.repository.UserRepository;
-import com.example.InternShip.dto.response.FileResponse;
 import com.example.InternShip.service.CloudinaryService;
 import com.example.InternShip.service.UserService;
 import lombok.RequiredArgsConstructor;
+
+import java.util.List;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -27,7 +30,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
-import com.example.InternShip.dto.request.ChangeMyPasswordRequest;
 
 @Service
 @RequiredArgsConstructor
@@ -55,9 +57,15 @@ public class UserServiceImpl implements UserService {
                 users.hasPrevious());
     }
 
-    public GetUserResponse getUserInfo() {
-        User user = authService.getUserLogin();
+    @Override
+    public GetUserResponse findById(int id) {
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException(ErrorCode.USER_NOT_EXISTED.getMessage()));
         return modelMapper.map(user, GetUserResponse.class);
+    }
+
+    public GetUserResponse getUserInfo() {
+        return findById(authService.getUserLogin().getId());
     }
 
     public Role parseRole(String role) {
@@ -134,6 +142,14 @@ public class UserServiceImpl implements UserService {
         }
         user.setPassword(bcrypt.encode(request.getNewPassword()));
         userRepository.save(user);
+    }
+
+    @Override
+    public List<GetUserResponse> getAllHr() {
+        return userRepository.findByRole(Role.HR)
+                .stream()
+                .map(user -> modelMapper.map(user, GetUserResponse.class))
+                .toList();
     }
 
 }

@@ -34,5 +34,5 @@ public interface TeamRepository extends JpaRepository<Team, Integer> {
             @Param("keyword") String keyword,
             Pageable pageable);
 
-    Team findByMentor_id(Integer id);
+    List<Team> findAllByInternshipProgram_id(Integer internshipProgramId);
 }

@@ -28,14 +28,14 @@ public class GlobalExceptionHandler {
     @ExceptionHandler( value = MethodArgumentNotValidException.class)
     ResponseEntity<String> handlingMethodArgumentNotValidException(MethodArgumentNotValidException exception){
         String message = null;
-            String enumKey = Objects.requireNonNull(exception.getFieldError()).getDefaultMessage();
-            if (enumKey != null) {
-                try {
-                    message = ErrorCode.valueOf(enumKey).getMessage();
-                } catch (IllegalArgumentException e) {
-                    message = "Kiểm tra lại request đi";
-                }
+        String enumKey = Objects.requireNonNull(exception.getFieldError()).getDefaultMessage();
+        if (enumKey != null) {
+            try {
+                message = ErrorCode.valueOf(enumKey).getMessage();
+            } catch (IllegalArgumentException e) {
+                message = "Kiểm tra lại request đi";
             }
+        }
 
         return ResponseEntity.badRequest().body(message);
     }

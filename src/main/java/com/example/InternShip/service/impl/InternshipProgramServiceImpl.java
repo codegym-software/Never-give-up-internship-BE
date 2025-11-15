@@ -7,10 +7,10 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import com.example.InternShip.dto.request.CreateInternProgramRequest;
-import com.example.InternShip.dto.request.UpdateInternProgramRequest;
-import com.example.InternShip.dto.response.GetInternProgramResponse;
-import com.example.InternShip.dto.response.GetAllInternProgramResponse;
+import com.example.InternShip.dto.internshipProgram.request.CreateInternProgramRequest;
+import com.example.InternShip.dto.internshipProgram.request.UpdateInternProgramRequest;
+import com.example.InternShip.dto.internshipProgram.response.GetAllInternProgramResponse;
+import com.example.InternShip.dto.internshipProgram.response.GetInternProgramResponse;
 import com.example.InternShip.dto.response.PagedResponse;
 import com.example.InternShip.entity.*;
 import com.example.InternShip.entity.enums.Role;
@@ -40,8 +40,6 @@ public class InternshipProgramServiceImpl implements InternshipProgramService {
     private final InternshipProgramRepository internshipProgramRepository;
     private final InternshipApplicationRepository internshipApplicationRepository;
     private final DepartmentRepository departmentRepository;
-    private final InternRepository internRepository;
-    private final UserRepository userRepository;
     private final AuthServiceImpl authService;
     private final ModelMapper modelMapper;
     private final Scheduler scheduler;
@@ -93,6 +91,7 @@ public class InternshipProgramServiceImpl implements InternshipProgramService {
     }
 
     // thêm InternProgram
+    @Override
     public GetInternProgramResponse createInternProgram (CreateInternProgramRequest request) throws SchedulerException {
         if (!(LocalDateTime.now().isBefore(request.getEndPublishedTime()) &&
                 request.getEndPublishedTime().isBefore(request.getEndReviewingTime()) &&
@@ -125,6 +124,7 @@ public class InternshipProgramServiceImpl implements InternshipProgramService {
     }
 
     // sửa InternProgram
+    @Override
     public GetInternProgramResponse updateInternProgram(UpdateInternProgramRequest request, int id) throws SchedulerException {
         if (!(request.getEndPublishedTime().isBefore(request.getEndReviewingTime()) &&
                 request.getEndReviewingTime().isBefore(request.getTimeStart()))) {

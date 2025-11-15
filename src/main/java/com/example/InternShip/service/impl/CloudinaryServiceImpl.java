@@ -2,9 +2,9 @@ package com.example.InternShip.service.impl;
 
 import com.cloudinary.Cloudinary;
 import com.cloudinary.utils.ObjectUtils;
-import com.example.InternShip.dto.response.FileResponse;
+import com.example.InternShip.dto.cloudinary.response.FileResponse;
 import com.example.InternShip.entity.User;
-import com.example.InternShip.exception.FileStorageException;
+import com.example.InternShip.exception.ErrorCode;
 import com.example.InternShip.service.AuthService;
 import com.example.InternShip.service.CloudinaryService;
 
@@ -64,17 +64,17 @@ public class CloudinaryServiceImpl implements CloudinaryService {
 
         } catch (IOException e) {
             log.error("Error uploading file: ", e);
-            throw new FileStorageException("Không thể upload file: " + e.getMessage());
+            throw new RuntimeException(ErrorCode.UPLOAD_FILE_FAILED.getMessage());
         }
     }
 
     private void validateFile(MultipartFile file, String folder) {
         if (file.isEmpty()) {
-            throw new FileStorageException("File trống!");
+            throw new RuntimeException(ErrorCode.FILE_NOT_NULL.getMessage());
         }
 
         if (file.getSize() > MAX_FILE_SIZE) {
-            throw new FileStorageException("File quá lớn! Kích thước tối đa: 10MB");
+            throw new RuntimeException(ErrorCode.FILE_INVALID.getMessage());
         }
 
         String extension = getFileExtension(file.getOriginalFilename()).toLowerCase();
@@ -83,13 +83,13 @@ public class CloudinaryServiceImpl implements CloudinaryService {
         if ("avatars".equals(folder)) {
             List<String> allowedImageExtensions = List.of("png", "jpg", "jpeg", "gif");
             if (!allowedImageExtensions.contains(extension)) {
-                throw new FileStorageException("Chỉ chấp nhận file ảnh (PNG, JPG, GIF)!");
+                throw new IllegalArgumentException(ErrorCode.TYPE_AVATAR_FILE_INVALID.getMessage());
             }
         } else {
             // Assuming other folders are for documents like CVs
-            List<String> allowedDocumentExtensions = List.of("pdf", "docx", "doc");
+            List<String> allowedDocumentExtensions = List.of("pdf", "docx", "doc", "png", "jpg", "jpeg");
             if (!allowedDocumentExtensions.contains(extension)) {
-                throw new FileStorageException("Chỉ chấp nhận file .pdf, .docx, .doc");
+                throw new IllegalArgumentException(ErrorCode.TYPE_FILE_INVALID.getMessage());
             }
         }
     }

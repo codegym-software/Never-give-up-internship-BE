@@ -1,7 +1,6 @@
 package com.example.InternShip.entity;
 
 import com.example.InternShip.entity.enums.Role;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -43,6 +42,12 @@ public class User {
 
     @OneToMany(mappedBy = "hr")
     private List<Conversation> hrConversations;
+
+    @OneToMany(mappedBy = "remitter")
+    private List<Allowance> allowances;
+
+    @OneToMany(mappedBy = "handler")
+    private List<SupportRequest> supportRequests;
 
     private String phone;
 

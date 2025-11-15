@@ -2,7 +2,7 @@ package com.example.InternShip.service;
 
 import java.util.List;
 
-import com.example.InternShip.dto.response.GetAllDepartmentResponse;
+import com.example.InternShip.dto.department.response.GetAllDepartmentResponse;
 
 public interface DepartmentService {
 

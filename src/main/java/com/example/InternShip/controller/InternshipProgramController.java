@@ -1,12 +1,10 @@
 package com.example.InternShip.controller;
 
-import com.example.InternShip.dto.request.CreateInternProgramRequest;
-import com.example.InternShip.dto.request.UpdateInternProgramRequest;
-import com.example.InternShip.dto.response.GetInternProgramResponse;
-import com.example.InternShip.dto.response.GetAllInternProgramResponse;
 import jakarta.validation.Valid;
 import org.quartz.SchedulerException;
 
+import com.example.InternShip.dto.internshipProgram.request.CreateInternProgramRequest;
+import com.example.InternShip.dto.internshipProgram.request.UpdateInternProgramRequest;
 import com.example.InternShip.service.InternshipProgramService;
 import lombok.RequiredArgsConstructor;
 import java.util.List;
@@ -19,9 +17,10 @@ import org.springframework.web.bind.annotation.*;
 public class InternshipProgramController {
 
     private final InternshipProgramService internshipProgramService;
+
     @GetMapping // Cái này chắc là cho bên client
-    public List<GetAllInternProgramResponse> getAllPrograms() {
-        return internshipProgramService.getAllPrograms();
+    public ResponseEntity<?> getAllPrograms() {
+        return ResponseEntity.ok(internshipProgramService.getAllPrograms());
     }
 
     @GetMapping("/get") // Hàm lấy ra các chương trình thực tập (Cái này cho bên Manager)
@@ -37,22 +36,24 @@ public class InternshipProgramController {
     }
 
     @PostMapping
-    public GetInternProgramResponse createInternProgram (@RequestBody @Valid CreateInternProgramRequest request) throws SchedulerException {
-        return internshipProgramService.createInternProgram(request);
+    public ResponseEntity<?> createInternProgram(@RequestBody @Valid CreateInternProgramRequest request)
+            throws SchedulerException {
+        return ResponseEntity.ok(internshipProgramService.createInternProgram(request));
     }
 
     @PutMapping("/{id}")
-    public GetInternProgramResponse updateInternProgram(@RequestBody @Valid UpdateInternProgramRequest request, @PathVariable int id) throws SchedulerException {
-        return internshipProgramService.updateInternProgram(request, id);
+    public ResponseEntity<?> updateInternProgram(@RequestBody @Valid UpdateInternProgramRequest request,
+            @PathVariable int id) throws SchedulerException {
+        return ResponseEntity.ok(internshipProgramService.updateInternProgram(request, id));
     }
 
     @PatchMapping("/cancel/{id}")
-    public GetInternProgramResponse cancelInternProgram(@PathVariable int id) throws SchedulerException {
-        return internshipProgramService.cancelInternProgram(id);
+    public ResponseEntity<?> cancelInternProgram(@PathVariable int id) throws SchedulerException {
+        return ResponseEntity.ok(internshipProgramService.cancelInternProgram(id));
     }
 
     @PatchMapping("/publish/{id}")
-    public GetInternProgramResponse publishInternProgram(@PathVariable int id) throws SchedulerException {
-        return internshipProgramService.publishInternProgram(id);
+    public ResponseEntity<?> publishInternProgram(@PathVariable int id) throws SchedulerException {
+        return ResponseEntity.ok(internshipProgramService.publishInternProgram(id));
     }
 }

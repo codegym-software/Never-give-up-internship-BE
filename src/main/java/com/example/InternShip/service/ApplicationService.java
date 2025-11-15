@@ -1,10 +1,10 @@
 package com.example.InternShip.service;
 
-import com.example.InternShip.dto.request.ApplicationRequest;
-import com.example.InternShip.dto.request.HandleApplicationRequest;
-import com.example.InternShip.dto.response.ApplicationResponse;
+import com.example.InternShip.dto.application.request.ApplicationRequest;
+import com.example.InternShip.dto.application.request.HandleApplicationRequest;
+import com.example.InternShip.dto.application.request.SubmitApplicationContractRequest;
+import com.example.InternShip.dto.application.response.ApplicationResponse;
 import com.example.InternShip.dto.response.PagedResponse;
-import com.example.InternShip.dto.request.SubmitApplicationContractRequest;
 
 import java.util.List;
 
