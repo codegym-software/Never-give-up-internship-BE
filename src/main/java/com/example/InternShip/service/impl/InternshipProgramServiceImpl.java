@@ -92,7 +92,7 @@ public class InternshipProgramServiceImpl implements InternshipProgramService {
     }
 
     // thêm InternProgram
-    @Autowired
+    @Override
     public GetInternProgramResponse createInternProgram (CreateInternProgramRequest request) throws SchedulerException {
         if (!(LocalDateTime.now().isBefore(request.getEndPublishedTime()) &&
                 request.getEndPublishedTime().isBefore(request.getEndReviewingTime()) &&
@@ -125,7 +125,7 @@ public class InternshipProgramServiceImpl implements InternshipProgramService {
     }
 
     // sửa InternProgram
-    @Autowired
+    @Override
     public GetInternProgramResponse updateInternProgram(UpdateInternProgramRequest request, int id) throws SchedulerException {
         if (!(request.getEndPublishedTime().isBefore(request.getEndReviewingTime()) &&
                 request.getEndReviewingTime().isBefore(request.getTimeStart()))) {
