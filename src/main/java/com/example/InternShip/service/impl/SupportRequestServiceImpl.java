@@ -48,7 +48,9 @@ public class SupportRequestServiceImpl implements SupportRequestService {
         res.setEvidenceFileUrl(supportRequest.getEvidenceFile());
         res.setInternName(supportRequest.getIntern().getUser().getFullName());
         res.setInternEmail(supportRequest.getIntern().getUser().getEmail());
-        res.setHandlerName(supportRequest.getHandler().getFullName());
+        if (supportRequest.getHandler() != null) {
+            res.setHandlerName(supportRequest.getHandler().getFullName());
+        }
         return res;
     }
 
@@ -62,7 +64,9 @@ public class SupportRequestServiceImpl implements SupportRequestService {
             res.setEvidenceFileUrl(supportRequest.getEvidenceFile());
             res.setInternName(supportRequest.getIntern().getUser().getFullName());
             res.setInternEmail(supportRequest.getIntern().getUser().getFullName());
-            res.setHandlerName(supportRequest.getHandler().getFullName());
+            if (supportRequest.getHandler() != null) {
+                res.setHandlerName(supportRequest.getHandler().getFullName());
+            }
             return res;
         }).toList();
     }
@@ -82,7 +86,9 @@ public class SupportRequestServiceImpl implements SupportRequestService {
         res.setEvidenceFileUrl(supportRequest.getEvidenceFile());
         res.setInternName(supportRequest.getIntern().getUser().getFullName());
         res.setInternEmail(supportRequest.getIntern().getUser().getEmail());
-        res.setHandlerName(supportRequest.getHandler().getFullName());
+        if (supportRequest.getHandler() != null) {
+            res.setHandlerName(supportRequest.getHandler().getFullName());
+        }
         return res;
     }
 
@@ -99,7 +105,9 @@ public class SupportRequestServiceImpl implements SupportRequestService {
         res.setEvidenceFileUrl(supportRequest.getEvidenceFile());
         res.setInternName(supportRequest.getIntern().getUser().getFullName());
         res.setInternEmail(supportRequest.getIntern().getUser().getEmail());
-        res.setHandlerName(supportRequest.getHandler().getFullName());
+        if (supportRequest.getHandler() != null) {
+            res.setHandlerName(supportRequest.getHandler().getFullName());
+        }
         return res;
     }
 
@@ -116,7 +124,9 @@ public class SupportRequestServiceImpl implements SupportRequestService {
         res.setEvidenceFileUrl(supportRequest.getEvidenceFile());
         res.setInternName(supportRequest.getIntern().getUser().getFullName());
         res.setInternEmail(supportRequest.getIntern().getUser().getEmail());
-        res.setHandlerName(supportRequest.getHandler().getFullName());
+        if (supportRequest.getHandler() != null) {
+            res.setHandlerName(supportRequest.getHandler().getFullName());
+        }
         return res;
     }
 

@@ -35,7 +35,7 @@ public class SupportRequestController {
     @GetMapping
     public ResponseEntity<?> getAllSupportRequest(
             @RequestParam(required = false, defaultValue = "") String keyword, // Tên + Email
-            @RequestParam(required = false, defaultValue = "") String status) {
+            @RequestParam(required = false) String status) {
         return ResponseEntity.ok(supportRequestService.getAllSupportRequest(keyword, status));
     }
 
