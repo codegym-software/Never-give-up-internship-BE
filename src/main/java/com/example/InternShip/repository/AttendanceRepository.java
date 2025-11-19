@@ -60,5 +60,4 @@ public interface AttendanceRepository extends JpaRepository<Attendance, Integer>
                 GROUP BY i.id, u.full_name, t.name
             """, nativeQuery = true)
     GetAllAttendanceResponse findAttendanceSummaryByInternId(@Param("internId") Integer internId);
-
 }
