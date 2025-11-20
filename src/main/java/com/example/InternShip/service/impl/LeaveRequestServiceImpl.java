@@ -85,7 +85,7 @@ public class LeaveRequestServiceImpl implements LeaveRequestService {
     @Override
     @Transactional(readOnly = true)
     public PagedResponse<GetAllLeaveApplicationResponse> getAllLeaveApplication(
-            Boolean approved, String keyword, String type, int page, int size) {
+            String status, String keyword, String type, int page, int size) {
 
         page = Math.max(0, page - 1);
         Pageable pageable = PageRequest.of(page, size, Sort.by("date").descending());
@@ -100,26 +100,11 @@ public class LeaveRequestServiceImpl implements LeaveRequestService {
         }
 
         Page<LeaveRequest> leaveApplications = leaveRequestRepository
-                .searchLeaveApplication(approved, leaveType, keyword, pageable);
+                .searchLeaveApplication(status, leaveType, keyword, pageable);
 
         // Map entity → DTO
         List<GetAllLeaveApplicationResponse> res = leaveApplications.getContent().stream()
-                .map(lr -> {
-                    GetAllLeaveApplicationResponse dto = new GetAllLeaveApplicationResponse();
-                    dto.setId(lr.getId());
-                    dto.setInternName(lr.getIntern().getUser().getFullName());
-                    dto.setType(lr.getType());
-                    dto.setDate(lr.getDate());
-                    dto.setReason(lr.getReason());
-                    dto.setAttachedFileUrl(lr.getAttachedFileUrl());
-                    if (lr.getApproved() == null) {
-                        dto.setApproved(null);
-                    } else {
-                        dto.setApproved(lr.getApproved());
-                    }
-                    dto.setReasonReject(lr.getReasonReject());
-                    return dto;
-                }).toList();
+                .map(this::mapLeaveApplicationToGetAllLeaveApplicationResponse).toList();
 
         return new PagedResponse<>(
                 res,
@@ -181,11 +166,7 @@ public class LeaveRequestServiceImpl implements LeaveRequestService {
     }
 
     @Override
-    public void approveLeaveApplication(Integer id) {
-        // User user = authService.getUserLogin();
-        // if (user.getRole() != Role.HR) {
-        //     throw new IllegalArgumentException();
-        // }
+    public GetAllLeaveApplicationResponse approveLeaveApplication(Integer id) {
         LeaveRequest leaveRequest = leaveRequestRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException(ErrorCode.LEAVE_APPLICATION_NOT_EXISTS.getMessage()));
         if (leaveRequest.getApproved() == null) {
@@ -194,15 +175,12 @@ public class LeaveRequestServiceImpl implements LeaveRequestService {
         } else {
             throw new IllegalArgumentException(ErrorCode.ACTION_INVALID.getMessage());
         }
+        return mapLeaveApplicationToGetAllLeaveApplicationResponse(leaveRequest);
     }
 
     @Override
-    public void rejectLeaveApplication(RejectLeaveApplicationRequest request) {
-        // User user = authService.getUserLogin();
-        // if (user.getRole() != Role.HR) {
-        //     throw new IllegalArgumentException();
-        // }
-        LeaveRequest leaveRequest = leaveRequestRepository.findById(request.getId())
+    public GetAllLeaveApplicationResponse rejectLeaveApplication(int id, RejectLeaveApplicationRequest request) {
+        LeaveRequest leaveRequest = leaveRequestRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException(ErrorCode.LEAVE_APPLICATION_NOT_EXISTS.getMessage()));
         if (leaveRequest.getApproved() == null) {
             leaveRequest.setApproved(false);
@@ -211,5 +189,23 @@ public class LeaveRequestServiceImpl implements LeaveRequestService {
         } else {
             throw new IllegalArgumentException(ErrorCode.ACTION_INVALID.getMessage());
         }
+        return mapLeaveApplicationToGetAllLeaveApplicationResponse(leaveRequest);
+    }
+
+    public GetAllLeaveApplicationResponse mapLeaveApplicationToGetAllLeaveApplicationResponse(LeaveRequest lr){
+        GetAllLeaveApplicationResponse dto = new GetAllLeaveApplicationResponse();
+        dto.setId(lr.getId());
+        dto.setInternName(lr.getIntern().getUser().getFullName());
+        dto.setType(lr.getType());
+        dto.setDate(lr.getDate());
+        dto.setReason(lr.getReason());
+        dto.setAttachedFileUrl(lr.getAttachedFileUrl());
+        if (lr.getApproved() == null) {
+            dto.setApproved(null);
+        } else {
+            dto.setApproved(lr.getApproved());
+        }
+        dto.setReasonReject(lr.getReasonReject());
+        return dto;
     }
 }
