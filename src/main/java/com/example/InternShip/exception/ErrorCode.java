@@ -117,6 +117,7 @@ public enum ErrorCode {
     CANNOT_EVALUATE_SPRINT("Chưa có báo cáo chưa thể đánh giá sprint"),
     INTERN_NOT_IN_THIS_TEAM("Thực tập sinh hiện không thuộc nhóm này"),
     EVALUATION_BY_MENTOR_ONLY("Chỉ mentor mới có thể đánh giá"),
+    NOT_SUPPORT_REQUEST("Không tìm thây yêu cầu"),
     ;
     private final String message;
 }

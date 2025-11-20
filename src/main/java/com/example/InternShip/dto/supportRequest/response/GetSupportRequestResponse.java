@@ -2,6 +2,7 @@ package com.example.InternShip.dto.supportRequest.response;
 
 import java.time.LocalDateTime;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -9,7 +10,7 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class GetSupportRequestReponse {
+public class GetSupportRequestResponse {
     private Integer id;
     private String title;
     private String description;
@@ -18,7 +19,9 @@ public class GetSupportRequestReponse {
     private String internEmail;
     private String handlerName;
     private String hrResponse;
-    private LocalDateTime createAt;
+    @JsonFormat(pattern="dd-MM-yyyy HH:mm:ss")
+    private LocalDateTime createdAt;
+    @JsonFormat(pattern="dd-MM-yyyy HH:mm:ss")
     private LocalDateTime resolvedAt;
     private String status;
 }

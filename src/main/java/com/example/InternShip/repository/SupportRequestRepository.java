@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
 import com.example.InternShip.entity.SupportRequest;
+import org.springframework.data.repository.query.Param;
 
 public interface SupportRequestRepository extends JpaRepository<SupportRequest, Integer> {
 
@@ -24,4 +25,6 @@ public interface SupportRequestRepository extends JpaRepository<SupportRequest, 
             """)
     List<SupportRequest> searchSupportRequest(String keyword, SupportRequest.Status status);
 
+    @Query("SELECT s FROM SupportRequest s WHERE s.intern.id = :internId ORDER BY s.createdAt DESC")
+    List<SupportRequest> findAllByInternId(@Param("internId") Integer internId);
 }
