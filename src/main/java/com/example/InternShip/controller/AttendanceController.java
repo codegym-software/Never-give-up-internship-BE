@@ -40,10 +40,4 @@ public class AttendanceController {
     public ResponseEntity<?> getTeamSchedule(@PathVariable int teamId) {
         return ResponseEntity.ok(attendanceService.getTeamSchedule(teamId));
     }
-
-    @GetMapping
-    public ResponseEntity<?> getInternsAttendance(
-            @RequestParam(required = false, defaultValue = "") Integer teamId) {
-        return ResponseEntity.ok(attendanceService.getInternsAttendance(teamId));
-    }
 }
