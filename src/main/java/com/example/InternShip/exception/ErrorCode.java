@@ -41,6 +41,7 @@ public enum ErrorCode {
     FILE_INVALID("Tệp quá lớn! Kích thước tối đa: 10MB"),
     TYPE_FILE_INVALID("Chỉ chấp nhận file .pdf, .docx, .doc, png, jpg, jpeg"),
     TYPE_AVATAR_FILE_INVALID("Chỉ chấp nhận file ảnh (PNG, JPG, GIF)!"),
+    SUPPORT_REQUEST_STATUS_INVALID("Trạng thái không hợp lệ để thực hiện!"),
 
     //EXISTED
     USERNAME_EXISTED("Tên đăng nhập đã tồn tại."),
@@ -67,6 +68,7 @@ public enum ErrorCode {
     SPRINT_NOT_EXISTS("Sprint không tồn tại"),
     TASK_NOT_EXISTS("Task không tồn tại"),
     CONVERSATION_NOT_EXISTS("Cuộc hội thoại không tồn tại"),
+    SUPPORT_REQUEST_NOT_EXISTS("Đơn yêu cầu hỗ trợ không tồn tại"),
 
     //NOT_NULL
     UNIVERSITY_NOT_NULL ("Trường học không được để trống"),
@@ -81,6 +83,8 @@ public enum ErrorCode {
     ID_NOT_NULL("Mày, mày tính làm gì?"),
     REASON_REJECT_NOT_NULL("Phải có ít nhất 1 lý do chứ?"),
     FILE_NOT_NULL("Tệp không được để trống"),
+    SUPPORT_REQUEST_TITLE_NOT_NULL("Tiêu đề yêu cầu hỗ trợ không được để trống"),
+    SUPPORT_REQUEST_DESCRIPTION_NOT_NULL("Nội dung yêu cầu hỗ trợ không được để trống"),
     
     //FAILED
     VERIFICATION_FAILED("Xác thực thất bại"),
@@ -113,6 +117,7 @@ public enum ErrorCode {
     CANNOT_EVALUATE_SPRINT("Chưa có báo cáo chưa thể đánh giá sprint"),
     INTERN_NOT_IN_THIS_TEAM("Thực tập sinh hiện không thuộc nhóm này"),
     EVALUATION_BY_MENTOR_ONLY("Chỉ mentor mới có thể đánh giá"),
+    NOT_SUPPORT_REQUEST("Không tìm thây yêu cầu"),
     ;
     private final String message;
 }
