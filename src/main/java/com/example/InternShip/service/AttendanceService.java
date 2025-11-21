@@ -14,7 +14,4 @@ public interface AttendanceService {
     List<GetMyScheduleResponse> getMySchedule();
 
     List<GetTeamScheduleResponse> getTeamSchedule(int teamId);
-
-    List<GetAllAttendanceResponse> getInternsAttendance(Integer teamId);
-
 }

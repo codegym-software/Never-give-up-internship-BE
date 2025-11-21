@@ -311,30 +311,4 @@ public class AttendanceServiceImpl implements AttendanceService {
             }
         }
     }
-
-    @Override
-    public List<GetAllAttendanceResponse> getInternsAttendance(Integer teamId) {
-        System.out.println("Team ID: " + teamId);
-        List<Intern> interns;
-
-        if (teamId != null) {
-            interns = internRepository.findAllByStatusAndTeam_id(Intern.Status.ACTIVE, teamId);
-        } else {
-            interns = internRepository.findAllByStatus(Intern.Status.ACTIVE);
-        }
-
-        List<GetAllAttendanceResponse> res = new ArrayList<>();
-
-        for (Intern intern : interns) {
-            System.out.println("INTERN: " +intern.getId());
-            GetAllAttendanceResponse summary = attendanceRepository.findAttendanceSummaryByInternId(intern.getId());
-            if (summary != null) { // ✅ chỉ thêm nếu có dữ liệu
-                System.out.println("SUMARY: " + summary.getTeamName());
-                res.add(summary);
-            }
-        }
-
-        return res;
-    }
-
 }
