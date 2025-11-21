@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -40,6 +41,9 @@ public class InternshipProgram {
 
     @OneToMany(mappedBy = "internshipProgram")
     private List<Intern> interns;
+
+    @Column(precision = 15, scale = 0, nullable = false)
+    private BigDecimal defaultAllowance = BigDecimal.valueOf(0);
 
     public enum Status {
         DRAFT, // bản nháp

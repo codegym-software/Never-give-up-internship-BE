@@ -51,6 +51,12 @@ public class Intern {
     @OneToMany(mappedBy = "assignee")
     private List<Task> tasks;
 
+    @OneToMany(mappedBy = "intern")
+    private List<Allowance> allowances;
+
+    @OneToMany(mappedBy = "intern")
+    private List<SupportRequest> supportRequests;
+
     @Column(precision = 4, scale = 2)
     private BigDecimal expertiseScore; //điểm chuyên môn
 
@@ -68,6 +74,9 @@ public class Intern {
 
     @Column(columnDefinition = "TEXT")
     private String assessment;//nhận xét
+
+    @Column(precision = 15, scale = 0)
+    private BigDecimal allowanceOverride;
 
     public enum SoftSkill {
         GOOD, //tốt
