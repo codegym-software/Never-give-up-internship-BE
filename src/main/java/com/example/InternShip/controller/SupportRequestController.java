@@ -64,9 +64,12 @@ public class SupportRequestController {
     @GetMapping
     //@PreAuthorize("hasAuthority('SCOPE_HR')")
     public ResponseEntity<?> getAllSupportRequest(
-            @RequestParam(required = false, defaultValue = "") String keyword, // Tên + Email
-            @RequestParam(required = false) String status) {
-        return ResponseEntity.ok(supportRequestService.getAllSupportRequest(keyword, status));
+            @RequestParam(required = false, defaultValue = "") String keyword,
+            @RequestParam(required = false) String status,
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "10") int size
+    ) {
+        return ResponseEntity.ok(supportRequestService.getAllSupportRequest(keyword, status, page, size));
     }
 
     // Duyệt đơn hỗ trợ
@@ -87,7 +90,7 @@ public class SupportRequestController {
     @PutMapping("/reject/{supportId}")
     //@PreAuthorize("hasAuthority('SCOPE_HR')")
     public ResponseEntity<?> rejectSupportRequest(@PathVariable Integer supportId,
-            @RequestBody RejectSupportRequestRequest request) {
+                                                  @RequestBody RejectSupportRequestRequest request) {
         return ResponseEntity.ok(supportRequestService.rejectSupportRequest(supportId, request));
     }
 }

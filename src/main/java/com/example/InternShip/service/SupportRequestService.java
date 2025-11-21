@@ -2,6 +2,7 @@ package com.example.InternShip.service;
 
 import java.util.List;
 
+import com.example.InternShip.dto.response.PagedResponse;
 import com.example.InternShip.dto.supportRequest.request.CreateSupportRequestRequest;
 import com.example.InternShip.dto.supportRequest.request.RejectSupportRequestRequest;
 import com.example.InternShip.dto.supportRequest.request.UpdateSupportRequestRequest;
@@ -9,9 +10,7 @@ import com.example.InternShip.dto.supportRequest.response.GetSupportRequestRespo
 
 public interface SupportRequestService {
     //HR
-    GetSupportRequestResponse createSupportRequest(CreateSupportRequestRequest request);
-
-    List<GetSupportRequestResponse> getAllSupportRequest(String keyword, String status);
+    PagedResponse<GetSupportRequestResponse> getAllSupportRequest(String keyword, String status, int page, int size);
 
     GetSupportRequestResponse approveSupportRequest(Integer supportId);
 
@@ -20,6 +19,8 @@ public interface SupportRequestService {
     GetSupportRequestResponse rejectSupportRequest(Integer supportId, RejectSupportRequestRequest request);
 
     //Intern
+    GetSupportRequestResponse createSupportRequest(CreateSupportRequestRequest request);
+
     GetSupportRequestResponse updateRequest(Integer id, UpdateSupportRequestRequest request);
 
     List<GetSupportRequestResponse> getMyList();

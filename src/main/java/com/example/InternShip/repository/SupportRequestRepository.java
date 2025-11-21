@@ -2,6 +2,8 @@ package com.example.InternShip.repository;
 
 import java.util.List;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
@@ -23,7 +25,9 @@ public interface SupportRequestRepository extends JpaRepository<SupportRequest, 
             AND
                 (:status IS NULL OR sr.status = :status)
             """)
-    List<SupportRequest> searchSupportRequest(String keyword, SupportRequest.Status status);
+    Page<SupportRequest> searchSupportRequest(@Param("keyword") String keyword,
+                                              @Param("status") SupportRequest.Status status,
+                                              Pageable pageable);
 
     @Query("SELECT s FROM SupportRequest s WHERE s.intern.id = :internId ORDER BY s.createdAt DESC")
     List<SupportRequest> findAllByInternId(@Param("internId") Integer internId);
