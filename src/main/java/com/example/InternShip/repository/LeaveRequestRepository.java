@@ -23,19 +23,28 @@ public interface LeaveRequestRepository extends JpaRepository<LeaveRequest, Inte
             LocalDate endDate);
 
     @Query("""
-            SELECT lr
-            FROM LeaveRequest lr
-            JOIN lr.intern i
-            WHERE (:approved IS NULL OR lr.approved = :approved)
-              AND (:type IS NULL OR lr.type = :type)
-              AND (:keyword IS NULL OR :keyword = '' OR
-                   LOWER(i.user.fullName) LIKE LOWER(CONCAT('%', :keyword, '%')))
-            """)
+    SELECT lr
+    FROM LeaveRequest lr
+    JOIN lr.intern i
+    WHERE 
+        (
+            :status IS NULL 
+            OR :status = '' 
+            OR UPPER(:status) = 'ALL'
+            OR (UPPER(:status) = 'APPROVED' AND lr.approved = TRUE)
+            OR (UPPER(:status) = 'REJECTED' AND lr.approved = FALSE)
+            OR (UPPER(:status) = 'PENDING' AND lr.approved IS NULL)
+        )
+        AND (:type IS NULL OR lr.type = :type)
+        AND (:keyword IS NULL OR :keyword = '' OR
+             LOWER(i.user.fullName) LIKE LOWER(CONCAT('%', :keyword, '%')))
+""")
     Page<LeaveRequest> searchLeaveApplication(
-            @Param("approved") Boolean approved,
+            @Param("status") String status,
             @Param("type") LeaveRequest.Type type,
             @Param("keyword") String keyword,
             Pageable pageable);
+
 
     // Lấy tất cả đơn nghỉ của 1 intern
     @Query("""
