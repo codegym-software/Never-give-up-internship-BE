@@ -5,8 +5,7 @@ on:
     branches: [Allowance]
   pull_request:
     branches: [Allowance]
-
-
+    
 jobs:
   # ========================
   # BACKEND - SPRING BOOT
