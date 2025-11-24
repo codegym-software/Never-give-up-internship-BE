@@ -89,7 +89,7 @@ public class ReportServiceImpl implements ReportService {
 
                     if (log.getApproved() == null) {
                         entry.setLeaveStatus("Chờ duyệt");
-                    } else if (log.getApproved() == true) {
+                    } else if (log.getApproved()) {
                         entry.setLeaveStatus("Đã duyệt");
                     } else {
                         entry.setLeaveStatus("Đã từ chối" + (log.getReasonReject() != null ? ": " + log.getReasonReject() : ""));
@@ -142,18 +142,7 @@ public class ReportServiceImpl implements ReportService {
     @Override
     public Page<FinalReportResponse> getFinalReport(Integer programId, Integer universityId, Pageable pageable) {
         Page<Intern> internPage = internRepository.findFinalReport(programId, universityId, pageable);
-        Map<Integer, AttendanceRepository.AttendanceSummaryProjection> summaryMap = getAttendanceSummaryMap(programId, null);
-        return internPage.map(intern -> mapToFinalResponse(intern, summaryMap.get(intern.getId())));
-    }
-
-    private Map<Integer, AttendanceRepository.AttendanceSummaryProjection> getAttendanceSummaryMap(Integer programId, Integer teamId) {
-        return attendanceRepository.getAttendanceSummary(teamId, programId)
-                .stream()
-                .collect(Collectors.toMap(
-                        AttendanceRepository.AttendanceSummaryProjection::getInternId,
-                        Function.identity(),
-                        (existing, replacement) -> existing // Xử lý nếu có trùng lặp
-                ));
+        return internPage.map(this::mapToFinalResponse);
     }
 
     @Override
@@ -249,7 +238,7 @@ public class ReportServiceImpl implements ReportService {
         }).collect(Collectors.toList());
     }
 
-    private FinalReportResponse mapToFinalResponse(Intern intern, AttendanceRepository.AttendanceSummaryProjection summary) {
+    private FinalReportResponse mapToFinalResponse(Intern intern) {
         FinalReportResponse res = modelMapper.map(intern, FinalReportResponse.class);
         res.setInternId(intern.getId());
         res.setFullName(intern.getUser().getFullName());
