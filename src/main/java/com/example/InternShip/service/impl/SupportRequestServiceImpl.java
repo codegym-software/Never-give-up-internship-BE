@@ -173,6 +173,7 @@ public class SupportRequestServiceImpl implements SupportRequestService {
         }
 
         supportRequest.setStatus(SupportRequest.Status.REJECTED);
+        supportRequest.setHrResponse(request.getHrResponse());
         supportRequestRepository.save(supportRequest);
         return mapToResponse(supportRequest);
     }
