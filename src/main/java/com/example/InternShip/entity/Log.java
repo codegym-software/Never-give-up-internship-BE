@@ -18,12 +18,15 @@ public class Log {
     @JoinColumn(name = "actioner_id", nullable = false)
     private User action; // người thực hiện
 
-    private String oldData; // Dữ liệu cũ
+    private String dataChange; // bị thay đổi
 
-    private String newData; // Dữ liệu mới
-
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private Action actionType; // loại hành động
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private Model affected; // tên đối tượng bị tác động
 
     @Column(nullable = false)
     private LocalDateTime actionAt; // thời gian thực hiện
@@ -32,5 +35,26 @@ public class Log {
         CREATE,
         MODIFY,
         DELETE
+    }
+
+    public enum Model {
+        ALLOWANCE,
+        ATTENDANCE,
+        CHAT_MESSAGE,
+        CONVERSATION,
+        DEPARTMENT,
+        INTERN,
+        INTERNSHIP_APPLICATION,
+        INTERNSHIP_PROGRAM,
+        LEAVE_REQUEST,
+        MAJOR,
+        MENTOR,
+        PENDING_USER,
+        SPRINT,
+        SUPPORT_REQUEST,
+        TASK,
+        TEAM,
+        UNIVERSITY,
+        USER
     }
 }
