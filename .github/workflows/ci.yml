@@ -33,11 +33,11 @@ jobs:
           restore-keys: | 
             ${{ runner.os }}-m2-
       - name: Run Backend Tests
-        working-directory: BE
+        working-directory: Never-give-up-internship-BE
         run: mvn test
 
       - name: Build Backend
-        working-directory: BE
+        working-directory: Never-give-up-internship-BE
         run: mvn -B clean package
 
     
