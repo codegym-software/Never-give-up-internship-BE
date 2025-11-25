@@ -39,14 +39,14 @@ public class LeaveRequestController {
 
     @GetMapping // Get cho riêng hr
     public ResponseEntity<?> getAllLeaveApplication(
-            @RequestParam(required = false, defaultValue = "") Boolean approved, // trạng thái
+            @RequestParam(required = false, defaultValue = "") String status, // trạng thái
             @RequestParam(required = false, defaultValue = "") String keyword, // internName
             @RequestParam(required = false, defaultValue = "") String type, // loại đơn
             @RequestParam(required = false, defaultValue = "1") int page,
             @RequestParam(required = false, defaultValue = "10") int size) {
 
         return ResponseEntity.ok(leaveRequestService.getAllLeaveApplication(
-                approved,
+                status,
                 keyword,
                 type,
                 page,
@@ -66,13 +66,12 @@ public class LeaveRequestController {
 
     @PatchMapping("/approve/{id}")
     public ResponseEntity<?> approveLeaveApplication(@PathVariable Integer id) {
-        leaveRequestService.approveLeaveApplication(id);
-        return ResponseEntity.ok().build();
+
+        return ResponseEntity.ok(leaveRequestService.approveLeaveApplication(id));
     }
 
-    @PatchMapping("/reject")
-    public ResponseEntity<?> rejectLeaveApplication(@RequestBody @Valid RejectLeaveApplicationRequest request) {
-        leaveRequestService.rejectLeaveApplication(request);
-        return ResponseEntity.ok().build();
+    @PatchMapping("/reject/{id}")
+    public ResponseEntity<?> rejectLeaveApplication(@PathVariable int id ,@RequestBody @Valid RejectLeaveApplicationRequest request) {
+        return ResponseEntity.ok(leaveRequestService.rejectLeaveApplication(id, request));
     }
 }

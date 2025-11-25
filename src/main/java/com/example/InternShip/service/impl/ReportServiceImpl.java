@@ -1,6 +1,8 @@
 package com.example.InternShip.service.impl;
 
 import com.example.InternShip.dto.report.response.AttendanceSummaryResponse;
+import com.example.InternShip.dto.report.response.FinalAttendanceResponse;
+import com.example.InternShip.dto.report.response.FinalReportResponse;
 import com.example.InternShip.dto.report.response.InternAttendanceDetailResponse;
 import com.example.InternShip.entity.Attendance;
 import com.example.InternShip.entity.Intern;
@@ -14,10 +16,14 @@ import com.example.InternShip.repository.LeaveRequestRepository;
 import com.example.InternShip.service.ReportService;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
@@ -31,6 +37,7 @@ public class ReportServiceImpl implements ReportService {
     private final InternRepository internRepository;
     private final InternshipProgramRepository internshipProgramRepository;
     private final LeaveRequestRepository leaveRequestRepository;
+    private final ModelMapper modelMapper;
 
     @Override
     public List<AttendanceSummaryResponse> getAttendanceSummaryReport(Integer teamId, Integer internshipProgramId) {
@@ -82,7 +89,7 @@ public class ReportServiceImpl implements ReportService {
 
                     if (log.getApproved() == null) {
                         entry.setLeaveStatus("Chờ duyệt");
-                    } else if (log.getApproved() == true) {
+                    } else if (log.getApproved()) {
                         entry.setLeaveStatus("Đã duyệt");
                     } else {
                         entry.setLeaveStatus("Đã từ chối" + (log.getReasonReject() != null ? ": " + log.getReasonReject() : ""));
@@ -130,5 +137,117 @@ public class ReportServiceImpl implements ReportService {
             res.setTotalAbsentDays(p.getTotalAbsentDays());
             return res;
         }).collect(Collectors.toList());
+    }
+
+    @Override
+    public Page<FinalReportResponse> getFinalReport(Integer programId, Integer universityId, Pageable pageable) {
+        Page<Intern> internPage = internRepository.findFinalReport(programId, universityId, pageable);
+        return internPage.map(this::mapToFinalResponse);
+    }
+
+    @Override
+    public List<FinalAttendanceResponse> getFinalAttendance(Integer internId, Integer internshipProgramId) {
+        Intern intern = internRepository.findById(internId)
+                .orElseThrow(() -> new EntityNotFoundException(ErrorCode.INTERN_NOT_FOUND.getMessage()));
+
+        InternshipProgram program = internshipProgramRepository.findById(internshipProgramId)
+                .orElseThrow(() -> new EntityNotFoundException(ErrorCode.INTERNSHIP_PROGRAM_NOT_EXISTED.getMessage()));
+
+        LocalDate startDate = program.getTimeStart().toLocalDate();
+        LocalDate endDate = program.getTimeEnd().toLocalDate();
+
+        List<Attendance> attendanceLogs = attendanceRepository.findByInternAndDateBetweenOrderByDateAsc(intern, startDate, endDate);
+
+        List<LeaveRequest> leaveRequestLogs = leaveRequestRepository.findByInternAndDateBetweenOrderByDateAsc(intern, startDate, endDate);
+
+        long totalWorking = 0;
+        long totalOnLeave = 0;
+        long totalAbsent = 0;
+
+        for (Attendance att : attendanceLogs) {
+            String status = att.getStatus().name();
+
+            if (status.equals("PRESENT") || status.equals("LATE") ||
+                    status.equals("EARLY_LEAVE") || status.equals("LATE_AND_EARLY_LEAVE")) {
+                totalWorking++;
+            }
+            if (status.equals("ON_LEAVE")) {
+                totalOnLeave++;
+            }
+            if (status.equals("ABSENT")) {
+                totalAbsent++;
+            }
+        }
+
+        for(LeaveRequest lr : leaveRequestLogs) {
+            String status = lr.getType().name();
+            if(status.equals("LATE") || status.equals("EARLY_LEAVE")){
+                totalWorking++;
+            }
+            if(status.equals("ON_LEAVE")){
+                totalOnLeave++;
+            }
+        }
+
+        Map<LocalDate, Attendance> attendanceMap = attendanceLogs.stream()
+                .collect(Collectors.toMap(Attendance::getDate, Function.identity(), (a1, a2) -> a1));
+
+        Map<LocalDate, LeaveRequest> leaveMap = leaveRequestLogs.stream()
+                .collect(Collectors.toMap(LeaveRequest::getDate, Function.identity(), (l1, l2) -> l1));
+
+        List<LocalDate> allDates = new ArrayList<>(attendanceMap.keySet());
+        for (LocalDate date : leaveMap.keySet()) {
+            if (!attendanceMap.containsKey(date)) {
+                allDates.add(date);
+            }
+        }
+        Collections.sort(allDates);
+
+        long finalTotalWorking = totalWorking;
+        long finalTotalOnLeave = totalOnLeave;
+        long finalTotalAbsent = totalAbsent;
+
+        return allDates.stream().map(date -> {
+            FinalAttendanceResponse res = new FinalAttendanceResponse();
+            res.setDate(date);
+
+            Attendance att = attendanceMap.get(date);
+            LeaveRequest leave = leaveMap.get(date);
+
+            if (att != null) {
+                res.setStatus(att.getStatus().name());
+            } else if (leave != null) {
+                res.setStatus(leave.getType().name());
+            } else {
+                res.setStatus("ABSENT");
+            }
+
+            if (leave != null) {
+                String reason = leave.getReason();
+                if (leave.getApproved() != null && !leave.getApproved()) {
+                    reason += " (Từ chối: " + leave.getReasonReject() + ")";
+                }
+                res.setReason(reason);
+            }
+
+            res.setTotalWorkingDays(finalTotalWorking);
+            res.setTotalOnLeaveDays(finalTotalOnLeave);
+            res.setTotalAbsentDays(finalTotalAbsent);
+
+            return res;
+        }).collect(Collectors.toList());
+    }
+
+    private FinalReportResponse mapToFinalResponse(Intern intern) {
+        FinalReportResponse res = modelMapper.map(intern, FinalReportResponse.class);
+        res.setInternId(intern.getId());
+        res.setFullName(intern.getUser().getFullName());
+        res.setEmail(intern.getUser().getEmail());
+
+        if (intern.getInternshipProgram() != null) {
+            res.setInternshipProgramId(intern.getInternshipProgram().getId());
+        }
+
+        return res;
     }
 }

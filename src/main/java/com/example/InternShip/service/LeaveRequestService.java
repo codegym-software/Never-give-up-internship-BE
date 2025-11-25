@@ -12,16 +12,16 @@ public interface LeaveRequestService {
 
     InternGetAllLeaveApplicationResponseSupport createLeaveRequest(CreateLeaveApplicationRequest request);
 
-    PagedResponse<GetAllLeaveApplicationResponse> getAllLeaveApplication(Boolean approved, String keyword, String type,
+    PagedResponse<GetAllLeaveApplicationResponse> getAllLeaveApplication(String status, String keyword, String type,
             int page, int size);
 
     GetLeaveApplicationResponse viewLeaveApplication(Integer id);
 
     void cancelLeaveApplication(Integer id);
 
-    void approveLeaveApplication(Integer id);
+    GetAllLeaveApplicationResponse approveLeaveApplication(Integer id);
 
-    void rejectLeaveApplication(RejectLeaveApplicationRequest request);
+    GetAllLeaveApplicationResponse rejectLeaveApplication(int id, RejectLeaveApplicationRequest request);
 
     InternGetAllLeaveApplicationResponse getAllLeaveApplicationByIntern(String status);
 }

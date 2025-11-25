@@ -37,5 +37,6 @@ public class Allowance {
         PENDING,
         PAID,
         CANCELED,
+        DRAFT,
     }
 }
