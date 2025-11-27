@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 @Setter
 public class Log {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY) // Vì nó tự sinh ra nhiều nên sài cái này
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
     @ManyToOne
@@ -55,6 +55,7 @@ public class Log {
         TASK,
         TEAM,
         UNIVERSITY,
-        USER
+        USER,
+        WORK_SCHEDULE,
     }
 }

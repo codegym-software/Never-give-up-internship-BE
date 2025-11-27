@@ -1,5 +1,6 @@
 package com.example.InternShip.service.impl;
 
+import com.example.InternShip.annotation.LogActivity;
 import com.example.InternShip.dto.cloudinary.response.FileResponse;
 import com.example.InternShip.dto.leaveRequest.request.CreateLeaveApplicationRequest;
 import com.example.InternShip.dto.leaveRequest.request.RejectLeaveApplicationRequest;
@@ -9,6 +10,8 @@ import com.example.InternShip.dto.leaveRequest.response.InternGetAllLeaveApplica
 import com.example.InternShip.dto.leaveRequest.response.InternGetAllLeaveApplicationResponseSupport;
 import com.example.InternShip.dto.response.PagedResponse;
 import com.example.InternShip.entity.Intern;
+import com.example.InternShip.entity.Log.Action;
+import com.example.InternShip.entity.Log.Model;
 import com.example.InternShip.entity.LeaveRequest;
 import com.example.InternShip.entity.User;
 import com.example.InternShip.exception.ErrorCode;
@@ -42,7 +45,13 @@ public class LeaveRequestServiceImpl implements LeaveRequestService {
 
     private final ModelMapper modelMapper;
 
-        @Override
+    @Override
+    @Transactional
+    @LogActivity(
+            action = Action.CREATE,
+            affected = Model.LEAVE_REQUEST,
+            description = "Tạo đơn xin nghỉ phép"
+    )
     public InternGetAllLeaveApplicationResponseSupport createLeaveRequest(CreateLeaveApplicationRequest request) {
         // Lấy ra thằng intern request
         User user = authService.getUserLogin();
@@ -155,6 +164,12 @@ public class LeaveRequestServiceImpl implements LeaveRequestService {
     }
 
     @Override
+    @Transactional
+    @LogActivity(
+            action = Action.DELETE,
+            affected = Model.LEAVE_REQUEST,
+            description = "Xoá đơn xin nghỉ"
+    )
     public void cancelLeaveApplication(Integer id) {
         // Tính làm cái check đơn của người dùng nhưng mà thôi
         LeaveRequest leaveRequest = leaveRequestRepository.findById(id)
@@ -192,7 +207,7 @@ public class LeaveRequestServiceImpl implements LeaveRequestService {
         return mapLeaveApplicationToGetAllLeaveApplicationResponse(leaveRequest);
     }
 
-    public GetAllLeaveApplicationResponse mapLeaveApplicationToGetAllLeaveApplicationResponse(LeaveRequest lr){
+    public GetAllLeaveApplicationResponse mapLeaveApplicationToGetAllLeaveApplicationResponse(LeaveRequest lr) {
         GetAllLeaveApplicationResponse dto = new GetAllLeaveApplicationResponse();
         dto.setId(lr.getId());
         dto.setInternName(lr.getIntern().getUser().getFullName());

@@ -1,5 +1,6 @@
 package com.example.InternShip.service.impl;
 
+import com.example.InternShip.annotation.LogActivity;
 import com.example.InternShip.dto.cloudinary.response.FileResponse;
 import com.example.InternShip.dto.response.PagedResponse;
 import com.example.InternShip.dto.user.request.ChangeMyPasswordRequest;
@@ -9,6 +10,8 @@ import com.example.InternShip.dto.user.request.GetAllUserRequest;
 import com.example.InternShip.dto.user.request.UpdateInfoRequest;
 import com.example.InternShip.dto.user.request.UpdateUserRequest;
 import com.example.InternShip.dto.user.response.GetUserResponse;
+import com.example.InternShip.entity.Log.Action;
+import com.example.InternShip.entity.Log.Model;
 import com.example.InternShip.entity.PendingUser;
 import com.example.InternShip.entity.User;
 import com.example.InternShip.entity.enums.Role;
@@ -17,6 +20,7 @@ import com.example.InternShip.repository.PendingUserRepository;
 import com.example.InternShip.repository.UserRepository;
 import com.example.InternShip.service.CloudinaryService;
 import com.example.InternShip.service.UserService;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 
 import java.util.List;
@@ -79,6 +83,13 @@ public class UserServiceImpl implements UserService {
         return null;
     }
 
+    @Override
+    @Transactional
+    @LogActivity(
+            action = Action.CREATE,
+            affected = Model.USER,
+            description = "Thêm người dùng mới"
+    )
     public GetUserResponse createUser(CreateUserRequest request) {
         if (userRepository.existsByEmail(request.getEmail())) {
             throw new RuntimeException(ErrorCode.EMAIL_EXISTED.getMessage());
@@ -93,6 +104,13 @@ public class UserServiceImpl implements UserService {
         return modelMapper.map(user, GetUserResponse.class);
     }
 
+    @Override
+    @Transactional
+    @LogActivity(
+            action = Action.MODIFY,
+            affected = Model.USER,
+            description = "Sửa người dùng"
+    )
     public GetUserResponse updateUser(UpdateUserRequest request, int id) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException(ErrorCode.USER_NOT_EXISTED.getMessage()));
@@ -106,6 +124,12 @@ public class UserServiceImpl implements UserService {
         return modelMapper.map(user, GetUserResponse.class);
     }
 
+    @Transactional
+    @LogActivity(
+            action = Action.MODIFY,
+            affected = Model.USER,
+            description = "Sửa thông tin cá nhân"
+    )
     public GetUserResponse updateUserInfo(UpdateInfoRequest request) {
         User user = authService.getUserLogin();
         modelMapper.map(request, user);

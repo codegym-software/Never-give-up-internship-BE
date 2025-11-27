@@ -7,12 +7,15 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import com.example.InternShip.annotation.LogActivity;
 import com.example.InternShip.dto.internshipProgram.request.CreateInternProgramRequest;
 import com.example.InternShip.dto.internshipProgram.request.UpdateInternProgramRequest;
 import com.example.InternShip.dto.internshipProgram.response.GetAllInternProgramResponse;
 import com.example.InternShip.dto.internshipProgram.response.GetInternProgramResponse;
 import com.example.InternShip.dto.response.PagedResponse;
 import com.example.InternShip.entity.*;
+import com.example.InternShip.entity.Log.Model;
+import com.example.InternShip.entity.Log.Action;
 import com.example.InternShip.entity.enums.Role;
 import com.example.InternShip.exception.ErrorCode;
 import com.example.InternShip.job.EndPublishJob;
@@ -92,6 +95,12 @@ public class InternshipProgramServiceImpl implements InternshipProgramService {
 
     // thêm InternProgram
     @Override
+    @Transactional
+    @LogActivity(
+            action = Action.CREATE,
+            affected = Model.INTERNSHIP_PROGRAM,
+            description = "Tạo chương trình thực tập"
+    )
     public GetInternProgramResponse createInternProgram (CreateInternProgramRequest request) throws SchedulerException {
         if (!(LocalDateTime.now().isBefore(request.getEndPublishedTime()) &&
                 request.getEndPublishedTime().isBefore(request.getEndReviewingTime()) &&
@@ -125,6 +134,12 @@ public class InternshipProgramServiceImpl implements InternshipProgramService {
 
     // sửa InternProgram
     @Override
+    @Transactional
+    @LogActivity(
+            action = Action.MODIFY,
+            affected = Model.INTERNSHIP_PROGRAM,
+            description = "Sửa chương trình thực tập"
+    )
     public GetInternProgramResponse updateInternProgram(UpdateInternProgramRequest request, int id) throws SchedulerException {
         if (!(request.getEndPublishedTime().isBefore(request.getEndReviewingTime()) &&
                 request.getEndReviewingTime().isBefore(request.getTimeStart()))) {
@@ -157,6 +172,12 @@ public class InternshipProgramServiceImpl implements InternshipProgramService {
     }
 
     // hủy InternProgram
+    @Transactional
+    @LogActivity(
+            action = Action.DELETE,
+            affected = Model.INTERNSHIP_PROGRAM,
+            description = "Xoá chương trình thực tập"
+    )
     public GetInternProgramResponse cancelInternProgram(int id) throws SchedulerException {
         InternshipProgram internshipProgram = internshipProgramRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException(ErrorCode.INTERNSHIP_PROGRAM_NOT_EXISTED.getMessage()));

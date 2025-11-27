@@ -1,5 +1,6 @@
 package com.example.InternShip.service.impl;
 
+import com.example.InternShip.annotation.LogActivity;
 import com.example.InternShip.dto.intern.request.CreateInternRequest;
 import com.example.InternShip.dto.intern.request.GetAllInternRequest;
 import com.example.InternShip.dto.intern.request.UpdateInternRequest;
@@ -7,6 +8,8 @@ import com.example.InternShip.dto.intern.response.GetAllInternNoTeamResponse;
 import com.example.InternShip.dto.intern.response.GetInternResponse;
 import com.example.InternShip.dto.intern.response.MyProfileResponse;
 import com.example.InternShip.entity.*;
+import com.example.InternShip.entity.Log.Action;
+import com.example.InternShip.entity.Log.Model;
 import com.example.InternShip.entity.enums.Role;
 import com.example.InternShip.exception.ErrorCode;
 import com.example.InternShip.repository.*;
@@ -75,6 +78,12 @@ public class InternServiceImpl implements InternService {
         }
 
         @Override
+        @Transactional
+        @LogActivity(
+                action = Action.MODIFY,
+                affected = Model.INTERN,
+                description = "Chỉnh sửa thông tin TTS"
+        )
         public GetInternResponse updateIntern(Integer id, UpdateInternRequest updateInternRequest) {
                 University university = universityRepository.findById(updateInternRequest.getUniversityId())
                                 .orElseThrow(() -> new RuntimeException(ErrorCode.UNIVERSITY_NOT_EXISTED.getMessage()));
@@ -107,6 +116,11 @@ public class InternServiceImpl implements InternService {
 
         @Override
         @Transactional
+        @LogActivity(
+                action = Action.CREATE,
+                affected = Model.INTERN,
+                description = "Thêm mới TTS"
+        )
         public GetInternResponse createIntern(CreateInternRequest request) {
                 if (userRepository.existsByEmail(request.getEmail())) {
                         throw new RuntimeException(ErrorCode.EMAIL_EXISTED.getMessage());

@@ -1,5 +1,8 @@
 package com.example.InternShip.service.impl;
 
+import com.example.InternShip.annotation.LogActivity;
+import com.example.InternShip.entity.Log.Model;
+import com.example.InternShip.entity.Log.Action;
 import com.example.InternShip.dto.intern.response.GetInternResponse;
 import com.example.InternShip.dto.response.*;
 import com.example.InternShip.dto.team.request.AddMemberRequest;
@@ -44,6 +47,11 @@ public class TeamServiceImpl implements TeamService {
 
     @Override
     @Transactional
+    @LogActivity(
+            action = Action.CREATE,
+            affected = Model.TEAM,
+            description = "Thêm nhóm"
+    )
     public TeamDetailResponse createTeam(CreateTeamRequest request) {
         InternshipProgram program = programRepository.findById(request.getInternshipProgramId())
                 .orElseThrow(() -> new EntityNotFoundException(ErrorCode.PROGRAM_NOT_EXISTED.getMessage()));
@@ -76,6 +84,12 @@ public class TeamServiceImpl implements TeamService {
     }
 
     @Override
+    @Transactional
+    @LogActivity(
+            action = Action.MODIFY,
+            affected = Model.TEAM,
+            description = "Sửa nhóm"
+    )
     public TeamDetailResponse updateTeam(Integer teamId, UpdateTeamRequest request) {
         Team team = teamRepository.findById(teamId)
                 .orElseThrow(() -> new EntityNotFoundException(ErrorCode.TEAM_NOT_EXISTED.getMessage()));
@@ -98,6 +112,12 @@ public class TeamServiceImpl implements TeamService {
     }
 
     @Override
+    @Transactional
+    @LogActivity(
+            action = Action.CREATE,
+            affected = Model.TEAM,
+            description = "Thêm thành viên nhóm"
+    )
     public TeamDetailResponse addMember(Integer teamId, AddMemberRequest request) {
         Team team = teamRepository.findById(teamId)
                 .orElseThrow(() -> new EntityNotFoundException(ErrorCode.TEAM_NOT_EXISTED.getMessage()));
@@ -122,6 +142,11 @@ public class TeamServiceImpl implements TeamService {
 
     @Override
     @Transactional
+    @LogActivity(
+            action = Action.DELETE,
+            affected = Model.TEAM,
+            description = "Xoá thành viên nhóm"
+    )
     public TeamDetailResponse removeMember(Integer internId) {
         Intern intern = internRepository.findById(internId)
                 .orElseThrow(() -> new EntityNotFoundException(ErrorCode.INTERN_NOT_EXISTED.getMessage()));
