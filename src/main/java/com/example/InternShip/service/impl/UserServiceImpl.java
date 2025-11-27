@@ -109,7 +109,7 @@ public class UserServiceImpl implements UserService {
     @LogActivity(
             action = Action.MODIFY,
             affected = Model.USER,
-            description = "Sửa người dùng"
+            description = "Sửa quyền hoặc trạng thái người dùng"
     )
     public GetUserResponse updateUser(UpdateUserRequest request, int id) {
         User user = userRepository.findById(id)

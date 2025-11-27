@@ -88,7 +88,7 @@ public class TeamServiceImpl implements TeamService {
     @LogActivity(
             action = Action.MODIFY,
             affected = Model.TEAM,
-            description = "Sửa nhóm"
+            description = "Sửa thông tin nhóm"
     )
     public TeamDetailResponse updateTeam(Integer teamId, UpdateTeamRequest request) {
         Team team = teamRepository.findById(teamId)

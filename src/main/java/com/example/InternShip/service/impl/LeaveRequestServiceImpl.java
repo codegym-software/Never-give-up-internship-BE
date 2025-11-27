@@ -181,6 +181,12 @@ public class LeaveRequestServiceImpl implements LeaveRequestService {
     }
 
     @Override
+    @Transactional
+    @LogActivity(
+            action = Action.MODIFY,
+            affected = Model.LEAVE_REQUEST,
+            description = "HR duyệt đơn xin nghỉ phép"
+    )
     public GetAllLeaveApplicationResponse approveLeaveApplication(Integer id) {
         LeaveRequest leaveRequest = leaveRequestRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException(ErrorCode.LEAVE_APPLICATION_NOT_EXISTS.getMessage()));
@@ -194,6 +200,12 @@ public class LeaveRequestServiceImpl implements LeaveRequestService {
     }
 
     @Override
+    @Transactional
+    @LogActivity(
+            action = Action.MODIFY,
+            affected = Model.LEAVE_REQUEST,
+            description = "HR từ chối đơn xin nghỉ phép"
+    )
     public GetAllLeaveApplicationResponse rejectLeaveApplication(int id, RejectLeaveApplicationRequest request) {
         LeaveRequest leaveRequest = leaveRequestRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException(ErrorCode.LEAVE_APPLICATION_NOT_EXISTS.getMessage()));

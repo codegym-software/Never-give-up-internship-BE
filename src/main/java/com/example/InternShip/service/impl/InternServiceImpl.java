@@ -82,7 +82,7 @@ public class InternServiceImpl implements InternService {
         @LogActivity(
                 action = Action.MODIFY,
                 affected = Model.INTERN,
-                description = "Chỉnh sửa thông tin TTS"
+                description = "Chỉnh sửa thông tin thực tập sinh"
         )
         public GetInternResponse updateIntern(Integer id, UpdateInternRequest updateInternRequest) {
                 University university = universityRepository.findById(updateInternRequest.getUniversityId())
@@ -119,7 +119,7 @@ public class InternServiceImpl implements InternService {
         @LogActivity(
                 action = Action.CREATE,
                 affected = Model.INTERN,
-                description = "Thêm mới TTS"
+                description = "Thêm mới thực tập sinh"
         )
         public GetInternResponse createIntern(CreateInternRequest request) {
                 if (userRepository.existsByEmail(request.getEmail())) {
