@@ -1,5 +1,6 @@
 package com.example.InternShip.service.impl;
 
+import com.example.InternShip.annotation.LogActivity;
 import com.example.InternShip.dto.cloudinary.response.FileResponse;
 import com.example.InternShip.dto.leaveRequest.request.CreateLeaveApplicationRequest;
 import com.example.InternShip.dto.leaveRequest.request.RejectLeaveApplicationRequest;
@@ -10,6 +11,8 @@ import com.example.InternShip.dto.leaveRequest.response.InternGetAllLeaveApplica
 import com.example.InternShip.dto.response.PagedResponse;
 import com.example.InternShip.entity.Intern;
 import com.example.InternShip.entity.LeaveRequest;
+import com.example.InternShip.entity.Log.Action;
+import com.example.InternShip.entity.Log.Model;
 import com.example.InternShip.entity.User;
 import com.example.InternShip.exception.ErrorCode;
 import com.example.InternShip.repository.LeaveRequestRepository;
@@ -155,6 +158,12 @@ public class LeaveRequestServiceImpl implements LeaveRequestService {
     }
 
     @Override
+    @Transactional
+    @LogActivity(
+            action = Action.DELETE,
+            affected = Model.LEAVE_REQUEST,
+            description = "Xoá đơn xin nghỉ"
+    )
     public void cancelLeaveApplication(Integer id) {
         // Tính làm cái check đơn của người dùng nhưng mà thôi
         LeaveRequest leaveRequest = leaveRequestRepository.findById(id)
