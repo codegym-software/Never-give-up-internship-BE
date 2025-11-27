@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import com.example.InternShip.annotation.LogActivity;
 import com.example.InternShip.dto.response.PagedResponse;
 import com.example.InternShip.dto.supportRequest.request.UpdateSupportRequestRequest;
 import org.modelmapper.ModelMapper;
@@ -25,10 +26,13 @@ import com.example.InternShip.service.AuthService;
 import com.example.InternShip.service.CloudinaryService;
 import com.example.InternShip.service.SupportRequestService;
 import com.example.InternShip.entity.SupportRequest.Status;
+import com.example.InternShip.entity.Log.Model;
+import com.example.InternShip.entity.Log.Action;
 
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -41,6 +45,12 @@ public class SupportRequestServiceImpl implements SupportRequestService {
 
     //Intern gửi yêu cầu
     @Override
+    @Transactional
+    @LogActivity(
+            action = Action.CREATE,
+            affected = Model.SUPPORT_REQUEST,
+            description = "Tạo yêu cầu phụ cấp"
+    )
     public GetSupportRequestResponse createSupportRequest(CreateSupportRequestRequest request) {
         User user = authService.getUserLogin();
         SupportRequest supportRequest = new SupportRequest();
@@ -70,6 +80,12 @@ public class SupportRequestServiceImpl implements SupportRequestService {
 
     //Intern sửa yêu cầu
     @Override
+    @Transactional
+    @LogActivity(
+            action = Action.MODIFY,
+            affected = Model.SUPPORT_REQUEST,
+            description = "Chỉnh sửa yêu cầu phụ cấp"
+    )
     public GetSupportRequestResponse updateRequest(Integer id, UpdateSupportRequestRequest request) {
         User user = authService.getUserLogin();
         SupportRequest req = supportRequestRepository.findById(id)
@@ -97,6 +113,12 @@ public class SupportRequestServiceImpl implements SupportRequestService {
 
     //Intern hủy yêu cầu
     @Override
+    @Transactional
+    @LogActivity(
+            action = Action.DELETE,
+            affected = Model.SUPPORT_REQUEST,
+            description = "Huỷ yêu cầu phụ cấp"
+    )
     public void cancelSupportRequest(Integer supportId) {
         SupportRequest supportRequest = supportRequestRepository.findById(supportId)
                 .orElseThrow(() -> new EntityNotFoundException(ErrorCode.SUPPORT_REQUEST_NOT_EXISTS.getMessage()));
@@ -133,6 +155,12 @@ public class SupportRequestServiceImpl implements SupportRequestService {
 
     //HR duyệt yêu cầu
     @Override
+    @Transactional
+    @LogActivity(
+            action = Action.MODIFY,
+            affected = Model.SUPPORT_REQUEST,
+            description = "Duyệt yêu cầu phụ cấp"
+    )
     public GetSupportRequestResponse approveSupportRequest(Integer supportId) {
         SupportRequest supportRequest = supportRequestRepository.findById(supportId)
                 .orElseThrow(() -> new EntityNotFoundException(ErrorCode.SUPPORT_REQUEST_NOT_EXISTS.getMessage()));
@@ -164,6 +192,12 @@ public class SupportRequestServiceImpl implements SupportRequestService {
 
     //HR từ chối yêu cầu
     @Override
+    @Transactional
+    @LogActivity(
+            action = Action.MODIFY,
+            affected = Model.SUPPORT_REQUEST,
+            description = "Từ chối yêu cầu phụ cấp"
+    )
     public GetSupportRequestResponse rejectSupportRequest(Integer supportId, RejectSupportRequestRequest request) {
         SupportRequest supportRequest = supportRequestRepository.findById(supportId)
                 .orElseThrow(() -> new EntityNotFoundException(ErrorCode.SUPPORT_REQUEST_NOT_EXISTS.getMessage()));

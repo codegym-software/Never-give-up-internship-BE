@@ -8,6 +8,7 @@ import com.example.InternShip.service.AuthService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.JoinPoint;
@@ -32,6 +33,7 @@ public class SystemLogAspect {
     private final ObjectMapper objectMapper;
 
     @AfterReturning(pointcut = "@annotation(logActivity)", returning = "result")
+    @Transactional
     public void logActivity(JoinPoint joinPoint, LogActivity logActivity, Object result) {
         try {
             // 1. Lấy User hiện tại
@@ -39,7 +41,7 @@ public class SystemLogAspect {
             try {
                 currentUser = authService.getUserLogin();
             } catch (Exception e) {
-                // Bỏ qua nếu không có user (tác vụ hệ thống)
+                // Bỏ qua nếu không có user
             }
             if (currentUser == null) return;
 
@@ -52,13 +54,18 @@ public class SystemLogAspect {
 
             // 3. Xử lý dữ liệu thay đổi (JSON)
             String dataJson = getPayloadJson(joinPoint);
+            String description = logActivity.description();
 
-            // Nếu JSON rỗng (hoặc chỉ có {}), dùng description mặc định
-            if (dataJson == null || dataJson.equals("{}") || dataJson.isEmpty()) {
-                newLog.setDataChange(logActivity.description());
+            // --- LOGIC MỚI Ở ĐÂY ---
+            if (dataJson != null && !dataJson.equals("{}") && !dataJson.isEmpty()) {
+                // Nếu có JSON: Lưu cả Description + JSON để dễ đọc
+                // Ví dụ: "Tạo mới chương trình | Data: {"name": "Java", ...}"
+                newLog.setDataChange(description + " | Chi tiết: " + dataJson);
             } else {
-                newLog.setDataChange(dataJson);
+                // Nếu không có JSON: Chỉ lưu Description
+                newLog.setDataChange(description);
             }
+            // -----------------------
 
             logRepository.save(newLog);
 
@@ -73,8 +80,8 @@ public class SystemLogAspect {
     private String getPayloadJson(JoinPoint joinPoint) {
         try {
             CodeSignature signature = (CodeSignature) joinPoint.getSignature();
-            String[] paramNames = signature.getParameterNames(); // Tên tham số (vd: id, request)
-            Object[] args = joinPoint.getArgs();                 // Giá trị tham số
+            String[] paramNames = signature.getParameterNames();
+            Object[] args = joinPoint.getArgs();
 
             Map<String, Object> logData = new HashMap<>();
 
@@ -82,21 +89,16 @@ public class SystemLogAspect {
                 Object arg = args[i];
                 String paramName = paramNames[i];
 
-                // Bỏ qua các đối tượng hệ thống không cần log
                 if (arg instanceof MultipartFile || arg instanceof MultipartFile[]
                         || arg instanceof HttpServletRequest || arg instanceof HttpServletResponse) {
                     continue;
                 }
 
-                // Nếu tham số là DTO (Request Body), ta thường muốn log nội dung nó trực tiếp
-                // chứ không muốn bọc trong tên biến.
-                // Ví dụ: muốn { "name": "A" } thay vì { "request": { "name": "A" } }
-                // Logic: Nếu chỉ có 1 tham số và nó là Object phức tạp -> Log thẳng Object đó.
+                // Nếu chỉ có 1 tham số là DTO phức tạp -> Log thẳng object đó cho gọn
                 if (args.length == 1 && !isPrimitiveOrWrapper(arg)) {
                     return objectMapper.writeValueAsString(arg);
                 }
 
-                // Nếu có nhiều tham số (VD: id, request), ta đưa vào Map
                 logData.put(paramName, arg);
             }
 
@@ -107,7 +109,6 @@ public class SystemLogAspect {
         }
     }
 
-    // Helper: Kiểm tra kiểu dữ liệu đơn giản
     private boolean isPrimitiveOrWrapper(Object obj) {
         Class<?> clazz = obj.getClass();
         return clazz.isPrimitive() || clazz == Integer.class || clazz == Long.class

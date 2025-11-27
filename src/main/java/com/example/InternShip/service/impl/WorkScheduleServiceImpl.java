@@ -1,8 +1,11 @@
 package com.example.InternShip.service.impl;
 
+import com.example.InternShip.annotation.LogActivity;
 import com.example.InternShip.dto.workSchedule.request.CreateWorkScheduleRequest;
 import com.example.InternShip.dto.workSchedule.request.UpdateWorkScheduleRequest;
 import com.example.InternShip.dto.workSchedule.response.WorkScheduleResponse;
+import com.example.InternShip.entity.Log.Model;
+import com.example.InternShip.entity.Log.Action;
 import com.example.InternShip.entity.Team;
 import com.example.InternShip.entity.WorkSchedule;
 import com.example.InternShip.exception.ErrorCode;
@@ -10,6 +13,7 @@ import com.example.InternShip.repository.TeamRepository;
 import com.example.InternShip.repository.WorkScheduleRepository;
 import com.example.InternShip.service.WorkScheduleService;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -36,6 +40,12 @@ public class WorkScheduleServiceImpl implements WorkScheduleService {
     }
 
     @Override
+    @Transactional
+    @LogActivity(
+            action = Action.MODIFY,
+            affected = Model.WORK_SCHEDULE,
+            description = "Sửa lịch"
+    )
     public WorkScheduleResponse updateSchedule(Integer id, UpdateWorkScheduleRequest request) {
         WorkSchedule workSchedule = workScheduleRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException(ErrorCode.WORK_SCHEDULE_NOT_EXISTED.getMessage()));
@@ -47,6 +57,12 @@ public class WorkScheduleServiceImpl implements WorkScheduleService {
         return mapToResponse(workSchedule);
     }
 
+    @Transactional
+    @LogActivity(
+            action = Action.CREATE,
+            affected = Model.WORK_SCHEDULE,
+            description = "Thêm lịch mới"
+    )
     public WorkScheduleResponse createSchedule(CreateWorkScheduleRequest request){
         Team team = teamRepository.findById(request.getIdTeam())
                 .orElseThrow(() -> new EntityNotFoundException(ErrorCode.TEAM_NOT_EXISTED.getMessage()));
@@ -63,6 +79,12 @@ public class WorkScheduleServiceImpl implements WorkScheduleService {
         return mapToResponse(workSchedule);
     }
 
+    @Transactional
+    @LogActivity(
+            action = Action.DELETE,
+            affected = Model.WORK_SCHEDULE,
+            description = "Xoá lịch"
+    )
     public void deleteSchedule (int id){
         workScheduleRepository.deleteById(id);
     }

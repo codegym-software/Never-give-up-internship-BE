@@ -88,7 +88,7 @@ public class UserServiceImpl implements UserService {
     @LogActivity(
             action = Action.CREATE,
             affected = Model.USER,
-            description = "Sửa người dùng" // Description này chỉ dùng dự phòng
+            description = "Thêm người dùng mới"
     )
     public GetUserResponse createUser(CreateUserRequest request) {
         if (userRepository.existsByEmail(request.getEmail())) {
@@ -109,7 +109,7 @@ public class UserServiceImpl implements UserService {
     @LogActivity(
             action = Action.MODIFY,
             affected = Model.USER,
-            description = "Tạo người dùng mới" // Description này chỉ dùng dự phòng
+            description = "Sửa người dùng"
     )
     public GetUserResponse updateUser(UpdateUserRequest request, int id) {
         User user = userRepository.findById(id)
@@ -124,6 +124,12 @@ public class UserServiceImpl implements UserService {
         return modelMapper.map(user, GetUserResponse.class);
     }
 
+    @Transactional
+    @LogActivity(
+            action = Action.MODIFY,
+            affected = Model.USER,
+            description = "Sửa thông tin cá nhân"
+    )
     public GetUserResponse updateUserInfo(UpdateInfoRequest request) {
         User user = authService.getUserLogin();
         modelMapper.map(request, user);
