@@ -153,7 +153,7 @@ public class InternServiceImpl implements InternService {
 
         public PagedResponse<GetInternResponse> getAllIntern(GetAllInternRequest request) {
                 int page = Math.max(0, request.getPage() - 1);
-                int size = 15;
+                int size = 10;
                 PageRequest pageable = PageRequest.of(page, size, Sort.by("id").descending());
                 Page<Intern> interns = internRepository.searchInterns(request.getMajorId(), request.getUniversityId(),
                                 request.getKeyWord(), pageable);
@@ -206,24 +206,11 @@ public class InternServiceImpl implements InternService {
                                 .toList();
         }
 
-        @Override
-        public Integer getAuthenticatedInternTeamId() {
-                User user = authService.getUserLogin();
-                Intern intern = internRepository.findByUser(user)
-                                .orElseThrow(() -> new EntityNotFoundException(
-                                                ErrorCode.INTERN_NOT_EXISTED.getMessage()));
-
-                if (intern.getTeam() != null) {
-                        return intern.getTeam().getId();
-                }
-                return null; // Intern is not assigned to a team
-        }
-
         @Override // Hàm lấy intern theo ID nhóm
         public List<GetInternResponse> getAllInternByTeamId(Integer teamId) {
                 Team team = teamRepository.findById(teamId).orElseThrow(
                                 () -> new EntityNotFoundException(ErrorCode.TEAM_NOT_EXISTED.getMessage()));
-                List<Intern> interns = team.getInterns();                
+                List<Intern> interns = team.getInterns();
                 List<GetInternResponse> response = interns.stream().map(intern -> {
                         GetInternResponse dto = modelMapper.map(intern.getUser(), GetInternResponse.class);
                         modelMapper.map(intern, dto);
@@ -232,7 +219,7 @@ public class InternServiceImpl implements InternService {
                         dto.setInternshipProgram(intern.getInternshipProgram().getName());
                         return dto;
                 }).toList();
-                
+
                 return response;
         }
 }

@@ -2,6 +2,7 @@ package com.example.InternShip.entity;
 
 import jakarta.persistence.*;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDate;
@@ -32,9 +33,13 @@ public class LeaveRequest {
 
     private String reasonReject;
 
+    @Getter
+    @RequiredArgsConstructor
     public enum Type {
-        LATE, // Xin đi muộn
-        EARLY_LEAVE, // Xin về sớm
-        ON_LEAVE // Xin nghỉ phép
+        LATE("Xin đi muộn"),
+        EARLY_LEAVE("Xin về sớm"),
+        ON_LEAVE("Xin nghỉ phép")
+        ;
+        private final String message;
     }
 }

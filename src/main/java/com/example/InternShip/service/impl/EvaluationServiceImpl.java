@@ -14,6 +14,7 @@ import com.example.InternShip.service.ExcelExportService;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -76,7 +77,8 @@ public class EvaluationServiceImpl implements EvaluationService {
     public ByteArrayInputStream exportEvaluations(Integer teamId, Integer programId) {
 
         //Lấy danh sách Intern đã lọc
-        List<Intern> internsToExport = internRepository.findForEvaluationReport(programId, teamId);
+        List<Intern> internsToExport =
+                internRepository.findForEvaluationReport(programId, teamId, Pageable.unpaged()).getContent();
 
         return excelExportService.exportInternEvaluations(internsToExport);
     }
