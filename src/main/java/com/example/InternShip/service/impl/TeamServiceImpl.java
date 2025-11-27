@@ -23,6 +23,7 @@ import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
@@ -183,7 +184,7 @@ public class TeamServiceImpl implements TeamService {
     }
 
     public List<GetAllTeamResponse> getAllTeam() {
-        List<Team> teams = teamRepository.findAll();
+        List<Team> teams = teamRepository.findAll(Sort.by(Sort.Direction.DESC, "id"));
         return teams.stream()
                 .map(team -> {
                     GetAllTeamResponse response = modelMapper.map(team, GetAllTeamResponse.class);

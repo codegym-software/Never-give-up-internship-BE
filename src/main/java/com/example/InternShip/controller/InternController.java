@@ -6,9 +6,7 @@ import com.example.InternShip.dto.intern.request.UpdateInternRequest;
 import com.example.InternShip.dto.intern.response.GetInternResponse;
 import com.example.InternShip.dto.intern.response.MyProfileResponse;
 import com.example.InternShip.dto.response.PagedResponse;
-import com.example.InternShip.dto.workSchedule.response.WorkScheduleResponse;
 import com.example.InternShip.service.InternService;
-import com.example.InternShip.service.WorkScheduleService; // Added
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -33,7 +31,6 @@ import java.util.List; // Added
 @RequiredArgsConstructor
 public class InternController {
     private final InternService internService;
-    private final WorkScheduleService workScheduleService; // Added
 
     @PutMapping("/{id}")
     public ResponseEntity<GetInternResponse> UpdateInternById(@PathVariable Integer id,
@@ -59,21 +56,6 @@ public class InternController {
     @GetMapping("/in/{teamId}")
     public ResponseEntity<?> getAllInternByTeamId(@PathVariable Integer teamId) {
         return ResponseEntity.ok(internService.getAllInternByTeamId(teamId));
-    }
-
-    @GetMapping("/my-team-schedule") // New endpoint
-    public ResponseEntity<List<WorkScheduleResponse>> getMyTeamSchedule() {
-        Integer internTeamId = internService.getAuthenticatedInternTeamId();
-
-        if (internTeamId == null) {
-            // If the intern is not associated with a team or not found, return 404 Not
-            // Found
-            // Or 403 Forbidden, depending on desired error handling
-            return ResponseEntity.notFound().build();
-        }
-
-        List<WorkScheduleResponse> teamSchedule = workScheduleService.getWorkSchedule(internTeamId);
-        return ResponseEntity.ok(teamSchedule);
     }
 
     @GetMapping("/me")

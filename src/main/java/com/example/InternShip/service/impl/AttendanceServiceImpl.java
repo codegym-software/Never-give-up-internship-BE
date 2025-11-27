@@ -22,7 +22,6 @@ import org.springframework.scheduling.annotation.Scheduled;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.Optional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -116,6 +115,11 @@ public class AttendanceServiceImpl implements AttendanceService {
                 .orElseThrow(() -> new IllegalStateException(ErrorCode.SCHEDULE_NOT_SET_TODAY.getMessage()));
     }
 
+    private boolean listLeaveRequestHasType (LeaveRequest.Type type, List<LeaveRequest> requests){
+        return requests.stream()
+                .anyMatch(leaveRequest -> leaveRequest.getType().equals(type));
+    }
+
     private Attendance.Status calculateAttendanceStatus(Intern intern, Attendance attendance) {
         LocalTime checkIn = attendance.getCheckIn();
         LocalTime checkOut = attendance.getCheckOut();
@@ -123,46 +127,37 @@ public class AttendanceServiceImpl implements AttendanceService {
         // Lấy giờ làm việc dự kiến đã được lưu lúc check-in
         LocalTime expectedStartTime = attendance.getTimeStart();
         LocalTime expectedEndTime = attendance.getTimeEnd();
-
         LocalTime allowedCheckInTime = expectedStartTime.plusMinutes(30);
 
+        boolean isEarlyLeave = checkOut.isBefore(expectedEndTime);
+        boolean isLate = checkIn.isAfter(allowedCheckInTime);
+
         // Kiểm tra đơn nghỉ phép (chỉ lấy đơn đã APPROVED)
-        Optional<LeaveRequest> leaveOpt = leaveRequestRepository.findByInternAndDateAndApproved(
+        List<LeaveRequest> leaveOpt = leaveRequestRepository.findByInternAndDateAndApproved(
                 intern, attendance.getDate(), true);
 
-        if (leaveOpt.isPresent()) {
-            LeaveRequest leave = leaveOpt.get();
-            // Nghỉ cả ngày
-            if (leave.getType() == LeaveRequest.Type.ON_LEAVE) {
-                return Attendance.Status.ON_LEAVE;
+        if (!leaveOpt.isEmpty()) {
+            boolean hasEarlyLeaveRequest = listLeaveRequestHasType(LeaveRequest.Type.EARLY_LEAVE, leaveOpt);
+            boolean hasLateRequest = listLeaveRequestHasType(LeaveRequest.Type.LATE, leaveOpt);
+
+            if (isLate && isEarlyLeave) {
+                return hasLateRequest && hasEarlyLeaveRequest ?
+                        Attendance.Status.EXCUSED_TIME : Attendance.Status.TIME_VIOLATION;
             }
-            // Xin đi muộn
-            if (leave.getType() == LeaveRequest.Type.LATE) {
-                // kiểm tra có về sớm không
-                boolean isEarlyLeave = checkOut.isBefore(expectedEndTime);
-                return isEarlyLeave ? Attendance.Status.EARLY_LEAVE : Attendance.Status.LATE;
+            if (isLate) {
+                return hasLateRequest ? Attendance.Status.EXCUSED_TIME : Attendance.Status.TIME_VIOLATION;
             }
-            // Xin về sớm
-            if (leave.getType() == LeaveRequest.Type.EARLY_LEAVE) {
-                // kiểm tra có đi muộn không
-                boolean isLate = checkIn.isAfter(allowedCheckInTime);
-                return isLate ? Attendance.Status.LATE : Attendance.Status.EARLY_LEAVE;
+            if (isEarlyLeave) {
+                return hasEarlyLeaveRequest ? Attendance.Status.EXCUSED_TIME : Attendance.Status.TIME_VIOLATION;
             }
         }
 
-        // Nếu không có đơn, xét trạng thái dựa trên giờ
-        boolean isLate = checkIn.isAfter(allowedCheckInTime);
-        boolean isEarlyLeave = checkOut.isBefore(expectedEndTime);
-
-        if (isLate && isEarlyLeave) {
-            return Attendance.Status.LATE_AND_EARLY_LEAVE;
-        } else if (isLate) {
-            return Attendance.Status.LATE;
-        } else if (isEarlyLeave) {
-            return Attendance.Status.EARLY_LEAVE;
-        } else {
-            return Attendance.Status.PRESENT;
+        if (isLate || isEarlyLeave) {
+            return Attendance.Status.TIME_VIOLATION;
         }
+
+        return Attendance.Status.PRESENT;
+
     }
 
     // Phương thức tiện ích để map sang DTO
@@ -275,7 +270,7 @@ public class AttendanceServiceImpl implements AttendanceService {
         return responses;
     }
 
-    @Scheduled(cron = "0 30 17 * * ?")
+    @Scheduled(cron = "0 00 19 * * ?")
     public void checkAttendance() {
         LocalDate today = LocalDate.now();
         List<Intern> interns = internRepository.findAllByStatus(Intern.Status.ACTIVE);
@@ -301,12 +296,19 @@ public class AttendanceServiceImpl implements AttendanceService {
                     .anyMatch(at -> today.equals(at.getDate()));
 
             if (!hasAttendanceToday) {
+                List<LeaveRequest> leaveOpt = leaveRequestRepository.findByInternAndDateAndApproved(
+                        intern, today, true);
+
                 Attendance attendance = new Attendance();
                 attendance.setDate(today);
                 attendance.setIntern(intern);
-                attendance.setStatus(Attendance.Status.ABSENT);
                 attendance.setTimeStart(todaySchedule.getTimeStart());
                 attendance.setTimeEnd(todaySchedule.getTimeEnd());
+                if(!leaveOpt.isEmpty() && listLeaveRequestHasType(LeaveRequest.Type.ON_LEAVE, leaveOpt)) {
+                    attendance.setStatus(Attendance.Status.ON_LEAVE);
+                }else {
+                    attendance.setStatus(Attendance.Status.ABSENT);
+                }
                 attendanceRepository.save(attendance);
             }
         }
