@@ -179,6 +179,9 @@ public class ReportServiceImpl implements ReportService {
             );
 
             FinalReportResponse response = modelMapper.map(intern, FinalReportResponse.class);
+            response.setInternId(intern.getId());
+            response.setFullName(intern.getUser().getEmail());
+            response.setEmail(intern.getUser().getEmail());
             response.setAttendancePercent(attendancePercent);
             response.setAverageScore(calculateAverageScore(intern));
 
