@@ -13,4 +13,7 @@ public @interface LogActivity {
     Action action();
     Model affected();
     String description();
+
+    //Class của đối tượng bị tác động (để tìm dữ liệu cũ)
+    Class<?> entityType() default Void.class;
 }

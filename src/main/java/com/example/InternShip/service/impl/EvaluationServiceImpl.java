@@ -1,10 +1,13 @@
 package com.example.InternShip.service.impl;
 
+import com.example.InternShip.annotation.LogActivity;
 import com.example.InternShip.dto.evaluation.request.EvaluateInternRequest;
 import com.example.InternShip.dto.evaluation.response.EvaluationResponse;
 import com.example.InternShip.entity.Intern;
 import com.example.InternShip.entity.Mentor;
 import com.example.InternShip.entity.User;
+import com.example.InternShip.entity.Log.Action;
+import com.example.InternShip.entity.Log.Model;
 import com.example.InternShip.exception.ErrorCode;
 import com.example.InternShip.repository.InternRepository;
 import com.example.InternShip.repository.MentorRepository;
@@ -34,6 +37,12 @@ public class EvaluationServiceImpl implements EvaluationService {
 
     @Override
     @Transactional
+    @LogActivity(
+            action = Action.CREATE,
+            affected = Model.INTERN,
+            description = "Đánh giá quá trình thực tập cho TTS",
+            entityType = Intern.class
+    )
     public EvaluationResponse evaluateIntern(Integer internId, EvaluateInternRequest request) {
         User mentorUser = authService.getUserLogin();
         Mentor mentor = mentorRepository.findByUser(mentorUser)

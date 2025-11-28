@@ -6,21 +6,17 @@ import com.example.InternShip.entity.User;
 import com.example.InternShip.repository.LogRepository;
 import com.example.InternShip.service.AuthService;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import jakarta.transaction.Transactional;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.aspectj.lang.JoinPoint;
-import org.aspectj.lang.annotation.AfterReturning;
+import org.aspectj.lang.ProceedingJoinPoint;
+import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
-import org.aspectj.lang.reflect.CodeSignature;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.Map;
 
 @Aspect
 @Component
@@ -32,86 +28,115 @@ public class SystemLogAspect {
     private final AuthService authService;
     private final ObjectMapper objectMapper;
 
-    @AfterReturning(pointcut = "@annotation(logActivity)", returning = "result")
-    @Transactional
-    public void logActivity(JoinPoint joinPoint, LogActivity logActivity, Object result) {
-        try {
-            // 1. Lấy User hiện tại
-            User currentUser = null;
+    @PersistenceContext
+    private EntityManager entityManager; // Dùng để query dữ liệu động
+
+    // Dùng @Around để bao trọn quá trình (Trước và Sau khi chạy hàm)
+    @Around("@annotation(logActivity)")
+    public Object logActivity(ProceedingJoinPoint joinPoint, LogActivity logActivity) throws Throwable {
+
+        //Lấy dữ liệu cũ (Pre-processing)
+        String oldDataJson = null;
+        Object entityId = null;
+
+        // Chỉ tìm dữ liệu cũ nếu là Sửa hoặc Xóa và có khai báo entityType
+        if ((logActivity.action() == Log.Action.MODIFY || logActivity.action() == Log.Action.DELETE)
+                && logActivity.entityType() != Void.class) {
+
             try {
-                currentUser = authService.getUserLogin();
+                // Giả định: ID thường là tham số đầu tiên hoặc tham số kiểu Integer/Long đầu tiên
+                entityId = findIdInArgs(joinPoint.getArgs());
+
+                if (entityId != null) {
+                    // Query DB lấy entity hiện tại
+                    Object oldEntity = entityManager.find(logActivity.entityType(), entityId);
+                    if (oldEntity != null) {
+                        // Detach để tránh Hibernate tự động update nếu có thay đổi ngầm
+                        entityManager.detach(oldEntity);
+                        oldDataJson = convertToJson(oldEntity);
+                    }
+                }
             } catch (Exception e) {
-                // Bỏ qua nếu không có user
+                log.warn("Không thể lấy dữ liệu cũ cho Log: {}", e.getMessage());
             }
-            if (currentUser == null) return;
-
-            // 2. Tạo Log
-            Log newLog = new Log();
-            newLog.setAction(currentUser);
-            newLog.setActionAt(LocalDateTime.now());
-            newLog.setActionType(logActivity.action());
-            newLog.setAffected(logActivity.affected());
-
-            // 3. Xử lý dữ liệu thay đổi (JSON)
-            String dataJson = getPayloadJson(joinPoint);
-            String description = logActivity.description();
-
-            // --- LOGIC MỚI Ở ĐÂY ---
-            if (dataJson != null && !dataJson.equals("{}") && !dataJson.isEmpty()) {
-                // Nếu có JSON: Lưu cả Description + JSON để dễ đọc
-                // Ví dụ: "Tạo mới chương trình | Data: {"name": "Java", ...}"
-                newLog.setDataChange(description + " | Chi tiết: " + dataJson);
-            } else {
-                // Nếu không có JSON: Chỉ lưu Description
-                newLog.setDataChange(description);
-            }
-            // -----------------------
-
-            logRepository.save(newLog);
-
-        } catch (Exception e) {
-            log.error("Lỗi ghi log: ", e);
         }
-    }
 
-    /**
-     * Hàm thông minh: Lấy tên tham số và giá trị, bỏ qua File, convert sang JSON
-     */
-    private String getPayloadJson(JoinPoint joinPoint) {
+        //Thực thi hàm chính
+        Object result = joinPoint.proceed();
+
+        //Lấy dữ liệu mới và lưu log
         try {
-            CodeSignature signature = (CodeSignature) joinPoint.getSignature();
-            String[] paramNames = signature.getParameterNames();
-            Object[] args = joinPoint.getArgs();
-
-            Map<String, Object> logData = new HashMap<>();
-
-            for (int i = 0; i < args.length; i++) {
-                Object arg = args[i];
-                String paramName = paramNames[i];
-
-                if (arg instanceof MultipartFile || arg instanceof MultipartFile[]
-                        || arg instanceof HttpServletRequest || arg instanceof HttpServletResponse) {
-                    continue;
-                }
-
-                // Nếu chỉ có 1 tham số là DTO phức tạp -> Log thẳng object đó cho gọn
-                if (args.length == 1 && !isPrimitiveOrWrapper(arg)) {
-                    return objectMapper.writeValueAsString(arg);
-                }
-
-                logData.put(paramName, arg);
-            }
-
-            return objectMapper.writeValueAsString(logData);
-
+            saveLog(logActivity, oldDataJson, result, joinPoint.getArgs(), entityId);
         } catch (Exception e) {
-            return "";
+            log.error("Lỗi khi lưu Log: ", e);
+        }
+
+        return result;
+    }
+
+    private void saveLog(LogActivity logActivity, String oldDataJson, Object result, Object[] args, Object entityId) {
+        User currentUser = null;
+        try {
+            currentUser = authService.getUserLogin();
+        } catch (Exception e) { /* Bỏ qua */ }
+        if (currentUser == null) return;
+
+        Log log = new Log();
+        log.setAction(currentUser);
+        log.setActionAt(LocalDateTime.now());
+        log.setActionType(logActivity.action());
+        log.setAffected(logActivity.affected());
+        log.setDescription(logActivity.description());
+
+        // Set Data Old
+        log.setDataOld(oldDataJson);
+
+        // Set Data New
+        String newDataJson = null;
+
+        if (logActivity.action() == Log.Action.DELETE) {
+            newDataJson = null; // Xóa thì không có dữ liệu mới
+        } else if (logActivity.action() == Log.Action.CREATE) {
+            // Tạo mới: Dữ liệu mới chính là Result trả về (nếu có) hoặc tham số DTO truyền vào
+            newDataJson = (result != null) ? convertToJson(result) : getDtoFromJson(args);
+        } else if (logActivity.action() == Log.Action.MODIFY) {
+            //Nếu hàm trả về Entity mới -> dùng Result
+            //Query lại DB (chậm hơn chút nhưng chính xác nhất)
+            if (result != null) {
+                newDataJson = convertToJson(result);
+            } else if (entityId != null && logActivity.entityType() != Void.class) {
+                Object newEntity = entityManager.find(logActivity.entityType(), entityId);
+                newDataJson = convertToJson(newEntity);
+            }
+        }
+
+        log.setDataNew(newDataJson);
+        logRepository.save(log);
+    }
+
+    private Object findIdInArgs(Object[] args) {
+        for (Object arg : args) {
+            if (arg instanceof Integer || arg instanceof Long) {
+                return arg; // Lấy Integer/Long đầu tiên làm ID
+            }
+        }
+        return null;
+    }
+
+    private String convertToJson(Object object) {
+        try {
+            return objectMapper.writeValueAsString(object);
+        } catch (Exception e) {
+            return null;
         }
     }
 
-    private boolean isPrimitiveOrWrapper(Object obj) {
-        Class<?> clazz = obj.getClass();
-        return clazz.isPrimitive() || clazz == Integer.class || clazz == Long.class
-                || clazz == Double.class || clazz == String.class || clazz == Boolean.class;
+    // Lấy tham số DTO (bỏ qua ID và File)
+    private String getDtoFromJson(Object[] args) {
+        for (Object arg : args) {
+            if (arg instanceof MultipartFile || arg instanceof Integer || arg instanceof Long) continue;
+            return convertToJson(arg);
+        }
+        return null;
     }
 }

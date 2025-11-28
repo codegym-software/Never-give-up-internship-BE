@@ -115,7 +115,7 @@ public class AttendanceServiceImpl implements AttendanceService {
                 .orElseThrow(() -> new IllegalStateException(ErrorCode.SCHEDULE_NOT_SET_TODAY.getMessage()));
     }
 
-    private boolean listLeaveRequestHasType (LeaveRequest.Type type, List<LeaveRequest> requests){
+    private boolean listLeaveRequestHasType(LeaveRequest.Type type, List<LeaveRequest> requests) {
         return requests.stream()
                 .anyMatch(leaveRequest -> leaveRequest.getType().equals(type));
     }
@@ -304,9 +304,9 @@ public class AttendanceServiceImpl implements AttendanceService {
                 attendance.setIntern(intern);
                 attendance.setTimeStart(todaySchedule.getTimeStart());
                 attendance.setTimeEnd(todaySchedule.getTimeEnd());
-                if(!leaveOpt.isEmpty() && listLeaveRequestHasType(LeaveRequest.Type.ON_LEAVE, leaveOpt)) {
+                if (!leaveOpt.isEmpty() && listLeaveRequestHasType(LeaveRequest.Type.ON_LEAVE, leaveOpt)) {
                     attendance.setStatus(Attendance.Status.ON_LEAVE);
-                }else {
+                } else {
                     attendance.setStatus(Attendance.Status.ABSENT);
                 }
                 attendanceRepository.save(attendance);

@@ -18,7 +18,13 @@ public class Log {
     @JoinColumn(name = "actioner_id", nullable = false)
     private User action; // người thực hiện
 
-    private String dataChange; // bị thay đổi
+    @Column(columnDefinition = "TEXT")
+    private String dataOld; // Dữ liệu CŨ (Trước khi thay đổi)
+
+    @Column(columnDefinition = "TEXT")
+    private String dataNew; // Dữ liệu MỚI (Sau khi thay đổi)
+
+    private String description; //Mô tả ngắn gọn
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)

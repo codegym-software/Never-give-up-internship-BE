@@ -1,9 +1,12 @@
 package com.example.InternShip.service.impl;
 
+import com.example.InternShip.annotation.LogActivity;
 import com.example.InternShip.dto.AllowanceResponse;
 import com.example.InternShip.dto.request.AllowanceRequest;
 import com.example.InternShip.dto.response.PagedResponse;
 import com.example.InternShip.entity.Allowance;
+import com.example.InternShip.entity.Log.Action;
+import com.example.InternShip.entity.Log.Model;
 import com.example.InternShip.entity.Intern;
 import com.example.InternShip.entity.User;
 import com.example.InternShip.exception.NotFoundException;
@@ -26,13 +29,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 import com.example.InternShip.repository.InternRepository;
+
 import java.util.stream.Collectors;
 
 @Service
@@ -48,7 +51,7 @@ public class AllowanceServiceImpl implements AllowanceService {
     @Override
     @Transactional(readOnly = true)
     public PagedResponse<AllowanceResponse> getAllAllowances(Long internshipProgramId, String keyword, String status,
-            Pageable pageable) {
+                                                             Pageable pageable) {
         Specification<Allowance> spec = (root, query, criteriaBuilder) -> {
             List<Predicate> predicates = new ArrayList<>();
 
@@ -108,7 +111,7 @@ public class AllowanceServiceImpl implements AllowanceService {
         if (allowance.getStatus() == Allowance.Status.PAID) {
             throw new IllegalStateException("Allowance with id " + id + " has already been paid.");
         }
-       
+
         allowance.setStatus(Allowance.Status.PAID);
         allowance.setPaidAt(LocalDateTime.now());
 
@@ -140,10 +143,16 @@ public class AllowanceServiceImpl implements AllowanceService {
 
     @Override
     @Transactional
+    @LogActivity(
+            action = Action.CREATE,
+            affected = Model.ALLOWANCE,
+            description = "Tạo phụ cấp mới",
+            entityType = Allowance.class
+    )
     public AllowanceResponse createAllowance(AllowanceRequest request) {
-       
+
         Intern intern = internRepository.findById(request.getInternId())
-                 .orElseThrow(() -> new NotFoundException("Intern not found with id: " + request.getInternId()));
+                .orElseThrow(() -> new NotFoundException("Intern not found with id: " + request.getInternId()));
 
         Allowance allowance = new Allowance();
         allowance.setIntern(intern);

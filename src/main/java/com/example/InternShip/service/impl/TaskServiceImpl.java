@@ -91,7 +91,8 @@ public class TaskServiceImpl implements TaskService {
     @LogActivity(
             action = Action.CREATE,
             affected = Model.TASK,
-            description = "Thêm task mới"
+            description = "Tạo task mới",
+            entityType = Task.class
     )
     public TaskResponse createTask(CreateTaskRequest request) {
         User creator = authService.getUserLogin();
@@ -167,7 +168,8 @@ public class TaskServiceImpl implements TaskService {
     @LogActivity(
             action = Action.MODIFY,
             affected = Model.TASK,
-            description = "Chỉnh sửa task"
+            description = "Sửa thông tin task ",
+            entityType = Task.class
     )
     public TaskResponse updateTask(Long taskId, UpdateTaskRequest request) {
         User user = authService.getUserLogin();
@@ -237,7 +239,8 @@ public class TaskServiceImpl implements TaskService {
     @LogActivity(
             action = Action.DELETE,
             affected = Model.TASK,
-            description = "Xoá task"
+            description = "Xoá task",
+            entityType = Task.class
     )
     public void deleteTask(Long taskId) {
         User user = authService.getUserLogin();

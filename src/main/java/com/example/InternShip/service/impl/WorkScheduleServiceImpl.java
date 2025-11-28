@@ -44,7 +44,8 @@ public class WorkScheduleServiceImpl implements WorkScheduleService {
     @LogActivity(
             action = Action.MODIFY,
             affected = Model.WORK_SCHEDULE,
-            description = "Sửa lịch"
+            description = "Sửa lịch làm việc",
+            entityType = WorkSchedule.class
     )
     public WorkScheduleResponse updateSchedule(Integer id, UpdateWorkScheduleRequest request) {
         WorkSchedule workSchedule = workScheduleRepository.findById(id)
@@ -61,7 +62,8 @@ public class WorkScheduleServiceImpl implements WorkScheduleService {
     @LogActivity(
             action = Action.CREATE,
             affected = Model.WORK_SCHEDULE,
-            description = "Thêm lịch mới"
+            description = "Tạo mới lịch làm vệc",
+            entityType = WorkSchedule.class
     )
     public WorkScheduleResponse createSchedule(CreateWorkScheduleRequest request){
         Team team = teamRepository.findById(request.getIdTeam())
@@ -83,7 +85,8 @@ public class WorkScheduleServiceImpl implements WorkScheduleService {
     @LogActivity(
             action = Action.DELETE,
             affected = Model.WORK_SCHEDULE,
-            description = "Xoá lịch"
+            description = "Xoá lịch làm việc",
+            entityType = WorkSchedule.class
     )
     public void deleteSchedule (int id){
         workScheduleRepository.deleteById(id);

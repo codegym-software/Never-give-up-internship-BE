@@ -13,6 +13,7 @@ import com.example.InternShip.entity.Intern;
 import com.example.InternShip.entity.Log.Action;
 import com.example.InternShip.entity.Log.Model;
 import com.example.InternShip.entity.LeaveRequest;
+import com.example.InternShip.entity.Mentor;
 import com.example.InternShip.entity.User;
 import com.example.InternShip.exception.ErrorCode;
 import com.example.InternShip.repository.LeaveRequestRepository;
@@ -50,7 +51,8 @@ public class LeaveRequestServiceImpl implements LeaveRequestService {
     @LogActivity(
             action = Action.CREATE,
             affected = Model.LEAVE_REQUEST,
-            description = "Tạo đơn xin nghỉ phép"
+            description = "Tạo đơn xin nghỉ phép",
+            entityType = LeaveRequest.class
     )
     public InternGetAllLeaveApplicationResponseSupport createLeaveRequest(CreateLeaveApplicationRequest request) {
         // Lấy ra thằng intern request
@@ -168,7 +170,8 @@ public class LeaveRequestServiceImpl implements LeaveRequestService {
     @LogActivity(
             action = Action.DELETE,
             affected = Model.LEAVE_REQUEST,
-            description = "Xoá đơn xin nghỉ"
+            description = "Xoá đơn xin nghỉ",
+            entityType = LeaveRequest.class
     )
     public void cancelLeaveApplication(Integer id) {
         // Tính làm cái check đơn của người dùng nhưng mà thôi
@@ -185,7 +188,8 @@ public class LeaveRequestServiceImpl implements LeaveRequestService {
     @LogActivity(
             action = Action.MODIFY,
             affected = Model.LEAVE_REQUEST,
-            description = "HR duyệt đơn xin nghỉ phép"
+            description = "Duyệt đơn xin nghỉ phép",
+            entityType = LeaveRequest.class
     )
     public GetAllLeaveApplicationResponse approveLeaveApplication(Integer id) {
         LeaveRequest leaveRequest = leaveRequestRepository.findById(id)
@@ -204,7 +208,8 @@ public class LeaveRequestServiceImpl implements LeaveRequestService {
     @LogActivity(
             action = Action.MODIFY,
             affected = Model.LEAVE_REQUEST,
-            description = "HR từ chối đơn xin nghỉ phép"
+            description = "Từ chối đơn xin nghỉ phép",
+            entityType = LeaveRequest.class
     )
     public GetAllLeaveApplicationResponse rejectLeaveApplication(int id, RejectLeaveApplicationRequest request) {
         LeaveRequest leaveRequest = leaveRequestRepository.findById(id)

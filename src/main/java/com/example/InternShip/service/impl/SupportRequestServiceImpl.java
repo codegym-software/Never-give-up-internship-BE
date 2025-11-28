@@ -49,7 +49,8 @@ public class SupportRequestServiceImpl implements SupportRequestService {
     @LogActivity(
             action = Action.CREATE,
             affected = Model.SUPPORT_REQUEST,
-            description = "Tạo yêu cầu phụ cấp"
+            description = "Tạo yêu cầu phụ cấp",
+            entityType = SupportRequest.class
     )
     public GetSupportRequestResponse createSupportRequest(CreateSupportRequestRequest request) {
         User user = authService.getUserLogin();
@@ -84,7 +85,8 @@ public class SupportRequestServiceImpl implements SupportRequestService {
     @LogActivity(
             action = Action.MODIFY,
             affected = Model.SUPPORT_REQUEST,
-            description = "Chỉnh sửa yêu cầu phụ cấp"
+            description = "Sửa yêu cầu phụ cấp",
+            entityType = SupportRequest.class
     )
     public GetSupportRequestResponse updateRequest(Integer id, UpdateSupportRequestRequest request) {
         User user = authService.getUserLogin();
@@ -117,7 +119,8 @@ public class SupportRequestServiceImpl implements SupportRequestService {
     @LogActivity(
             action = Action.DELETE,
             affected = Model.SUPPORT_REQUEST,
-            description = "Huỷ yêu cầu phụ cấp"
+            description = "Huỷ yêu cầu phụ cấp",
+            entityType = SupportRequest.class
     )
     public void cancelSupportRequest(Integer supportId) {
         SupportRequest supportRequest = supportRequestRepository.findById(supportId)
@@ -159,7 +162,8 @@ public class SupportRequestServiceImpl implements SupportRequestService {
     @LogActivity(
             action = Action.MODIFY,
             affected = Model.SUPPORT_REQUEST,
-            description = "Duyệt yêu cầu phụ cấp"
+            description = "Duyệt yêu cầu phụ cấp",
+            entityType = SupportRequest.class
     )
     public GetSupportRequestResponse approveSupportRequest(Integer supportId) {
         SupportRequest supportRequest = supportRequestRepository.findById(supportId)
@@ -196,7 +200,8 @@ public class SupportRequestServiceImpl implements SupportRequestService {
     @LogActivity(
             action = Action.MODIFY,
             affected = Model.SUPPORT_REQUEST,
-            description = "Từ chối yêu cầu phụ cấp"
+            description = "Từ chối yêu cầu phụ cấp",
+            entityType = SupportRequest.class
     )
     public GetSupportRequestResponse rejectSupportRequest(Integer supportId, RejectSupportRequestRequest request) {
         SupportRequest supportRequest = supportRequestRepository.findById(supportId)

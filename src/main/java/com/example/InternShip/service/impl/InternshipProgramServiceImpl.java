@@ -54,7 +54,7 @@ public class InternshipProgramServiceImpl implements InternshipProgramService {
         List<InternshipProgram> results = null;
         if (role.equals(Role.VISITOR)) {
             results = internshipProgramRepository.findAllByStatus(InternshipProgram.Status.PUBLISHED);
-        }else {
+        } else {
             results = internshipProgramRepository.findAll();
         }
         return results.stream()
@@ -99,9 +99,10 @@ public class InternshipProgramServiceImpl implements InternshipProgramService {
     @LogActivity(
             action = Action.CREATE,
             affected = Model.INTERNSHIP_PROGRAM,
-            description = "Tạo chương trình thực tập"
+            description = "Tạo chương trình thực tập mới",
+            entityType = InternshipProgram.class
     )
-    public GetInternProgramResponse createInternProgram (CreateInternProgramRequest request) throws SchedulerException {
+    public GetInternProgramResponse createInternProgram(CreateInternProgramRequest request) throws SchedulerException {
         if (!(LocalDateTime.now().isBefore(request.getEndPublishedTime()) &&
                 request.getEndPublishedTime().isBefore(request.getEndReviewingTime()) &&
                 request.getEndReviewingTime().isBefore(request.getTimeStart()))) {
@@ -123,7 +124,7 @@ public class InternshipProgramServiceImpl implements InternshipProgramService {
                 scheduleInternship(internshipProgram.getId(), EndPublishJob.class, internshipProgram.getEndPublishedTime());
                 scheduleInternship(internshipProgram.getId(), EndReviewJob.class, internshipProgram.getEndReviewingTime());
                 scheduleInternship(internshipProgram.getId(), StartInternship.class, internshipProgram.getTimeStart());
-            }catch (SchedulerException e){
+            } catch (SchedulerException e) {
                 throw new SchedulerException(ErrorCode.SCHEDULER_FAILED.getMessage());
             }
         }
@@ -138,7 +139,8 @@ public class InternshipProgramServiceImpl implements InternshipProgramService {
     @LogActivity(
             action = Action.MODIFY,
             affected = Model.INTERNSHIP_PROGRAM,
-            description = "Sửa chương trình thực tập"
+            description = "Sửa chương trình thực tập",
+            entityType = InternshipProgram.class
     )
     public GetInternProgramResponse updateInternProgram(UpdateInternProgramRequest request, int id) throws SchedulerException {
         if (!(request.getEndPublishedTime().isBefore(request.getEndReviewingTime()) &&
@@ -151,7 +153,7 @@ public class InternshipProgramServiceImpl implements InternshipProgramService {
 
         if (internshipProgram.getStatus() == InternshipProgram.Status.DRAFT) {
             modelMapper.map(request, internshipProgram);
-        }else {
+        } else {
             internshipProgram.setName(request.getName());
             if (internshipProgram.getEndPublishedTime().isAfter(LocalDateTime.now())) {
                 internshipProgram.setEndPublishedTime(request.getEndPublishedTime());
@@ -176,7 +178,8 @@ public class InternshipProgramServiceImpl implements InternshipProgramService {
     @LogActivity(
             action = Action.DELETE,
             affected = Model.INTERNSHIP_PROGRAM,
-            description = "Xoá chương trình thực tập"
+            description = "Xoá chương trình thực tập",
+            entityType = InternshipProgram.class
     )
     public GetInternProgramResponse cancelInternProgram(int id) throws SchedulerException {
         InternshipProgram internshipProgram = internshipProgramRepository.findById(id)
@@ -216,7 +219,7 @@ public class InternshipProgramServiceImpl implements InternshipProgramService {
             scheduleInternship(internshipProgram.getId(), EndPublishJob.class, internshipProgram.getEndPublishedTime());
             scheduleInternship(internshipProgram.getId(), EndReviewJob.class, internshipProgram.getEndReviewingTime());
             scheduleInternship(internshipProgram.getId(), StartInternship.class, internshipProgram.getTimeStart());
-        }catch (SchedulerException e){
+        } catch (SchedulerException e) {
             throw new SchedulerException(ErrorCode.SCHEDULER_FAILED.getMessage());
         }
 
@@ -224,14 +227,14 @@ public class InternshipProgramServiceImpl implements InternshipProgramService {
     }
 
     @Transactional
-    public void endPublish (int programId){
+    public void endPublish(int programId) {
         InternshipProgram internshipProgram = internshipProgramRepository.findById(programId)
                 .orElseThrow(() -> new EntityNotFoundException(ErrorCode.INTERNSHIP_TERM_NOT_EXISTED.getMessage()));
         List<InternshipApplication> applications = internshipProgram.getApplications();
         List<InternshipApplication> toUpdate = new ArrayList<>();
 
-        for (InternshipApplication app : applications){
-            if (app.getStatus() == InternshipApplication.Status.SUBMITTED){
+        for (InternshipApplication app : applications) {
+            if (app.getStatus() == InternshipApplication.Status.SUBMITTED) {
                 app.setStatus(InternshipApplication.Status.UNDER_REVIEW);
                 toUpdate.add(app);
             }
@@ -242,14 +245,14 @@ public class InternshipProgramServiceImpl implements InternshipProgramService {
     }
 
     @Transactional
-    public void endReviewing (int programId){
+    public void endReviewing(int programId) {
         InternshipProgram internshipProgram = internshipProgramRepository.findById(programId)
                 .orElseThrow(() -> new EntityNotFoundException(ErrorCode.INTERNSHIP_TERM_NOT_EXISTED.getMessage()));
         List<InternshipApplication> applications = internshipProgram.getApplications();
         List<InternshipApplication> toUpdate = new ArrayList<>();
 
-        for (InternshipApplication app : applications){
-            if (app.getStatus() == InternshipApplication.Status.UNDER_REVIEW){
+        for (InternshipApplication app : applications) {
+            if (app.getStatus() == InternshipApplication.Status.UNDER_REVIEW) {
                 app.setStatus(InternshipApplication.Status.REJECTED);
                 toUpdate.add(app);
             }
@@ -257,19 +260,19 @@ public class InternshipProgramServiceImpl implements InternshipProgramService {
         internshipProgram.setStatus(InternshipProgram.Status.PENDING);
         internshipProgramRepository.save(internshipProgram);
         internshipApplicationRepository.saveAll(toUpdate);
-        for (InternshipApplication app : applications){
+        for (InternshipApplication app : applications) {
             emailService.sendApplicationStatusEmail(app);
         }
     }
 
     @Transactional
-    public void startInternship(int programId){
+    public void startInternship(int programId) {
         InternshipProgram internshipProgram = internshipProgramRepository.findById(programId)
                 .orElseThrow(() -> new EntityNotFoundException(ErrorCode.INTERNSHIP_TERM_NOT_EXISTED.getMessage()));
         List<InternshipApplication> applications = internshipProgram.getApplications();
         List<InternshipApplication> toUpdateApp = new ArrayList<>();
 
-        for (InternshipApplication app : applications){
+        for (InternshipApplication app : applications) {
             if (app.getStatus() == InternshipApplication.Status.APPROVED) {
                 app.setStatus(InternshipApplication.Status.NOT_CONTRACT);
                 toUpdateApp.add(app);
@@ -280,7 +283,7 @@ public class InternshipProgramServiceImpl implements InternshipProgramService {
         internshipApplicationRepository.saveAll(toUpdateApp);
     }
 
-    public void scheduleInternship (int programId, Class<? extends Job> jobClass, LocalDateTime timeStart) throws SchedulerException {
+    public void scheduleInternship(int programId, Class<? extends Job> jobClass, LocalDateTime timeStart) throws SchedulerException {
         Date startDate = Date.from(timeStart.atZone(ZoneId.systemDefault()).toInstant());
 
         JobKey jobKey = new JobKey("job_" + programId, jobClass.getSimpleName());

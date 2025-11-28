@@ -16,7 +16,9 @@ public class LogResponse {
     // Thông tin hành động
     private String actionType; // CREATE, MODIFY, DELETE
     private String affectedObject; // INTERN, TEAM...
-    private String dataChange; // Chi tiết thay đổi
+    private String description;    // Mô tả hành động
+    private String dataOld;        // Dữ liệu cũ (JSON)
+    private String dataNew;        // Dữ liệu mới (JSON)
 
     @JsonFormat(pattern = "dd-MM-yyyy HH:mm:ss")
     private LocalDateTime actionAt;

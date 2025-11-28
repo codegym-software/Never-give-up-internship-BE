@@ -62,9 +62,13 @@ public class LogServiceImpl implements LogService {
         res.setId(log.getId());
         res.setActionType(log.getActionType().name());
         res.setAffectedObject(log.getAffected().name());
-        res.setDataChange(log.getDataChange());
         res.setActionAt(log.getActionAt());
 
+        res.setDescription(log.getDescription());
+        res.setDataOld(log.getDataOld());
+        res.setDataNew(log.getDataNew());
+
+        // Map thông tin người thực hiện
         if (log.getAction() != null) {
             res.setActionerId(log.getAction().getId());
             res.setActionerName(log.getAction().getFullName());

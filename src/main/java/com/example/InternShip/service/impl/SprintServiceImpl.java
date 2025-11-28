@@ -56,7 +56,8 @@ public class SprintServiceImpl implements SprintService {
     @LogActivity(
             action = Action.CREATE,
             affected = Model.SPRINT,
-            description = "Tạo spint mới"
+            description = "Tạo sprint mới",
+            entityType = Sprint.class
     )
     public SprintResponse createSprint(Integer teamId, CreateSprintRequest request) {
         // Validate new sprint dates
@@ -143,7 +144,8 @@ public class SprintServiceImpl implements SprintService {
     @LogActivity(
             action = Action.MODIFY,
             affected = Model.SPRINT,
-            description = "Chỉnh sửa spint"
+            description = "Sửa thông tin sprint",
+            entityType = Sprint.class
     )
     public SprintResponse updateSprint(Long sprintId, UpdateSprintRequest request) {
         User user = authService.getUserLogin();
@@ -219,7 +221,8 @@ public class SprintServiceImpl implements SprintService {
     @LogActivity(
             action = Action.DELETE,
             affected = Model.SPRINT,
-            description = "Xoá spint"
+            description = "Xoá sprint",
+            entityType = Sprint.class
     )
     public void deleteSprint(Long sprintId) {
         User user = authService.getUserLogin();
@@ -266,9 +269,10 @@ public class SprintServiceImpl implements SprintService {
     @Override
     @Transactional
     @LogActivity(
-            action = Action.CREATE,
+            action = Action.MODIFY,
             affected = Model.SPRINT,
-            description = "Nộp báo cáo"
+            description = "Nộp báo cáo",
+            entityType = Sprint.class
     )
     public SprintReportResponse submitReport(Long sprintId, MultipartFile file) {
         User user = authService.getUserLogin();
@@ -300,6 +304,12 @@ public class SprintServiceImpl implements SprintService {
 
     @Override
     @Transactional
+    @LogActivity(
+            action = Action.MODIFY,
+            affected = Model.SPRINT,
+            description = "Đánh giá sprint",
+            entityType = Sprint.class
+    )
     public void evaluateSprint(Long sprintId, EvaluateSprintRequest request) {
         Sprint sprint = sprintRepository.findById(sprintId)
                 .orElseThrow(() -> new EntityNotFoundException(ErrorCode.SPRINT_NOT_EXISTS.getMessage()));

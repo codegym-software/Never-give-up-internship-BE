@@ -51,7 +51,8 @@ public class TeamServiceImpl implements TeamService {
     @LogActivity(
             action = Action.CREATE,
             affected = Model.TEAM,
-            description = "Thêm nhóm"
+            description = "Tạo nhóm mới",
+            entityType = Team.class
     )
     public TeamDetailResponse createTeam(CreateTeamRequest request) {
         InternshipProgram program = programRepository.findById(request.getInternshipProgramId())
@@ -89,7 +90,8 @@ public class TeamServiceImpl implements TeamService {
     @LogActivity(
             action = Action.MODIFY,
             affected = Model.TEAM,
-            description = "Sửa thông tin nhóm"
+            description = "Sửa thông tin nhóm",
+            entityType = Team.class
     )
     public TeamDetailResponse updateTeam(Integer teamId, UpdateTeamRequest request) {
         Team team = teamRepository.findById(teamId)
@@ -115,9 +117,10 @@ public class TeamServiceImpl implements TeamService {
     @Override
     @Transactional
     @LogActivity(
-            action = Action.CREATE,
+            action = Action.MODIFY,
             affected = Model.TEAM,
-            description = "Thêm thành viên nhóm"
+            description = "Thêm thành viên nhóm",
+            entityType = Team.class
     )
     public TeamDetailResponse addMember(Integer teamId, AddMemberRequest request) {
         Team team = teamRepository.findById(teamId)
@@ -146,7 +149,8 @@ public class TeamServiceImpl implements TeamService {
     @LogActivity(
             action = Action.DELETE,
             affected = Model.TEAM,
-            description = "Xoá thành viên nhóm"
+            description = "Xoá thành viên nhóm",
+            entityType = Team.class
     )
     public TeamDetailResponse removeMember(Integer internId) {
         Intern intern = internRepository.findById(internId)
