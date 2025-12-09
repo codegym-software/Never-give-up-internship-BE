@@ -36,6 +36,7 @@ services:
 networks:
   internship-network:
     driver: bridge
+    
 
 
 
