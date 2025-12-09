@@ -4,6 +4,7 @@ on:
     workflows: ["CI - Build and Test"]
     types:
       - completed
+    branches: [cicd_namvu]
 
 jobs:
   deploy:
