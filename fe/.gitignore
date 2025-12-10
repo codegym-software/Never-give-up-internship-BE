@@ -23,5 +23,10 @@ dist-ssr
 *.sln
 *.sw?
 
+### VS Code ###
+.vscode/
+.env    
+.env.product
+
 
 
