@@ -1,36 +1,56 @@
 🏰 Tổng quan hệ thống khi triển khai các dịch vụ trên AWS
 
-Khi hệ thống được triển khai lên AWS, chúng ta sử dụng nhiều dịch vụ kết hợp với nhau để vận hành toàn bộ backend. Dưới đây là vai trò của từng thành phần:
+Khi hệ thống được triển khai lên AWS, chúng ta sử dụng nhiều dịch vụ để vận hành backend. Dưới đây là các thành phần chính và vai trò của chúng:
 
-🔹 EC2
+🔹 EC2 — Máy chủ ứng dụng
 
-EC2 là máy chủ chạy trên cloud, tương tự một server vật lý nhưng do AWS quản lý.
+EC2 là máy chủ chạy trên cloud (giống một VPS).
 EC2 được dùng để:
 
-Chạy backend (Spring Boot / NodeJS / bất kỳ service nào)
+Chạy backend (Spring Boot / NodeJS / Docker / Nginx…)
 
-Tạo SSH Tunnel để truy cập RDS một cách an toàn
+Làm trung gian để tạo SSH Tunnel đến RDS
 
-Chạy Docker / Docker Compose (nếu dùng container)
+Lưu file log, file cấu hình, chạy script CICD, v.v.
 
-🔹 RDS
+🔹 Cách truy cập vào máy chủ EC2
 
-RDS là dịch vụ quản lý database của AWS.
-Hệ thống sử dụng RDS MySQL và kết nối thông qua EC2 → RDS (vì RDS không mở public access).
+Để truy cập EC2, bạn cần:
+
+File key .pem (ví dụ: internship-sysney.pem)
+
+Đúng địa chỉ Public IP của EC2
+
+Truy cập bằng SSH:
+
+ssh -i "internship-sysney.pem" ubuntu@3.106.250.157
+
+
+Lưu ý quan trọng:
+
+IP của EC2 có thể thay đổi nếu server bị restart (không có Elastic IP).
+
+Username mặc định cho Ubuntu EC2: ubuntu
+
+Lệnh SSH phải chạy ngay tại thư mục chứa file .pem
+
+🔹 RDS — Database MySQL của AWS
+
+RDS chứa database chính của hệ thống.
+RDS không mở public access → chỉ EC2 mới có quyền truy cập trực tiếp.
+
+Laptop → EC2 → RDS (qua private network)
 
 🔹 Sơ đồ hoạt động tổng quan
 Developer Laptop
         │
-        │  (SSH Tunnel)
+        │  SSH / SSH Tunnel
         ▼
       EC2 Server
         │
-        │ (Private Subnet)
+        │  (Private Connection)
         ▼
         RDS MySQL
-
-
-→ Laptop không truy cập trực tiếp vào RDS, mà đi xuyên qua EC2 để đảm bảo bảo mật.
 
 Hướng dẫn truy cập Database RDS (AWS)
 
@@ -66,9 +86,9 @@ ssh -i "internship-sysney.pem" \
 
 Lưu ý:
 
-3.106.250.157 là Public IP của EC2 → có thể thay đổi khi restart.
+3.106.250.157 là Public IP của EC2 → có thể thay đổi sau mỗi lần restart.
 
-Giữ nguyên cửa sổ SSH này, không được tắt.
+Cửa sổ SSH này phải giữ mở, vì đóng SSH → SSH tunnel mất.
 
 🖥️ 3. Truy cập Database MySQL từ máy local
 
@@ -77,8 +97,8 @@ Mở một terminal khác và chạy:
 mysql -h 127.0.0.1 -P 3307 -u admin -p
 
 
-Nhập password của RDS khi được yêu cầu.
-Nếu kết nối thành công → bạn đã truy cập RDS qua SSH Tunnel.
+Nhập password của RDS.
+Kết nối thành công → bạn đã truy cập RDS qua SSH Tunnel.
 
 🧩 Sơ đồ kết nối (dễ hiểu)
 Your Laptop (127.0.0.1:3307)
