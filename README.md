@@ -1,37 +1,62 @@
+# Hướng dẫn truy cập Database RDS (AWS)
 
-hướng dẫn truy cập database rds : đây là nơi lưu trữ database chính của hệ thống khi triển khai lên aws 
+RDS là nơi lưu trữ database chính của hệ thống.  
+Hệ thống sử dụng **port 3307** cho MySQL và truy cập thông qua **SSH Tunnel từ EC2**.
 
+---
 
-mặc đinh nếu cổng truy cập vào rds 3307 nếu máy local đang có xung đột chung cổng thì tạm thời dùng lệnh : 
+## 🔧 1. Kiểm tra & giải phóng port 3307 trên máy local
 
-Kiểm tra ai đang chiếm cổng 3306
-sudo lsof -i :3306
+Kiểm tra chương trình nào đang chiếm cổng:
 
-Tắt MySQL local
+```bash
+sudo lsof -i :3307
+Nếu MySQL local đang chạy, tắt nó tạm thời:
 
-Tuỳ distro:
-
+bash
+Sao chép mã
 sudo systemctl stop mysql
+hoặc:
 
-hoặc
-
+bash
+Sao chép mã
 sudo systemctl stop mariadb
+🚀 2. Tạo SSH Tunnel đến RDS thông qua EC2
+Yêu cầu: có file key .pem để SSH vào EC2.
 
-b1: khởi chạy ec2 (yêu cầu : có file key để conect tới ec2), rồi mở cmd tại chính thư mục chứa file key rồi chạy lệnh sau :
-  ssh -i "internship-sysney.pem" -L 3307:internshipv3.chm8gaams2xg.ap-southeast-2.rds.amazonaws.com:3307 ubuntu@3.106.250.157
+Chạy lệnh:
 
-  lưu ý : địa chỉ ip của ec2 (ubuntu@3.106.250.157) sẽ bị thay đổi nếu như ec2 bị reset lại , nên là hãy chắc chắn rằng địa chỉ ip là đúng 
+bash
+Sao chép mã
+ssh -i "internship-sysney.pem" \
+    -L 3307:internshipv3.chm8gaams2xg.ap-southeast-2.rds.amazonaws.com:3307 \
+    ubuntu@3.106.250.157
+Lưu ý:
 
+3.106.250.157 là Public IP của EC2 → có thể thay đổi khi restart.
 
-  sau khi chạy lệnh trên thì để yên đó 
+Giữ nguyên cửa sổ SSH này, không được tắt.
 
-b2:  giao diện cli :    mở 1 cửa sổ cmd khác và chạy lệnh sau : 
+🖥️ 3. Truy cập Database MySQL từ máy local
+Mở một terminal khác và chạy:
+
+bash
+Sao chép mã
 mysql -h 127.0.0.1 -P 3307 -u admin -p
+Nhập password của RDS khi được yêu cầu.
+Nếu kết nối thành công → bạn đã truy cập RDS qua SSH Tunnel.
 
-nếu yêu cầu pass thì nhập pass vào ==> bạn sẽ truy cập vào được database  . DONE 
-
-
-
-
-
-
+🧩 Sơ đồ kết nối (dễ hiểu)
+java
+Sao chép mã
+Your Laptop (127.0.0.1:3307)
+           │
+           ▼
+      SSH Tunnel
+           │
+           ▼
+       EC2 Server
+           │
+           ▼
+       AWS RDS (MySQL)
+🎉 DONE — Bạn đã kết nối thành công đến RDS qua SSH Tunnel!
