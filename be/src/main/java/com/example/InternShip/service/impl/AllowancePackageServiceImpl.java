@@ -32,7 +32,8 @@ public class AllowancePackageServiceImpl implements AllowancePackageService {
     @Override
     public AllowancePackageResponse createAllowancePackage(CreateAllowancePackageRequest request) {
         InternshipProgram program = internshipProgramRepository.findById(request.getInternshipProgramId())
-                .orElseThrow(() -> new ResourceNotFoundException("InternshipProgram not found with id: " + request.getInternshipProgramId()));
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        "InternshipProgram not found with id: " + request.getInternshipProgramId()));
 
         AllowancePackage allowancePackage = new AllowancePackage();
         allowancePackage.setName(request.getName());
@@ -70,13 +71,18 @@ public class AllowancePackageServiceImpl implements AllowancePackageService {
         AllowancePackage allowancePackage = allowancePackageRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("AllowancePackage not found with id: " + id));
 
+        if (allowancePackage.getStatus() == AllowancePackage.Status.INACTIVE) {
+            throw new IllegalStateException("Cannot update an inactive AllowancePackage with id: " + id+"because it is inactive.");
+        }
+
         allowancePackage.setName(request.getName());
         allowancePackage.setAmount(request.getAmount());
         allowancePackage.setRequiredWorkDays(request.getRequiredWorkDays());
 
         if (request.getInternshipProgramId() != null) {
             InternshipProgram program = internshipProgramRepository.findById(request.getInternshipProgramId())
-                    .orElseThrow(() -> new ResourceNotFoundException("InternshipProgram not found with id: " + request.getInternshipProgramId()));
+                    .orElseThrow(() -> new ResourceNotFoundException(
+                            "InternshipProgram not found with id: " + request.getInternshipProgramId()));
             allowancePackage.setInternshipProgram(program);
         }
 
