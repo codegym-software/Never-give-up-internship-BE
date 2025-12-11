@@ -12,7 +12,7 @@ jobs:
   # ========================
   build-backend:
     name: Build Backend
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
 
     steps:
       - name: Checkout code
@@ -44,7 +44,7 @@ jobs:
   # ========================
   build-frontend:
     name: Build Frontend
-    runs-on: ubuntu-latest
+    runs-on: self-hosted 
 
     steps:
       - name: Checkout code
@@ -74,7 +74,7 @@ jobs:
   # ==================================
   build-and-push:
     name: Build and Push Docker Images
-    runs-on: ubuntu-latest
+    runs-on:  self-hosted
     needs: [build-backend, build-frontend]
 
     steps:
@@ -116,7 +116,7 @@ jobs:
   # ========================
   deploy:
     name: Deploy to EC2
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     needs: build-and-push
     if: github.event_name == 'push' # Only run on push events
 
