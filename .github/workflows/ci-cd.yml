@@ -144,3 +144,4 @@ jobs:
             docker image prune -f
             # Khởi động lại với image mới
             docker compose up -d
+            
