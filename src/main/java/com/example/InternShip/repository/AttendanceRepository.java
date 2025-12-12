@@ -1,11 +1,8 @@
 package com.example.InternShip.repository;
 
-import com.example.InternShip.dto.attendance.response.GetAllAttendanceResponse;
 import com.example.InternShip.entity.Attendance;
 import com.example.InternShip.entity.Intern;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
 
 import java.time.LocalDate;
 import java.util.Optional;
