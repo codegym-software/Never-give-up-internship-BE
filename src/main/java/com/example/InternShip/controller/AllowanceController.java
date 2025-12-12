@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import com.example.InternShip.dto.response.PagedResponse;
 
@@ -19,6 +20,7 @@ public class AllowanceController {
 
     private final AllowanceService allowanceService;
 
+    @PreAuthorize("hasAuthority('SCOPE_HR')")
     @GetMapping
     public ResponseEntity<PagedResponse<AllowanceResponse>> getAllAllowances(
             @RequestParam(required = false) Long internshipProgramId,
@@ -29,25 +31,29 @@ public class AllowanceController {
         return ResponseEntity.ok(allowances);
     }
 
+    @PreAuthorize("hasAuthority('SCOPE_HR')")
     @PutMapping("/{id}/transfer")
     public ResponseEntity<AllowanceResponse> transferAllowance(@PathVariable("id") long id) {
         AllowanceResponse updatedAllowance = allowanceService.transferAllowance(id);
         return ResponseEntity.ok(updatedAllowance);
     }
 
+    @PreAuthorize("hasAuthority('SCOPE_INTERN')")
     @GetMapping("/my-history")
     public ResponseEntity<PagedResponse<AllowanceResponse>> getMyHistory(
             Pageable pageable) {
-        PagedResponse<AllowanceResponse> allowances = allowanceService.getMyAllowances( pageable);
+        PagedResponse<AllowanceResponse> allowances = allowanceService.getMyAllowances(pageable);
         return ResponseEntity.ok(allowances);
     }
 
+    @PreAuthorize("hasAuthority('SCOPE_HR')")
     @PostMapping
     public ResponseEntity<AllowanceResponse> createAllowance(@Valid @RequestBody AllowanceRequest request) {
         AllowanceResponse newAllowance = allowanceService.createAllowance(request);
         return new ResponseEntity<>(newAllowance, HttpStatus.CREATED);
     }
 
+    @PreAuthorize("hasAuthority('SCOPE_HR')")
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> cancelAllowance(@PathVariable("id") long id) {
         allowanceService.cancelAllowance(id);

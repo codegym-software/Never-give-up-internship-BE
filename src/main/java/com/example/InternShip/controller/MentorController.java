@@ -9,6 +9,7 @@ import com.example.InternShip.service.MentorService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
@@ -18,11 +19,13 @@ import java.util.List;
 public class MentorController {
     private final MentorService mentorService;
 
+    @PreAuthorize("hasAuthority('SCOPE_HR') or hasAuthority('SCOPE_ADMIN')")
     @PostMapping
     public ResponseEntity<GetMentorResponse> createMentor(@Valid @RequestBody CreateMentorRequest request) {
         return ResponseEntity.ok(mentorService.createMentor(request));
     }
 
+    @PreAuthorize("hasAuthority('SCOPE_HR')")
     @PutMapping("/{id}")
     public ResponseEntity<GetMentorResponse> updateMentorDepartment(
             @PathVariable("id") Integer id,
@@ -30,6 +33,7 @@ public class MentorController {
         return ResponseEntity.ok(mentorService.updateMentorDepartment(id, request));
     }
 
+    @PreAuthorize("hasAuthority('SCOPE_HR') or hasAuthority('SCOPE_ADMIN')")
     @GetMapping // Hàm lấy ra danh sách mentor
     public ResponseEntity<?> getAll(
             @RequestParam(required = false, defaultValue = "") List<Integer> department,
@@ -43,10 +47,13 @@ public class MentorController {
     }
 
     @GetMapping("/getAll")
+    @PreAuthorize("hasAuthority('SCOPE_HR') or hasAuthority('SCOPE_ADMIN')")
     public ResponseEntity<?> getAllMentor() {
         return ResponseEntity.ok(mentorService.getAllMentor());
     }
 
+
+    // 2 api này k thấy dùng trong fe
     @GetMapping("/me/sprints")
     public ResponseEntity<List<SprintResponse>> getSprintsForCurrentUser() {
         return ResponseEntity.ok(mentorService.getSprintsForCurrentUser());
