@@ -45,7 +45,7 @@ public class ApplicationController {
     }
 
     @GetMapping // Hàm lấy ra danh sách đơn xin thực tập
-    @PreAuthorize("hasAuthority('SCOPE_HR'")
+    @PreAuthorize("hasAuthority('SCOPE_HR')")
     public ResponseEntity<?> getAllApplication(
             @RequestParam(required = false, defaultValue = "") Integer internshipTerm,
             @RequestParam(required = false, defaultValue = "") Integer university,

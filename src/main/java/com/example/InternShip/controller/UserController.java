@@ -27,7 +27,6 @@ public class UserController {
         return ResponseEntity.ok(userService.getAllUser(request));
     }
 
-    @PreAuthorize("hasAuthority('SCOPE_ADMIN')")
     @GetMapping("/info")
     public ResponseEntity<GetUserResponse> getUserInfo() {
         return ResponseEntity.ok(userService.getUserInfo());

@@ -1,6 +1,7 @@
 package com.example.InternShip.config;
 
-import org.quartz.Scheduler;
+import com.example.InternShip.config.scheduler.MonthlyAllowanceCalculationJob;
+import org.quartz.*;
 import org.quartz.spi.JobFactory;
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 import org.springframework.context.annotation.Bean;
@@ -8,6 +9,8 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.quartz.SchedulerFactoryBean;
 
 import javax.sql.DataSource;
+
+import static org.quartz.CronScheduleBuilder.cronSchedule;
 
 @Configuration
 public class QuartzConfig {
@@ -35,4 +38,23 @@ public class QuartzConfig {
         scheduler.start();
         return scheduler;
     }
+
+    // Bean for the Allowance Calculation Job
+    @Bean
+    public JobDetail monthlyAllowanceCalculationJobDetail() {
+        return JobBuilder.newJob(MonthlyAllowanceCalculationJob.class)
+                .withIdentity("monthlyAllowanceCalculationJob")
+                .storeDurably()
+                .build();
+    }
+
+    // Trigger for the Allowance Calculation Job
+    @Bean
+    public Trigger monthlyAllowanceCalculationJobTrigger() {
+    return TriggerBuilder.newTrigger()
+            .forJob(monthlyAllowanceCalculationJobDetail())
+            .withIdentity("monthlyAllowanceCalculationTrigger")
+            .withSchedule(cronSchedule("30 * * * * ?")) // Thêm dòng này
+            .build();
+}
 }
