@@ -114,8 +114,7 @@ jobs:
           docker build \
             --build-arg VITE_API_URL=${{ secrets.VITE_API_URL }} \
             --build-arg VITE_SOCKET_URL=${{ secrets.VITE_SOCKET_URL }} \
-            --build-arg VITE_SOCKET_URL=${{ secrets.VITE_REFESH_TOKEN_URL }} \
-            -–build-arg VITE_GOOGLE_CLIENT_ID=${{ secrets.VITE_GOOGLE_CLIENT_ID }} \
+            --build-arg VITE_GOOGLE_CLIENT_ID=${{ secrets.VITE_GOOGLE_CLIENT_ID }} \
             -t ${{ secrets.DOCKER_HUB_USERNAME }}/internship-frontend:dev .
 
           docker tag ${{ secrets.DOCKER_HUB_USERNAME }}/internship-frontend:dev ${{ secrets.DOCKER_HUB_USERNAME }}/internship-frontend:${{ env.SHORT_SHA }}
