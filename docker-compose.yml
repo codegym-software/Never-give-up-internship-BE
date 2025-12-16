@@ -22,8 +22,11 @@ services:
   internship-app-frontend:
     image: namvu26112005/internship-frontend:dev
     
+    
+
     env_file:
       - ./.env          
+
     container_name: frontend-container
     restart: unless-stopped
     ports:

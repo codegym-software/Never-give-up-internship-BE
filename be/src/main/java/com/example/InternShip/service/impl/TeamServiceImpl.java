@@ -1,5 +1,8 @@
 package com.example.InternShip.service.impl;
 
+import com.example.InternShip.annotation.LogActivity;
+import com.example.InternShip.entity.Log.Model;
+import com.example.InternShip.entity.Log.Action;
 import com.example.InternShip.dto.intern.response.GetInternResponse;
 import com.example.InternShip.dto.response.*;
 import com.example.InternShip.dto.team.request.AddMemberRequest;
@@ -20,6 +23,7 @@ import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
@@ -44,6 +48,12 @@ public class TeamServiceImpl implements TeamService {
 
     @Override
     @Transactional
+    @LogActivity(
+            action = Action.CREATE,
+            affected = Model.TEAM,
+            description = "Tạo nhóm mới",
+            entityType = Team.class
+    )
     public TeamDetailResponse createTeam(CreateTeamRequest request) {
         InternshipProgram program = programRepository.findById(request.getInternshipProgramId())
                 .orElseThrow(() -> new EntityNotFoundException(ErrorCode.PROGRAM_NOT_EXISTED.getMessage()));
@@ -76,6 +86,13 @@ public class TeamServiceImpl implements TeamService {
     }
 
     @Override
+    @Transactional
+    @LogActivity(
+            action = Action.MODIFY,
+            affected = Model.TEAM,
+            description = "Sửa thông tin nhóm",
+            entityType = Team.class
+    )
     public TeamDetailResponse updateTeam(Integer teamId, UpdateTeamRequest request) {
         Team team = teamRepository.findById(teamId)
                 .orElseThrow(() -> new EntityNotFoundException(ErrorCode.TEAM_NOT_EXISTED.getMessage()));
@@ -98,6 +115,13 @@ public class TeamServiceImpl implements TeamService {
     }
 
     @Override
+    @Transactional
+    @LogActivity(
+            action = Action.MODIFY,
+            affected = Model.TEAM,
+            description = "Thêm thành viên nhóm",
+            entityType = Team.class
+    )
     public TeamDetailResponse addMember(Integer teamId, AddMemberRequest request) {
         Team team = teamRepository.findById(teamId)
                 .orElseThrow(() -> new EntityNotFoundException(ErrorCode.TEAM_NOT_EXISTED.getMessage()));
@@ -122,6 +146,12 @@ public class TeamServiceImpl implements TeamService {
 
     @Override
     @Transactional
+    @LogActivity(
+            action = Action.DELETE,
+            affected = Model.TEAM,
+            description = "Xoá thành viên nhóm",
+            entityType = Team.class
+    )
     public TeamDetailResponse removeMember(Integer internId) {
         Intern intern = internRepository.findById(internId)
                 .orElseThrow(() -> new EntityNotFoundException(ErrorCode.INTERN_NOT_EXISTED.getMessage()));
@@ -158,7 +188,7 @@ public class TeamServiceImpl implements TeamService {
     }
 
     public List<GetAllTeamResponse> getAllTeam() {
-        List<Team> teams = teamRepository.findAll();
+        List<Team> teams = teamRepository.findAll(Sort.by(Sort.Direction.DESC, "id"));
         return teams.stream()
                 .map(team -> {
                     GetAllTeamResponse response = modelMapper.map(team, GetAllTeamResponse.class);

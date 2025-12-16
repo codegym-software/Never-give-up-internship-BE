@@ -90,17 +90,7 @@ class InternshipProgramServiceImplTest {
         assertEquals(1, response.size());
     }
 
-    @Test
-    void getAllInternshipPrograms_happyPath() {
-        Page<InternshipProgram> page = new PageImpl<>(Collections.singletonList(program));
-        when(internshipProgramRepository.findAll(any(Specification.class), any(Pageable.class))).thenReturn(page);
-        when(modelMapper.map(program, GetInternProgramResponse.class)).thenReturn(new GetInternProgramResponse());
-
-        PagedResponse<GetInternProgramResponse> response = internshipProgramService.getAllInternshipPrograms(null, null, false, 1);
-
-        assertNotNull(response);
-        assertEquals(1, response.getContent().size());
-    }
+   
 
     @Test
     void createInternProgram_happyPath() throws Exception {

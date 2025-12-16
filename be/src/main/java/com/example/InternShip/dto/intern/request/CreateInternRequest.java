@@ -9,10 +9,10 @@ import lombok.Data;
 @Data
 public class CreateInternRequest {
 
-    @NotBlank(message = "FULL_NAME_INVALID")
+    @NotBlank(message = "FULL_NAME_NOT_NULL")
     private String fullName;
 
-    @NotBlank(message = "EMAIL_INVALID")
+    @NotBlank(message = "EMAIL_NOT_NULL")
     @Email(message = "EMAIL_INVALID")
     private String email;
 
@@ -21,12 +21,12 @@ public class CreateInternRequest {
 
     private String address;
 
-    @NotNull(message = "MAJOR_INVALID")
+    @NotNull(message = "MAJOR_NOT_NULL")
     private Integer majorId;
 
-    @NotNull(message = "UNIVERSITY_INVALID")
+    @NotNull(message = "UNIVERSITY_NOT_NULL")
     private Integer universityId;
 
-    @NotNull(message = "INTERNSHIP_PROGRAM_INVALID")
+    @NotNull(message = "INTERNSHIP_PROGRAM_NOT_NULL")
     private Integer internshipProgramId;
 }

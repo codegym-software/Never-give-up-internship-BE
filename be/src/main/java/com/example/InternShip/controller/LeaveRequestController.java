@@ -3,6 +3,7 @@ package com.example.InternShip.controller;
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -32,12 +33,14 @@ public class LeaveRequestController {
     }
 
     @GetMapping("/me") // Get cho intern
+    @PreAuthorize("hasAuthority('SCOPE_INTERN')")
     public ResponseEntity<?> getAllLeaveApplicationByIntern(
             @RequestParam(required = false, defaultValue = "ALL") String status) {
         return ResponseEntity.ok(leaveRequestService.getAllLeaveApplicationByIntern(status));
     }
 
     @GetMapping // Get cho riêng hr
+    @PreAuthorize("hasAuthority('SCOPE_HR')")
     public ResponseEntity<?> getAllLeaveApplication(
             @RequestParam(required = false, defaultValue = "") String status, // trạng thái
             @RequestParam(required = false, defaultValue = "") String keyword, // internName
@@ -54,23 +57,27 @@ public class LeaveRequestController {
     }
 
     @GetMapping("/{id}") // Xem 1 cái
+    @PreAuthorize("hasAuthority('SCOPE_HR')")
     public ResponseEntity<?> viewLeaveApplication(@PathVariable Integer id) {
         return ResponseEntity.ok(leaveRequestService.viewLeaveApplication(id));
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasAuthority('SCOPE_INTERN')")
     public ResponseEntity<?> cancelLeaveApplication(@PathVariable Integer id) {
         leaveRequestService.cancelLeaveApplication(id);
         return ResponseEntity.ok().build();
     }
 
     @PatchMapping("/approve/{id}")
+    @PreAuthorize("hasAuthority('SCOPE_HR')")
     public ResponseEntity<?> approveLeaveApplication(@PathVariable Integer id) {
 
         return ResponseEntity.ok(leaveRequestService.approveLeaveApplication(id));
     }
 
     @PatchMapping("/reject/{id}")
+    @PreAuthorize("hasAuthority('SCOPE_HR')")
     public ResponseEntity<?> rejectLeaveApplication(@PathVariable int id ,@RequestBody @Valid RejectLeaveApplicationRequest request) {
         return ResponseEntity.ok(leaveRequestService.rejectLeaveApplication(id, request));
     }

@@ -20,91 +20,39 @@ import {
   ClipboardList,
   FileQuestion,
   LifeBuoy,
-  FileSpreadsheet,
-  ChevronDown,
+  History,
   DollarSign,
+  FileSpreadsheet,
 } from "lucide-react";
 import "./Layout.css";
-
-// Helper component for the collapsible submenu
-const SubMenuItem = ({ item, sidebarOpen, location }) => {
-  const [isOpen, setIsOpen] = useState(false);
-
-  const hasActiveChild = item.children.some(
-    (child) => location.pathname === child.path
-  );
-
-  useEffect(() => {
-    // Automatically open the submenu if one of its children is active
-    if (hasActiveChild) {
-      setIsOpen(true);
-    }
-  }, [hasActiveChild]);
-
-  const ParentIcon = item.icon;
-
-  return (
-    <div className={`nav-item-container ${hasActiveChild ? "parent-active" : ""}`}>
-      <button 
-        className={`nav-item-parent ${isOpen || hasActiveChild ? "active" : ""}`} 
-        onClick={() => setIsOpen(!isOpen)}
-      >
-        <div className="nav-item-parent-title">
-          <ParentIcon className="nav-icon" size={20} />
-          {sidebarOpen && <span className="nav-label">{item.label}</span>}
-        </div>
-        {sidebarOpen && (
-          <ChevronDown
-            className={`nav-chevron ${isOpen ? "open" : ""}`}
-            size={16}
-          />
-        )}
-      </button>
-      {sidebarOpen && (
-        <div className={`submenu ${isOpen ? "open" : ""}`}>
-          {item.children.map((child) => {
-            const ChildIcon = child.icon;
-            const isChildActive = location.pathname === child.path;
-            return (
-              <Link
-                key={child.path}
-                to={child.path}
-                className={`submenu-item ${isChildActive ? "active" : ""}`}
-              >
-                <ChildIcon className="nav-icon" size={20} />
-                <span className="nav-label">{child.label}</span>
-              </Link>
-            );
-          })}
-        </div>
-      )}
-    </div>
-  );
-};
-
 
 const rolePermissions = {
   ADMIN: [
     "/user",
     "/intern",
-    "/internshipApplication",
-    "/internshipProgram",
-    "/chat",
     "/mentor",
     "/team",
-    "/scheduleManagement",
+    "/evaluationReport",
+    "/logManagement",
   ],
-  MENTOR: ["/mentor/tasks", "/mentor/evaluation"], // Added /mentor/tasks for MENTOR role
-
-  INTERN: ["/myCalendar", "/leaveRequest", "/workProgress", "/my-work", "/my-allowance-history" , "/support-request"],
+  MENTOR: ["/mentor/tasks", "/mentor/evaluation", "/chat"],
+  INTERN: [
+    "/myCalendar",
+    "/leaveRequest",
+    "/workProgress",
+    "/my-work",
+    "/my-allowance-history",
+    "/support-request",
+  ],
   HR: [
     "/intern",
-    "/user",
+    "/mentor",
+    "/team",
     "/internshipProgram",
+    "/internshipApplication",
     "/chat",
     "/scheduleManagement",
-    "/admin/team-schedule",
-    "/diligenceHr",
+    "/diligenceManagement",
     "/leaveRequestManagement",
     "/evaluationReport",
     "/supportRequestList",
@@ -117,7 +65,7 @@ const rolePermissions = {
 const menuItems = [
   { path: "/user", icon: UserCheck, label: "Quản lý người dùng" },
   { path: "/intern", icon: UserCheck, label: "Quản lý thực tập sinh" },
-  { path: "/mentor", icon: UserCheck, label: "Quản lý Mentor" },
+  { path: "/mentor", icon: UserCheck, label: "Quản lý mentor" },
   { path: "/team", icon: Users, label: "Quản lý nhóm" },
   {
     path: "/internshipApplication",
@@ -130,18 +78,17 @@ const menuItems = [
   {
     path: "/scheduleManagement",
     icon: Calendar,
-    label: "Quản lí lịch thực tập",
+    label: "Quản lý lịch thực tập",
   },
   { path: "/internshipProgram", icon: Award, label: "Quản lý kỳ thực tập" },
+
+  { path: "/allowance-package", icon: Award, label: "Quản lí gói phụ cấp" },
   {
-    id: "allowance",
-    icon: DollarSign,
-    label: "Quản lí phụ cấp",
-    children: [
-      { path: "/allowance-package", icon: Award, label: "Quản lí gói phụ cấp" },
-      { path: "/allowance-report", icon: FileSpreadsheet, label: "Báo cáo phụ cấp" },
-    ],
+    path: "/allowance-report",
+    icon: FileSpreadsheet,
+    label: "Báo cáo phụ cấp",
   },
+
   { path: "/schedule", icon: Calendar, label: "Lịch" },
   { path: "/browseLeave", icon: FileText, label: "Duyệt đơn nghỉ phép" },
   { path: "/leaveRequest", icon: FileText, label: "Xin phép" },
@@ -150,7 +97,9 @@ const menuItems = [
     icon: ClipboardList,
     label: "Quản lý đơn xin phép",
   },
-  { path: "/diligenceHr", icon: FileText, label: "Quản lý chuyên cần" },
+  { path: "/allowance", icon: FileText, label: "Quản lí phụ cấp " },
+
+  { path: "/diligenceManagement", icon: FileText, label: "Quản lý chuyên cần" },
   {
     path: "/mentor/evaluation",
     icon: ClipboardList,
@@ -163,8 +112,9 @@ const menuItems = [
     label: "Báo cáo đánh giá thực tập",
   },
   { path: "/support-request", icon: LifeBuoy, label: "Yêu cầu hỗ trợ" },
-  { path: "/supportRequestList", icon: FileQuestion, label: "Yêu cầu hỗ trợ" },     
+  { path: "/supportRequestList", icon: FileQuestion, label: "Yêu cầu hỗ trợ" },
   { path: "/chat", icon: MessageSquare, label: "Tin nhắn" },
+  { path: "/logManagement", icon: History, label: "Nhật ký hệ thống" },
 ];
 const Layout = () => {
   const navigate = useNavigate();
@@ -227,19 +177,10 @@ const Layout = () => {
 
   useEffect(() => {
     if (role) {
-      const allowedPaths = new Set(rolePermissions[role] || []);
-      const finalMenu = menuItems.filter(item => {
-        // If it's a direct link, check if its path is allowed
-        if (item.path) {
-          return allowedPaths.has(item.path);
-        }
-        // If it has children, check if at least one child's path is allowed
-        if (item.children) {
-          return item.children.some(child => allowedPaths.has(child.path));
-        }
-        return false;
-      });
-      setFilteredMenu(finalMenu);
+      const allowedPaths = rolePermissions[role] || [];
+      setFilteredMenu(
+        menuItems.filter((item) => allowedPaths.includes(item.path))
+      );
     }
   }, [role]);
 
@@ -269,17 +210,6 @@ const Layout = () => {
 
           <nav className="sidebar-nav">
             {filteredMenu.map((item) => {
-              if (item.children) {
-                return (
-                  <SubMenuItem
-                    key={item.id}
-                    item={item}
-                    sidebarOpen={sidebarOpen}
-                    location={location}
-                  />
-                );
-              }
-              
               const Icon = item.icon;
               const isActive = location.pathname === item.path;
 
@@ -311,10 +241,10 @@ const Layout = () => {
             </div>
 
             <div className="header-actions">
-              <button className="icon-button">
+              {/* <button className="icon-button">
                 <Bell size={20} />
                 <span className="notification-badge"></span>
-              </button>
+              </button> */}
               <div
                 className={`user-profile ${showMenu ? "active" : ""}`}
                 onClick={() => toggleUserMenu()}

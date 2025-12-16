@@ -7,12 +7,15 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import com.example.InternShip.annotation.LogActivity;
 import com.example.InternShip.dto.internshipProgram.request.CreateInternProgramRequest;
 import com.example.InternShip.dto.internshipProgram.request.UpdateInternProgramRequest;
 import com.example.InternShip.dto.internshipProgram.response.GetAllInternProgramResponse;
 import com.example.InternShip.dto.internshipProgram.response.GetInternProgramResponse;
 import com.example.InternShip.dto.response.PagedResponse;
 import com.example.InternShip.entity.*;
+import com.example.InternShip.entity.Log.Model;
+import com.example.InternShip.entity.Log.Action;
 import com.example.InternShip.entity.enums.Role;
 import com.example.InternShip.exception.ErrorCode;
 import com.example.InternShip.job.EndPublishJob;
@@ -21,7 +24,6 @@ import com.example.InternShip.job.StartInternship;
 import com.example.InternShip.repository.*;
 import com.example.InternShip.service.EmailService;
 import jakarta.persistence.EntityNotFoundException;
-import jakarta.persistence.criteria.Predicate;
 import jakarta.transaction.Transactional;
 import org.modelmapper.ModelMapper;
 import org.quartz.*;
@@ -29,9 +31,7 @@ import org.quartz.impl.matchers.GroupMatcher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
-import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
 
 import com.example.InternShip.service.InternshipProgramService;
 
@@ -54,7 +54,7 @@ public class InternshipProgramServiceImpl implements InternshipProgramService {
         List<InternshipProgram> results = null;
         if (role.equals(Role.VISITOR)) {
             results = internshipProgramRepository.findAllByStatus(InternshipProgram.Status.PUBLISHED);
-        }else {
+        } else {
             results = internshipProgramRepository.findAll();
         }
         return results.stream()
@@ -62,40 +62,24 @@ public class InternshipProgramServiceImpl implements InternshipProgramService {
                 .toList();
     }
 
-    @Override
-    public PagedResponse<GetInternProgramResponse> getAllInternshipPrograms(List<Integer> departmentIds, String keyword, boolean activeOnly, int page) {
+    @Override // Tùng
+    public PagedResponse<GetInternProgramResponse> getAllInternshipPrograms(List<Integer> department,
+                                                                            String keyword, int page) {
         page = Math.max(0, page - 1);
         PageRequest pageable = PageRequest.of(page, 10, Sort.by("id").descending());
 
-        Specification<InternshipProgram> spec = (root, query, criteriaBuilder) -> {
-            List<Predicate> predicates = new ArrayList<>();
+        // Kiểm tra null vì Hibernate không coi List rỗng là null
+        if (department == null || department.isEmpty()) {
+            department = null;
+        }
 
-            // Filter by department
-            if (departmentIds != null && !departmentIds.isEmpty()) {
-                predicates.add(root.get("department").get("id").in(departmentIds));
-            }
-
-            // Filter by keyword
-            if (StringUtils.hasText(keyword)) {
-                predicates.add(criteriaBuilder.like(criteriaBuilder.lower(root.get("name")), "%" + keyword.toLowerCase() + "%"));
-            }
-
-            // Filter by active programs (timeEnd > now)
-            if (activeOnly) {
-                predicates.add(criteriaBuilder.greaterThan(root.get("timeEnd"), LocalDateTime.now()));
-            }
-
-            return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
-        };
-
-        Page<InternshipProgram> internshipPrograms = internshipProgramRepository.findAll(spec, pageable);
+        Page<InternshipProgram> internshipPrograms = internshipProgramRepository.searchInternshipProgram(department,
+                keyword, pageable);
 
         List<GetInternProgramResponse> responses = internshipPrograms.stream()
                 .map(internshipProgram -> {
                     GetInternProgramResponse response = modelMapper.map(internshipProgram, GetInternProgramResponse.class);
-                    if (internshipProgram.getDepartment() != null) {
-                        response.setDepartment(internshipProgram.getDepartment().getName());
-                    }
+                    response.setDepartment(internshipProgram.getDepartment().getName());
                     return response;
                 })
                 .collect(Collectors.toList());
@@ -111,7 +95,14 @@ public class InternshipProgramServiceImpl implements InternshipProgramService {
 
     // thêm InternProgram
     @Override
-    public GetInternProgramResponse createInternProgram (CreateInternProgramRequest request) throws SchedulerException {
+    @Transactional
+    @LogActivity(
+            action = Action.CREATE,
+            affected = Model.INTERNSHIP_PROGRAM,
+            description = "Tạo chương trình thực tập mới",
+            entityType = InternshipProgram.class
+    )
+    public GetInternProgramResponse createInternProgram(CreateInternProgramRequest request) throws SchedulerException {
         if (!(LocalDateTime.now().isBefore(request.getEndPublishedTime()) &&
                 request.getEndPublishedTime().isBefore(request.getEndReviewingTime()) &&
                 request.getEndReviewingTime().isBefore(request.getTimeStart()))) {
@@ -133,7 +124,7 @@ public class InternshipProgramServiceImpl implements InternshipProgramService {
                 scheduleInternship(internshipProgram.getId(), EndPublishJob.class, internshipProgram.getEndPublishedTime());
                 scheduleInternship(internshipProgram.getId(), EndReviewJob.class, internshipProgram.getEndReviewingTime());
                 scheduleInternship(internshipProgram.getId(), StartInternship.class, internshipProgram.getTimeStart());
-            }catch (SchedulerException e){
+            } catch (SchedulerException e) {
                 throw new SchedulerException(ErrorCode.SCHEDULER_FAILED.getMessage());
             }
         }
@@ -144,6 +135,13 @@ public class InternshipProgramServiceImpl implements InternshipProgramService {
 
     // sửa InternProgram
     @Override
+    @Transactional
+    @LogActivity(
+            action = Action.MODIFY,
+            affected = Model.INTERNSHIP_PROGRAM,
+            description = "Sửa chương trình thực tập",
+            entityType = InternshipProgram.class
+    )
     public GetInternProgramResponse updateInternProgram(UpdateInternProgramRequest request, int id) throws SchedulerException {
         if (!(request.getEndPublishedTime().isBefore(request.getEndReviewingTime()) &&
                 request.getEndReviewingTime().isBefore(request.getTimeStart()))) {
@@ -155,7 +153,7 @@ public class InternshipProgramServiceImpl implements InternshipProgramService {
 
         if (internshipProgram.getStatus() == InternshipProgram.Status.DRAFT) {
             modelMapper.map(request, internshipProgram);
-        }else {
+        } else {
             internshipProgram.setName(request.getName());
             if (internshipProgram.getEndPublishedTime().isAfter(LocalDateTime.now())) {
                 internshipProgram.setEndPublishedTime(request.getEndPublishedTime());
@@ -176,6 +174,13 @@ public class InternshipProgramServiceImpl implements InternshipProgramService {
     }
 
     // hủy InternProgram
+    @Transactional
+    @LogActivity(
+            action = Action.DELETE,
+            affected = Model.INTERNSHIP_PROGRAM,
+            description = "Xoá chương trình thực tập",
+            entityType = InternshipProgram.class
+    )
     public GetInternProgramResponse cancelInternProgram(int id) throws SchedulerException {
         InternshipProgram internshipProgram = internshipProgramRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException(ErrorCode.INTERNSHIP_PROGRAM_NOT_EXISTED.getMessage()));
@@ -214,7 +219,7 @@ public class InternshipProgramServiceImpl implements InternshipProgramService {
             scheduleInternship(internshipProgram.getId(), EndPublishJob.class, internshipProgram.getEndPublishedTime());
             scheduleInternship(internshipProgram.getId(), EndReviewJob.class, internshipProgram.getEndReviewingTime());
             scheduleInternship(internshipProgram.getId(), StartInternship.class, internshipProgram.getTimeStart());
-        }catch (SchedulerException e){
+        } catch (SchedulerException e) {
             throw new SchedulerException(ErrorCode.SCHEDULER_FAILED.getMessage());
         }
 
@@ -222,14 +227,14 @@ public class InternshipProgramServiceImpl implements InternshipProgramService {
     }
 
     @Transactional
-    public void endPublish (int programId){
+    public void endPublish(int programId) {
         InternshipProgram internshipProgram = internshipProgramRepository.findById(programId)
                 .orElseThrow(() -> new EntityNotFoundException(ErrorCode.INTERNSHIP_TERM_NOT_EXISTED.getMessage()));
         List<InternshipApplication> applications = internshipProgram.getApplications();
         List<InternshipApplication> toUpdate = new ArrayList<>();
 
-        for (InternshipApplication app : applications){
-            if (app.getStatus() == InternshipApplication.Status.SUBMITTED){
+        for (InternshipApplication app : applications) {
+            if (app.getStatus() == InternshipApplication.Status.SUBMITTED) {
                 app.setStatus(InternshipApplication.Status.UNDER_REVIEW);
                 toUpdate.add(app);
             }
@@ -240,14 +245,14 @@ public class InternshipProgramServiceImpl implements InternshipProgramService {
     }
 
     @Transactional
-    public void endReviewing (int programId){
+    public void endReviewing(int programId) {
         InternshipProgram internshipProgram = internshipProgramRepository.findById(programId)
                 .orElseThrow(() -> new EntityNotFoundException(ErrorCode.INTERNSHIP_TERM_NOT_EXISTED.getMessage()));
         List<InternshipApplication> applications = internshipProgram.getApplications();
         List<InternshipApplication> toUpdate = new ArrayList<>();
 
-        for (InternshipApplication app : applications){
-            if (app.getStatus() == InternshipApplication.Status.UNDER_REVIEW){
+        for (InternshipApplication app : applications) {
+            if (app.getStatus() == InternshipApplication.Status.UNDER_REVIEW) {
                 app.setStatus(InternshipApplication.Status.REJECTED);
                 toUpdate.add(app);
             }
@@ -255,19 +260,19 @@ public class InternshipProgramServiceImpl implements InternshipProgramService {
         internshipProgram.setStatus(InternshipProgram.Status.PENDING);
         internshipProgramRepository.save(internshipProgram);
         internshipApplicationRepository.saveAll(toUpdate);
-        for (InternshipApplication app : applications){
+        for (InternshipApplication app : applications) {
             emailService.sendApplicationStatusEmail(app);
         }
     }
 
     @Transactional
-    public void startInternship(int programId){
+    public void startInternship(int programId) {
         InternshipProgram internshipProgram = internshipProgramRepository.findById(programId)
                 .orElseThrow(() -> new EntityNotFoundException(ErrorCode.INTERNSHIP_TERM_NOT_EXISTED.getMessage()));
         List<InternshipApplication> applications = internshipProgram.getApplications();
         List<InternshipApplication> toUpdateApp = new ArrayList<>();
 
-        for (InternshipApplication app : applications){
+        for (InternshipApplication app : applications) {
             if (app.getStatus() == InternshipApplication.Status.APPROVED) {
                 app.setStatus(InternshipApplication.Status.NOT_CONTRACT);
                 toUpdateApp.add(app);
@@ -278,7 +283,7 @@ public class InternshipProgramServiceImpl implements InternshipProgramService {
         internshipApplicationRepository.saveAll(toUpdateApp);
     }
 
-    public void scheduleInternship (int programId, Class<? extends Job> jobClass, LocalDateTime timeStart) throws SchedulerException {
+    public void scheduleInternship(int programId, Class<? extends Job> jobClass, LocalDateTime timeStart) throws SchedulerException {
         Date startDate = Date.from(timeStart.atZone(ZoneId.systemDefault()).toInstant());
 
         JobKey jobKey = new JobKey("job_" + programId, jobClass.getSimpleName());

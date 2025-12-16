@@ -82,8 +82,7 @@ public class AllowanceReportServiceImpl implements AllowanceReportService {
                             ? allowance.getPeriod().format(DateTimeFormatter.ISO_LOCAL_DATE)
                             : "N/A");
             row.createCell(7).setCellValue(allowance.getStatus() != null ? allowance.getStatus().name() : "N/A");
-            row.createCell(8)
-                    .setCellValue(allowance.getRemitter() != null ? allowance.getRemitter().getFullName() : "N/A");
+           
             row.createCell(9)
                     .setCellValue(allowance.getPaidAt() != null
                             ? allowance.getPaidAt().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME)

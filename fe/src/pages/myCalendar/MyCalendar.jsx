@@ -51,7 +51,14 @@ const MyCalendar = () => {
   };
 
   return (
-    <div style={{ padding: "20px", height: "100%" }}>
+    <div
+      style={{
+        padding: "20px",
+        height: "100%",
+        backgroundColor: "white",
+        borderRadius: "5px",
+      }}
+    >
       <FullCalendar
         plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
         initialView="timeGridWeek"

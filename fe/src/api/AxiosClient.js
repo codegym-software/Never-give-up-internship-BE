@@ -3,9 +3,10 @@ import axios from "axios";
 import { jwtDecode } from "jwt-decode";
 
 const VITE_BASE_URL = import.meta.env.VITE_API_URL;
+const VITE_BASE_URL_REFRESH = import.meta.env.VITE_REFESH_TOKEN_URL;
 
 const AxiosClient = axios.create({
-  baseURL: VITE_BASE_URL || "http://localhost:8082/api/v1",
+  baseURL: VITE_BASE_URL ,
   headers: {
     "Content-Type": "application/json",
   },
@@ -24,7 +25,7 @@ AxiosClient.interceptors.request.use(
         }
         try {
           const res = await axios.post(
-            "http://localhost:8082/api/v1/auth/refresh",
+            VITE_BASE_URL_REFRESH,
             { refreshToken }
           );
           localStorage.setItem("AccessToken", res.data.accessToken);

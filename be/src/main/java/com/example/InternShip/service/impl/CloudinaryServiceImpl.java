@@ -28,6 +28,8 @@ public class CloudinaryServiceImpl implements CloudinaryService {
 
     private static final long MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
 
+
+    //xem xet co 2 cai upload file 
     @Override
     public FileResponse uploadFile(MultipartFile file, String folder) {
         User user = authService.getUserLogin();
@@ -69,7 +71,7 @@ public class CloudinaryServiceImpl implements CloudinaryService {
     }
 
     @Override
-    public FileResponse uploadFile(byte[] fileBytes, String fileName, String folder) {
+    public FileResponse uploadFile_Month_allowance_report(byte[] fileBytes, String fileName, String folder) {
         if (fileBytes == null || fileBytes.length == 0) {
             throw new RuntimeException(ErrorCode.FILE_NOT_NULL.getMessage());
         }
@@ -129,7 +131,7 @@ public class CloudinaryServiceImpl implements CloudinaryService {
             }
         } else {
             // Assuming other folders are for documents like CVs
-            List<String> allowedDocumentExtensions = List.of("pdf", "docx", "doc", "png", "jpg", "jpeg");
+            List<String> allowedDocumentExtensions = List.of("pdf", "docx", "doc", "png", "jpg", "jpeg","xlsx");
             if (!allowedDocumentExtensions.contains(extension)) {
                 throw new IllegalArgumentException(ErrorCode.TYPE_FILE_INVALID.getMessage());
             }

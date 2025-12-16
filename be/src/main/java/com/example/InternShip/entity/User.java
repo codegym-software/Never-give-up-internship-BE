@@ -10,9 +10,9 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
+@Table(name = "`user`")
 @Getter
 @Setter
-@Table(name = "`user`")
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -44,8 +44,6 @@ public class User {
     @OneToMany(mappedBy = "hr")
     private List<Conversation> hrConversations;
 
-    @OneToMany(mappedBy = "remitter")
-    private List<Allowance> allowances;
 
     @OneToMany(mappedBy = "handler")
     private List<SupportRequest> supportRequests;

@@ -2,11 +2,11 @@ import React, { useState, useEffect, useCallback } from "react";
 import InternApi from "../../api/internApi"; // Corrected import path
 import SprintApi from "../../api/SprintApi";
 import TaskApi from "../../api/TaskApi";
-import TeamSprintFilters from "../task_management/TeamSprintFilters";
-import KanbanBoard from "../task_management/KanbanBoard";
-import CreateTaskModal from "../task_management/CreateTaskModal";
-import TaskDetailModal from "../task_management/TaskDetailModal";
-import ConfirmationModal from "../task_management/ConfirmationModal";
+import TeamSprintFilters from "../taskManagement/TeamSprintFilters";
+import KanbanBoard from "../taskManagement/KanbanBoard";
+import CreateTaskModal from "../taskManagement/CreateTaskModal";
+import TaskDetailModal from "../taskManagement/TaskDetailModal";
+import ConfirmationModal from "../taskManagement/ConfirmationModal";
 import styles from "../mentor/TaskManagementPage.module.css"; // Re-use the same styles
 
 function MyWorkPage() {
@@ -26,8 +26,9 @@ function MyWorkPage() {
   // Modal states
   const [isCreateTaskModalOpen, setIsCreateTaskModalOpen] = useState(false);
   const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
-  const [isDeleteConfirmationOpen, setIsDeleteConfirmationOpen] = useState(false);
-  
+  const [isDeleteConfirmationOpen, setIsDeleteConfirmationOpen] =
+    useState(false);
+
   // Data for modals
   const [itemToDelete, setItemToDelete] = useState({ id: null, type: null });
   const [selectedTask, setSelectedTask] = useState(null);
@@ -47,7 +48,7 @@ function MyWorkPage() {
   const handleCloseDetailModal = () => setIsDetailModalOpen(false);
 
   const handleOpenDeleteTaskModal = (taskId) => {
-    setItemToDelete({ id: taskId, type: 'task' });
+    setItemToDelete({ id: taskId, type: "task" });
     setIsDeleteConfirmationOpen(true);
   };
 
@@ -58,11 +59,13 @@ function MyWorkPage() {
   };
 
   const handleConfirmDelete = async () => {
-    if (!itemToDelete.id || itemToDelete.type !== 'task') return;
+    if (!itemToDelete.id || itemToDelete.type !== "task") return;
 
     try {
       await TaskApi.deleteTask(itemToDelete.id);
-      setTasks(prevTasks => prevTasks.filter(task => task.id !== itemToDelete.id));
+      setTasks((prevTasks) =>
+        prevTasks.filter((task) => task.id !== itemToDelete.id)
+      );
     } catch (error) {
       console.error(`Không thể xóa ${itemToDelete.type}:`, error);
       alert(`Không thể xóa ${itemToDelete.type}. Vui lòng thử lại.`);
@@ -107,7 +110,7 @@ function MyWorkPage() {
     setIsLoadingTasks(true);
     try {
       const response = await TaskApi.getTasksBySprint(selectedSprintId);
-      setTasks(response.data || []);
+      setTasks(response || []);
     } catch (error) {
       console.error("Không thể lấy các task:", error);
       setTasks([]);
@@ -129,45 +132,72 @@ function MyWorkPage() {
     const startDate = new Date(sprint.startDate);
     const endDate = new Date(sprint.endDate);
     today.setHours(0, 0, 0, 0);
-    
+
     if (today < startDate) return "TODO";
     if (today > endDate) return "DONE";
     return "IN_PROGRESS";
   };
 
   if (isLoadingProfile) {
-    return <div className={styles.pageContainer}><p>Đang tải hồ sơ của bạn...</p></div>;
+    return (
+      <div className={styles.pageContainer}>
+        <p>Đang tải hồ sơ của bạn...</p>
+      </div>
+    );
   }
 
   if (!teamDetails) {
-    return <div className={styles.pageContainer}><p>Bạn chưa được phân công vào nhóm.</p></div>;
+    return (
+      <div className={styles.pageContainer}>
+        <p>Bạn chưa được phân công vào nhóm.</p>
+      </div>
+    );
   }
 
-  const sprintTasks = tasks.filter(task => task.status !== 'CANCELLED');
+  const sprintTasks = tasks.filter((task) => task.status !== "CANCELLED");
 
   const columns = {
-    TODO: { name: "To Do", items: sprintTasks.filter(t => t.status === 'TODO') },
-    IN_PROGRESS: { name: "In Progress", items: sprintTasks.filter(t => t.status === 'IN_PROGRESS') },
-    DONE: { name: "Done", items: sprintTasks.filter(t => t.status === 'DONE') },
+    TODO: {
+      name: "To Do",
+      items: sprintTasks.filter((t) => t.status === "TODO"),
+    },
+    IN_PROGRESS: {
+      name: "In Progress",
+      items: sprintTasks.filter((t) => t.status === "IN_PROGRESS"),
+    },
+    DONE: {
+      name: "Done",
+      items: sprintTasks.filter((t) => t.status === "DONE"),
+    },
   };
 
   return (
     <div className={styles.pageContainer}>
       <header className={styles.pageHeader}>
         <h1 className={styles.pageTitle}>Nhiệm vụ của tôi</h1>
-        <p style={{ margin: 0, color: '#718096' }}>Nhóm: {teamDetails.teamName}</p>
+        <p style={{ margin: 0, color: "#718096" }}>
+          Nhóm: {teamDetails.teamName}
+        </p>
       </header>
-      
+
       <TeamSprintFilters
         sprints={sprints}
         selectedSprintId={selectedSprintId}
-        onSprintChange={(selectedOption) => setSelectedSprintId(selectedOption ? selectedOption.value : "")}
+        onSprintChange={(selectedOption) =>
+          setSelectedSprintId(selectedOption ? selectedOption.value : "")
+        }
         isLoadingSprints={isLoadingSprints}
         getSprintStatus={getSprintStatus}
         isInternView={true}
       />
-      
-      <hr style={{ margin: '24px 0', border: 'none', borderTop: '1px solid #e2e8f0' }} />
+
+      <hr
+        style={{
+          margin: "24px 0",
+          border: "none",
+          borderTop: "1px solid #e2e8f0",
+        }}
+      />
 
       {selectedSprintId ? (
         <KanbanBoard
@@ -180,7 +210,7 @@ function MyWorkPage() {
           selectedSprintId={selectedSprintId}
         />
       ) : (
-        <p style={{ textAlign: 'center', marginTop: '40px', color: '#718096' }}>
+        <p style={{ textAlign: "center", marginTop: "40px", color: "#718096" }}>
           Vui lòng chọn một sprint để xem các nhiệm vụ của bạn.
         </p>
       )}

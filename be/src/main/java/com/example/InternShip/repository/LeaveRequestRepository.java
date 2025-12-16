@@ -11,16 +11,10 @@ import org.springframework.data.repository.query.Param;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Optional;
 
 public interface LeaveRequestRepository extends JpaRepository<LeaveRequest, Integer> {
     // Tìm đơn nghỉ phép (đã được duyệt) của 1 intern, trong 1 ngày cụ thể
-    Optional<LeaveRequest> findByInternAndDateAndApproved(Intern intern, LocalDate date, Boolean approved);
-
-    List<LeaveRequest> findByInternAndDateBetweenOrderByDateAsc(
-            Intern intern,
-            LocalDate startDate,
-            LocalDate endDate);
+    List<LeaveRequest> findByInternAndDateAndApproved(Intern intern, LocalDate date, Boolean approved);
 
     @Query("""
     SELECT lr

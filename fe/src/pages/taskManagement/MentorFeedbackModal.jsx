@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import styles from './SprintReviewModal.module.css';
 import { X, Send } from "lucide-react";
 import { toast } from "react-toastify";
+import ReportApi from "../../api/ReportApi";
 import SprintApi from "../../api/SprintApi";
 
 const evaluationLevels = [
@@ -29,7 +30,7 @@ function MentorFeedbackModal({
     if (!isOpen) return;
     // Nếu bạn có API lấy feedback trước đó, gọi ở đây để setFeedback
     // Ví dụ:
-    // SprintApi.getMentorFeedback(sprintId).then(data => setFeedback(data));
+    ReportApi.getMentorFeedback(sprintId).then(data => setFeedback(data));
     setFeedback({
       feedbackGood: "",
       feedbackBad: "",
@@ -57,8 +58,8 @@ function MentorFeedbackModal({
       onFeedbackSuccess?.();
       onClose();
     } catch (error) {
-      toast.error("Lỗi khi gửi phản hồi!");
-      console.error("Error submitting feedback:", error);
+      console.log(error);
+      toast.error("Lỗi khi gửi phản hồi!:");
     } finally {
       setIsSubmitting(false);
     }

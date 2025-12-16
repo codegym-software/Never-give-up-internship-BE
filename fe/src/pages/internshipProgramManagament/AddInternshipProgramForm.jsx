@@ -15,7 +15,7 @@ const AddInternshipProgramModal = ({
     endReviewingTime: "",
     timeStart: "",
     departmentId: 0,
-    allowance: "",           // ← mới
+    allowance: "", // ← mới
   });
 
   const handleChange = (key, value) => {
@@ -37,7 +37,7 @@ const AddInternshipProgramModal = ({
     e.preventDefault();
     const submitData = {
       ...formData,
-      allowance: parseFloat(formData.allowance) || 0, // đảm bảo là số
+      allowance: parseFloat(formData.allowance),
       endPublishedTime: convertToISO(formData.endPublishedTime),
       endReviewingTime: convertToISO(formData.endReviewingTime),
       timeStart: convertToISO(formData.timeStart),
@@ -71,18 +71,6 @@ const AddInternshipProgramModal = ({
               onChange={(e) => handleChange("name", e.target.value)}
               placeholder="Nhập tên kỳ thực tập..."
               required
-            />
-          </div>
-
-          <div className="form-group">
-            <label>Phụ cấp (VND/tháng)</label>
-            <input
-              type="number"
-              min="0"
-              step="100000"
-              value={formData.allowance}
-              onChange={(e) => handleChange("allowance", e.target.value)}
-              placeholder="Nhập phụ cấp..."
             />
           </div>
 
@@ -131,6 +119,18 @@ const AddInternshipProgramModal = ({
             />
           </div>
 
+          <div className="form-group">
+            <label>Phụ cấp (VND/tháng)</label>
+            <input
+              type="number"
+              min="0"
+              step="100000"
+              value={formData.allowance}
+              onChange={(e) => handleChange("allowance", e.target.value)}
+              placeholder="Nhập phụ cấp..."
+            />
+          </div>
+
           <div className="modal-actions">
             <button
               type="button"
@@ -142,7 +142,7 @@ const AddInternshipProgramModal = ({
 
             <button
               type="button"
-              className="btn btn-secondary"
+              className="btn btn-save"
               onClick={(e) => handleSubmit(e, true)}
             >
               Lưu nháp

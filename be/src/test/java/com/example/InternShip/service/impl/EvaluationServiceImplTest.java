@@ -105,14 +105,5 @@ class EvaluationServiceImplTest {
         assertEquals(1, response.getInternId());
     }
 
-    @Test
-    void exportEvaluations_happyPath() {
-        List<Intern> interns = Collections.singletonList(intern);
-        when(internRepository.findForEvaluationReport(1, 1)).thenReturn(interns);
-        when(excelExportService.exportInternEvaluations(interns)).thenReturn(new ByteArrayInputStream(new byte[0]));
-
-        ByteArrayInputStream response = evaluationService.exportEvaluations(1, 1);
-
-        assertNotNull(response);
-    }
+ 
 }

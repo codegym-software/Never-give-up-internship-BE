@@ -108,7 +108,8 @@ function SprintReviewModal({ isOpen, onClose, unfinishedTasks = [], activeSprint
           )}
         </div>
         <div className={styles.modalFooter}>
-          <button className={`${styles.btn} ${styles.btnConfirm}`} onClick={handleConfirm} disabled={unfinishedTasks.length === 0}>
+          {/* <button className={`${styles.btn} ${styles.btnConfirm}`} onClick={handleConfirm} disabled={unfinishedTasks.length === 0}> */}
+          <button className={`${styles.btn} ${styles.btnConfirm}`} onClick={handleConfirm}>
             Xác nhận
           </button>
           <button className={`${styles.btn} ${styles.btnCancel}`} onClick={onClose}>

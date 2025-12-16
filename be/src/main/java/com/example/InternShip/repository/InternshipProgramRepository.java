@@ -5,13 +5,12 @@ import com.example.InternShip.entity.InternshipProgram;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 
-public interface InternshipProgramRepository extends JpaRepository<InternshipProgram, Integer>, JpaSpecificationExecutor<InternshipProgram> {
+public interface InternshipProgramRepository extends JpaRepository<InternshipProgram, Integer> {
     List<InternshipProgram> findAllByStatus(InternshipProgram.Status status);
     
     // Tùng

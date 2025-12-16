@@ -391,33 +391,7 @@ class InternServiceImplTest {
         assertThrows(EntityNotFoundException.class, () -> internService.getAllInternNoTeam(99));
     }
 
-    @Test
-    void getAuthenticatedInternTeamId_WhenInternInTeam_ShouldReturnTeamId() {
-        // Arrange
-        when(authService.getUserLogin()).thenReturn(user);
-        when(internRepository.findByUser(user)).thenReturn(Optional.of(intern));
-
-        // Act
-        Integer teamId = internService.getAuthenticatedInternTeamId();
-
-        // Assert
-        assertEquals(team.getId(), teamId);
-    }
-
-    @Test
-    void getAuthenticatedInternTeamId_WhenInternNotInTeam_ShouldReturnNull() {
-        // Arrange
-        intern.setTeam(null);
-        when(authService.getUserLogin()).thenReturn(user);
-        when(internRepository.findByUser(user)).thenReturn(Optional.of(intern));
-
-        // Act
-        Integer teamId = internService.getAuthenticatedInternTeamId();
-
-        // Assert
-        assertNull(teamId);
-    }
-
+  
     @Test
     void getAllInternByTeamId_WhenTeamExists_ShouldReturnListOfInterns() {
         // Arrange

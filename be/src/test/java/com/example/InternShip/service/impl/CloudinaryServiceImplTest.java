@@ -75,7 +75,7 @@ class CloudinaryServiceImplTest {
         when(uploader.upload(any(byte[].class), anyMap())).thenReturn(
                 Map.of("public_id", "test_id", "secure_url", "http://example.com/test.xlsx"));
 
-        FileResponse response = cloudinaryService.uploadFile(fileBytes, fileName, folder);
+        FileResponse response = cloudinaryService.uploadFile_Month_allowance_report(fileBytes, fileName, folder);
 
         assertNotNull(response);
         assertEquals("http://example.com/test.xlsx", response.getFileUrl());

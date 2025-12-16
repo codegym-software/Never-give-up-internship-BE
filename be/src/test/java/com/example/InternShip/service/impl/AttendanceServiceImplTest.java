@@ -86,21 +86,7 @@ class AttendanceServiceImplTest {
     }
 
 
-    @Test
-    void checkOut_happyPath() {
-        attendance.setCheckIn(LocalTime.now().minusHours(1));
-        when(authService.getUserLogin()).thenReturn(user);
-        when(internRepository.findByUser(user)).thenReturn(Optional.of(intern));
-        when(attendanceRepository.findByInternAndDate(intern, LocalDate.now())).thenReturn(Optional.of(attendance));
-        when(leaveRequestRepository.findByInternAndDateAndApproved(intern, LocalDate.now(), true)).thenReturn(Optional.empty());
-        when(attendanceRepository.save(any(Attendance.class))).thenReturn(attendance);
-        when(modelMapper.map(any(Attendance.class), any())).thenReturn(new GetMyScheduleResponse());
-
-
-        GetMyScheduleResponse response = attendanceService.checkOut();
-
-        assertNotNull(response);
-    }
+ 
 
     @Test
     void getMySchedule_happyPath() {

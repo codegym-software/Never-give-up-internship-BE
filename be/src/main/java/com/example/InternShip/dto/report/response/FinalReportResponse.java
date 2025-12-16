@@ -7,7 +7,6 @@ import java.math.BigDecimal;
 @Data
 public class FinalReportResponse {
     private Integer internId;
-    private Integer internshipProgramId;
     private String fullName;
     private String email;
 
@@ -16,7 +15,9 @@ public class FinalReportResponse {
     private BigDecimal qualityScore; //điểm chất lượng
     private BigDecimal problemSolvingScore; //điểm giải quyết vấn đề
     private BigDecimal technologyLearningScore; //điểm học công nghệ mới
+    private BigDecimal averageScore; // điểm trung bình
+    private BigDecimal attendancePercent; // tỉ lệ chuyên cần
     private Intern.SoftSkill softSkill; //kỹ năng mềm
     private String assessment; //mentor đánh giá
-
+    private Intern.Status status; //trạng thái
 }

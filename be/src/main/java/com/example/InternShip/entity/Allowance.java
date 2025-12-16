@@ -35,9 +35,6 @@ public class Allowance {
     @JoinColumn(name = "intern_id", nullable = false)
     private Intern intern;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "remitter_id")
-    private User remitter;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "allowance_package_id")

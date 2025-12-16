@@ -71,55 +71,5 @@ class ReportServiceImplTest {
         program.setTimeEnd(LocalDateTime.now().plusDays(10));
     }
 
-    @Test
-    void getAttendanceSummaryReport_happyPath() {
-        AttendanceRepository.AttendanceSummaryProjection projection = mock(AttendanceRepository.AttendanceSummaryProjection.class);
-        when(projection.getInternId()).thenReturn(1);
-        when(attendanceRepository.getAttendanceSummary(1, 1)).thenReturn(Collections.singletonList(projection));
-        when(internRepository.findAllById(any())).thenReturn(Collections.singletonList(intern));
-
-        List<AttendanceSummaryResponse> response = reportService.getAttendanceSummaryReport(1, 1);
-
-        assertNotNull(response);
-        assertEquals(1, response.size());
-    }
-
-    @Test
-    void getInternAttendanceDetail_happyPath() {
-        when(internRepository.findById(1)).thenReturn(Optional.of(intern));
-        when(internshipProgramRepository.findById(1)).thenReturn(Optional.of(program));
-        when(attendanceRepository.findByInternAndDateBetweenOrderByDateAsc(any(), any(), any())).thenReturn(Collections.emptyList());
-        when(leaveRequestRepository.findByInternAndDateBetweenOrderByDateAsc(any(), any(), any())).thenReturn(Collections.emptyList());
-
-        InternAttendanceDetailResponse response = reportService.getInternAttendanceDetail(1, 1);
-
-        assertNotNull(response);
-        assertEquals(1, response.getInternId());
-    }
-
-    @Test
-    void getFinalReport_happyPath() {
-        Page<Intern> internPage = new PageImpl<>(Collections.singletonList(intern));
-        when(internRepository.findFinalReport(1, 1, Pageable.unpaged())).thenReturn(internPage);
-        when(attendanceRepository.getAttendanceSummary(null, 1)).thenReturn(Collections.emptyList());
-        when(modelMapper.map(any(Intern.class), any())).thenReturn(new FinalReportResponse());
-
-
-        Page<FinalReportResponse> response = reportService.getFinalReport(1, 1, Pageable.unpaged());
-
-        assertNotNull(response);
-        assertEquals(1, response.getTotalElements());
-    }
-
-    @Test
-    void getFinalAttendance_happyPath() {
-        when(internRepository.findById(1)).thenReturn(Optional.of(intern));
-        when(internshipProgramRepository.findById(1)).thenReturn(Optional.of(program));
-        when(attendanceRepository.findByInternAndDateBetweenOrderByDateAsc(any(), any(), any())).thenReturn(Collections.emptyList());
-        when(leaveRequestRepository.findByInternAndDateBetweenOrderByDateAsc(any(), any(), any())).thenReturn(Collections.emptyList());
-
-        List<FinalAttendanceResponse> response = reportService.getFinalAttendance(1, 1);
-
-        assertNotNull(response);
-    }
+   
 }

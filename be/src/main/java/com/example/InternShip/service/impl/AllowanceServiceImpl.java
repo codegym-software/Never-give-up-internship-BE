@@ -127,9 +127,7 @@ public class AllowanceServiceImpl implements AllowanceService {
             return null;
         }
 
-        String remitterName = Optional.ofNullable(allowance.getRemitter())
-                .map(User::getFullName)
-                .orElse(null);
+
 
         return new AllowanceResponse(
                 (long) allowance.getId(),
@@ -137,7 +135,6 @@ public class AllowanceServiceImpl implements AllowanceService {
                 allowance.getIntern().getUser().getEmail(),
                 allowance.getIntern().getInternshipProgram().getName(),
                 allowance.getAmount(),
-                remitterName,
                 allowance.getPaidAt(),
                 allowance.getStatus().name());
     }

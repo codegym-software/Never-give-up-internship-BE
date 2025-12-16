@@ -1,7 +1,7 @@
 .page-container {
   min-height: 100vh;
   background-color: #f8fafc;
-  padding: 30px 40px; /* Padding tổng thể trang */
+  padding: 20px 20px; /* Padding tổng thể trang */
   color: #334155;
   font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
 }
@@ -43,7 +43,7 @@
 .section-title {
   font-size: 18px;
   font-weight: 600;
-  margin-bottom: 20px;
+  margin-bottom: 10px;
   color: #475569;
   display: flex;
   gap: 8px;
@@ -267,6 +267,7 @@
   display: flex;
   flex-direction: column;
   align-items: center;
+  overflow: hidden;
   transition: all 0.2s;
 }
 
@@ -325,29 +326,6 @@
   background-color: #94a3b8;
   cursor: not-allowed;
   box-shadow: none;
-}
-
-.cancel-btn {
-  width: 100%;
-  padding: 10px;
-  background-color: white;
-  color: #64748b;
-  border: 1px solid #cbd5e1;
-  border-radius: 8px;
-  margin-top: 10px;
-  font-size: 14px;
-  font-weight: 600;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  transition: background 0.2s;
-}
-
-.cancel-btn:hover {
-  background-color: #f1f5f9;
-  color: #334155;
 }
 
 /* --- LOADING & EMPTY --- */

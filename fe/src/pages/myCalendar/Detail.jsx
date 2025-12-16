@@ -1,6 +1,25 @@
 import { X } from "lucide-react";
 
 const Detail = ({ details, onClose }) => {
+  const translateStatus = (status) => {
+    switch (status) {
+      case "CHECKED_IN":
+        return "Đã check-in";
+      case "PRESENT":
+        return "Có mặt";
+      case "TIME_VIOLATION":
+        return "Đi muộn/về sớm";
+      case "EXCUSED_TIME":
+        return "Đi muộn/về sớm có phép";
+      case "ON_LEAVE":
+        return "Nghỉ có phép";
+      case "ABSENT":
+        return "Vắng mặt";
+      default:
+        return status;
+    }
+  };
+
   return (
     <div className="modal-overlay">
       <div className="modal">
@@ -15,16 +34,18 @@ const Detail = ({ details, onClose }) => {
 
         <div className="detail-container">
           <div className="detail-row">
-            <span className="label">Giờ vào:</span>
-            <span className="value">{details.timeStart || "--"}</span>
+            <span className="label">Check-in:</span>
+            <span className="value">{details.checkIn || "--"}</span>
           </div>
           <div className="detail-row">
-            <span className="label">Giờ ra:</span>
-            <span className="value">{details.timeEnd || "--"}</span>
+            <span className="label">Check-out:</span>
+            <span className="value">{details.checkOut || "--"}</span>
           </div>
           <div className="detail-row">
             <span className="label">Trạng thái:</span>
-            <span className="value">{details.status || "--"}</span>
+            <span className="value">
+              {translateStatus(details.status) || "--"}
+            </span>
           </div>
         </div>
       </div>

@@ -20,17 +20,16 @@ import ScheduleManagement from "./pages/scheduleManagement/ScheduleManagement";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import InternshipProgramManagament from "./pages/internshipProgramManagament/InternshipProgramManagament";
-import DiligenceReport from "./pages/diligenceHr/DiligenceReport";
-import DiligenceDetail from "~/pages/diligenceHr/DiligenceDetail";
+import DiligenceManagement from "./pages/diligenceManagement/DiligenceManagement";
 import EvaluationReport from "./pages/evaluationReport/EvaluationReport";
-import EvaluationDiligenceDetail from "./pages/evaluationReport/DiligenceDetail";
 import LeaveRequest from "./pages/leaveRequest/LeaveRequest";
 import MentorEvaluation from "./pages/MentorEvaluation/MentorEvaluation";
 import LeaveRequestManagement from "./pages/leaveRequestManagement/LeaveRequestManagement";
-import InternSupportRequest from "~/pages/internSupportRequest/InternSupportRequest"; 
+import InternSupportRequest from "~/pages/internSupportRequest/InternSupportRequest";
 import SupportRequestList from "./pages/supportRequest/SupportRequestList";
 import SupportRequestDetail from "./pages/supportRequest/SupportRequestDetail";
 import AllowanceManagement from "./pages/allowance/AllowanceManagement";
+import LogManagement from "./pages/logManagement/LogManagement";
 import AllowancePackageManagement from "./pages/allowancePackage/AllowancePackageManagement";
 import AllowanceReportManagement from "./pages/allowanceReport/AllowanceReportManagement";
 
@@ -73,8 +72,14 @@ function App() {
             element={<InternshipApplicationManagement />}
           />
           {/* <Route path="allowance" element={<AllowanceManagement />} /> */}
-          <Route path="allowance-report" element={<AllowanceReportManagement />} />
-          <Route path="allowance-package" element={<AllowancePackageManagement />} />
+          <Route
+            path="allowance-report"
+            element={<AllowanceReportManagement />}
+          />
+          <Route
+            path="allowance-package"
+            element={<AllowancePackageManagement />}
+          />
           <Route
             path="internshipProgram"
             element={<InternshipProgramManagament />}
@@ -87,7 +92,6 @@ function App() {
           {/* Mentor */}
           <Route path="mentor/tasks" element={<TaskManagementPage />} />
           <Route path="mentor/evaluation" element={<MentorEvaluation />} />{" "}
-          {/* CHUẨN */}
           {/* Lịch & Nghỉ phép */}
           <Route path="scheduleManagement" element={<ScheduleManagement />} />
           <Route path="leaveRequest" element={<LeaveRequest />} />
@@ -95,18 +99,14 @@ function App() {
             path="leaveRequestManagement"
             element={<LeaveRequestManagement />}
           />
-          <Route path="diligenceHr" element={<DiligenceReport />} />
-          <Route
-            path="/diligenceHr/detail/:internId"
-            element={<DiligenceDetail />}
-          />
+          <Route path="diligenceManagement" element={<DiligenceManagement />} />
           {/* Trang mặc định */}
           <Route path="evaluationReport" element={<EvaluationReport />} />
           <Route path="supportRequestList" element={<SupportRequestList />} />
-          <Route path="supportRequestDetail/:id" element={<SupportRequestDetail />} />
+          <Route path="logManagement" element={<LogManagement />} />
           <Route
-            path="/evaluationReport/diligence/:internId/:internshipProgramId"
-            element={<EvaluationDiligenceDetail />}
+            path="supportRequestDetail/:id"
+            element={<SupportRequestDetail />}
           />
           <Route path="support-request" element={<InternSupportRequest />} />
           {/* <Route index element={<Navigate to="/intern" />} /> */}

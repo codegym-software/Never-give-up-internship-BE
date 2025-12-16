@@ -9,28 +9,11 @@ const statusOptions = [
   { value: "REJECTED", label: "Đã từ chối" },
 ];
 
-const selectStyles = {
-  control: (base) => ({
-    ...base,
-    height: 42,
-    minHeight: 42,
-    borderRadius: "8px",
-    borderColor: "#e2e8f0",
-    boxShadow: "none",
-    "&:hover": { borderColor: "#94a3b8" },
-  }),
-  menu: (base) => ({ ...base, zIndex: 100 }),
-  placeholder: (base) => ({ ...base, color: "#9ca3af", fontSize: "14px" }),
-  option: (base, state) => ({
-    ...base,
-    fontSize: "14px",
-    cursor: "pointer",
-    backgroundColor: state.isSelected ? "#2563eb" : state.isFocused ? "#eff6ff" : "white",
-    color: state.isSelected ? "white" : "#1e293b",
-  }),
-};
-
-const SupportRequestFilters = ({ filters, handleFilterChange, handleSearch }) => {
+const SupportRequestFilters = ({
+  filters,
+  handleFilterChange,
+  handleSearch,
+}) => {
   return (
     <div className="filter-container">
       <div className="filter-grid">
@@ -54,9 +37,10 @@ const SupportRequestFilters = ({ filters, handleFilterChange, handleSearch }) =>
           <label className="filter-label">Trạng thái</label>
           <Select
             value={statusOptions.find((opt) => opt.value === filters.status)}
-            onChange={(opt) => handleFilterChange("status", opt ? opt.value : "")}
+            onChange={(opt) =>
+              handleFilterChange("status", opt ? opt.value : "")
+            }
             options={statusOptions}
-            styles={selectStyles}
             placeholder="Chọn trạng thái"
             isClearable={false}
           />

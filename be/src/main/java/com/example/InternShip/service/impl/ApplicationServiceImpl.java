@@ -1,5 +1,6 @@
 package com.example.InternShip.service.impl;
 
+import com.example.InternShip.annotation.LogActivity;
 import com.example.InternShip.dto.application.request.ApplicationRequest;
 import com.example.InternShip.dto.application.request.HandleApplicationRequest;
 import com.example.InternShip.dto.application.request.SubmitApplicationContractRequest;
@@ -7,6 +8,8 @@ import com.example.InternShip.dto.application.response.ApplicationResponse;
 import com.example.InternShip.dto.cloudinary.response.FileResponse;
 import com.example.InternShip.dto.response.PagedResponse;
 import com.example.InternShip.entity.*;
+import com.example.InternShip.entity.Log.Model;
+import com.example.InternShip.entity.Log.Action;
 import com.example.InternShip.exception.ErrorCode;
 import com.example.InternShip.repository.*;
 import com.example.InternShip.service.ApplicationService;
@@ -41,7 +44,6 @@ public class ApplicationServiceImpl implements ApplicationService {
 
     @SuppressWarnings("unlikely-arg-type")
     @Override
-    @Transactional
     public ApplicationResponse submitApplication(ApplicationRequest request) { // Tài
         User user = authService.getUserLogin();
         List<InternshipApplication> liststatus = applicationRepository.findAllByUserId(user.getId());
@@ -207,6 +209,12 @@ public class ApplicationServiceImpl implements ApplicationService {
     }
 
     @Transactional
+    @LogActivity(
+            action = Action.MODIFY,
+            affected = Model.INTERNSHIP_APPLICATION,
+            description = "Duyệt/từ chối hồ sơ thực tập",
+            entityType = InternshipApplication.class
+    )
     public void handleApplicationAction(HandleApplicationRequest request) {
         List<InternshipApplication> applications = applicationRepository.findAllById(request.getApplicationIds());
 
@@ -215,7 +223,7 @@ public class ApplicationServiceImpl implements ApplicationService {
 
             if (!(currentStatus == InternshipApplication.Status.UNDER_REVIEW ||
                     currentStatus == InternshipApplication.Status.APPROVED ||
-                    currentStatus == InternshipApplication.Status.REJECTED ) ||
+                    currentStatus == InternshipApplication.Status.REJECTED) ||
                     app.getInternshipProgram().getStatus() != InternshipProgram.Status.REVIEWING) {
                 throw new IllegalArgumentException(
                         ErrorCode.STATUS_APPLICATION_INVALID.getMessage() + app.getUser().getEmail()

@@ -12,13 +12,12 @@ export const getAllInternshipProgram = async () => {
   }
 };
 
-export const getInternshipProgram = async ({ keyword, department, page, activeOnly }) => {
+export const getInternshipProgram = async ({ keyword, department, page }) => {
   try {
     const res = await InternshipProgramApi.getInternshipProgram({
       keyword,
       department,
       page,
-      activeOnly,
     });
     return res;
   } catch (err) {

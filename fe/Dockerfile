@@ -6,6 +6,9 @@ ARG VITE_API_URL
 
 # Thiết lập các biến môi trường này cho các lệnh tiếp theo (quan trọng cho npm build)
 ENV VITE_API_URL=$VITE_API_URL
+ENV VITE_SOCKET_URL=$VITE_SOCKET_URL
+ENV VITE_REFESH_TOKEN_URL=$VITE_REFESH_TOKEN_URL
+ENV VITE_GOOGLE_CLIENT_ID=$VITE_GOOGLE_CLIENT_ID
 
 WORKDIR /app
 COPY package*.json ./

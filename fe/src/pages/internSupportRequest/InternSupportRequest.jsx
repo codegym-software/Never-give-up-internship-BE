@@ -266,7 +266,7 @@ const InternSupportRequest = () => {
                                         htmlFor="file-upload"
                                         className={`file-dropzone ${fileName ? 'active' : ''}`}
                                     >
-                                        <FaFileUpload size={24} style={{ marginBottom: 8 }} />
+                                        <FaFileUpload size={24} />
                                         {fileName ? <b>{fileName}</b> : "Nhấn để chọn file"}
                                     </label>
                                     {fileName && (

@@ -100,8 +100,9 @@ function TeamSprintFilters({
   const selectedSprint = sprintOptions.find(
     (option) => option.value === selectedSprintId
   );
-
   const isSprintFinished = selectedSprint?.status === "DONE";
+
+  const haveReportUrl = selectedSprint?.reportUrl;
 
   const customSelectStyles = {
     control: (provided) => ({
@@ -236,25 +237,25 @@ function TeamSprintFilters({
             </button>
           </div>
 
-          <div style={{ alignSelf: "flex-end" }}>
+          {/* <div style={{ alignSelf: "flex-end" }}>
             <button
               onClick={() => setShowReviewModal(true)}
-              disabled={!isSprintFinished}
+              disabled={!haveReportUrl}
               className={styles.actionButton}
               title="Review sprint đã kết thúc"
             >
               <CheckCircle size={16} /> Đánh giá Sprint
             </button>
-          </div>
+          </div> */}
 
           <div style={{ alignSelf: "flex-end" }}>
             <button
               onClick={() => window.open(selectedSprint?.reportUrl, "_blank")}
-              disabled={!internReport}
+              disabled={!selectedSprint?.reportUrl}
               className={`${styles.actionButton} ${
-                !internReport ? "opacity-50 cursor-not-allowed" : ""
+                !selectedSprint?.reportUrl ? "opacity-50 cursor-not-allowed" : ""
               }`}
-              title={!internReport ? "Chưa có báo cáo" : "Xem báo cáo đã nộp"}
+              title={!selectedSprint?.reportUrl ? "Chưa có báo cáo" : "Xem báo cáo đã nộp"}
             >
               <FileText size={16} /> Báo Cáo
             </button>
@@ -263,13 +264,13 @@ function TeamSprintFilters({
           <div style={{ alignSelf: "flex-end" }}>
             <button
               onClick={() => setShowFeedbackModal(true)}
-              //disabled={!internReport}
+              disabled={!haveReportUrl}
               className={styles.actionButton}
               title={
-                !internReport ? "Cần có báo cáo để phản hồi" : "Gửi phản hồi"
+                !haveReportUrl ? "Cần có báo cáo để phản hồi" : "Gửi phản hồi"
               }
             >
-              <MessageSquare size={16} /> Phản Hồi
+              <MessageSquare size={16} /> Đánh giá sprint
             </button>
           </div>
         </>
@@ -314,6 +315,7 @@ function TeamSprintFilters({
         onSubmitSuccess={() => {
           setShowSubmitModal(false);
           // Có thể refresh báo cáo ở đây nếu cần
+          // fetchInternReport(selectedSprintId);
         }}
       />
 

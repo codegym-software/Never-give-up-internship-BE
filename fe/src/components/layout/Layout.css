@@ -760,6 +760,21 @@ body {
   text-transform: uppercase;
 }
 
+.status-badge.create {
+  background-color: #e0f2fe;
+  color: #0284c7;
+}
+
+.status-badge.modify {
+  background-color: #fef9c3; 
+  color: #ca8a04; 
+}
+
+.status-badge.delete {
+  background-color: #fee2e2; 
+  color: #dc2626; 
+}
+
 .status-badge.active {
   background-color: #dcfce7;
   color: #16a34a;
@@ -813,7 +828,6 @@ body {
   background-color: #fee2e2; /* do nhat */
   color: #dc2626; /* do dam */
 }
-
 /* Trang thai: WITHDRAWN (Rut lai ho so) */
 .status-badge.withdrawn {
   background-color: #f3f4f6; /* xam nhat */
@@ -842,6 +856,42 @@ body {
   background-color: #d1fae5;
   color: #065f46;
   border: 1px solid #34d399;
+}
+
+.status-badge.checked_in {
+  background-color: #fef3c7;
+  color: #78350f;
+  border: 1px solid #fbbf24;
+}
+
+.status-badge.present {
+  background-color: #d1fae5;
+  color: #065f46;
+  border: 1px solid #34d399;
+}
+
+.status-badge.time_violation {
+  background-color: #fee2e2;
+  color: #991b1b;
+  border: 1px solid #f87171;
+}
+
+.status-badge.excused_time {
+  background-color: #e0f2fe;
+  color: #0369a1;
+  border: 1px solid #60a5fa;
+}
+
+.status-badge.on_leave {
+  background-color: #fef3c7;
+  color: #78350f;
+  border: 1px solid #fbbf24;
+}
+
+.status-badge.absent {
+  background-color: #fee2e2;
+  color: #991b1b;
+  border: 1px solid #f87171;
 }
 
 /* Pagination */
@@ -1149,7 +1199,6 @@ body {
 }
 
 .detail-row {
-  display: grid;
   grid-template-columns: 140px 1fr;
   align-items: center;
   padding: 12px 0;
@@ -1387,12 +1436,6 @@ body {
   min-height: 100vh;
 }
 
-.chart-section {
-  display: flex;
-  gap: 24px;
-  margin-top: 24px;
-}
-
 .chart-box {
   flex: 1;
   background-color: #ffffff;
@@ -1417,7 +1460,6 @@ body {
   display: flex;
   gap: 24px;
   margin-top: 24px;
-  flex-wrap: wrap;
 }
 
 .chart-box {
@@ -1429,107 +1471,9 @@ body {
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
 }
 
-.status-badge.approved {
-  background-color: #dcfce7;
-  color: #16a34a;
-}
-.status-badge.under_review {
-  background-color: #fef9c3;
-  color: #ca8a04;
-}
-.status-badge.rejected {
-  background-color: #fee2e2;
-  color: #dc2626;
-}
-
 textarea {
   padding: 5px;
   font-size: 15px;
   font-family: "Inter", "Arial", sans-serif;
   font-weight: 500;
-}
-/* === Submenu Styles === */
-
-.nav-item-container {
-  margin: 0; /* Hoặc xóa margin để nó sát với các nav-item khác */
-}
-
-.nav-item-parent {
-  width: 100%;
-  display: flex;
-  align-items: center;
-  gap: 12px; /* Đồng bộ với nav-item */
-  padding: 12px 20px; /* Đồng bộ với nav-item */
-  border: none;
-  background-color: transparent; /* Đồng bộ với nav-item */
-  color: #666; /* Đồng bộ với nav-item */
-  cursor: pointer;
-  transition: all 0.2s;
-  text-decoration: none;
-  border-left: 3px solid transparent; /* Đồng bộ với nav-item */
-  font-size: 14px; /* Đồng bộ với nav-item */
-}
-
-.nav-item-parent:hover {
-  background-color: #f5f5f5; /* Đồng bộ với nav-item */
-}
-
-.nav-item-parent.active { /* Thêm class active cho nav-item-parent */
-  background-color: #e3f2fd;
-  color: #1976d2;
-  border-left-color: #1976d2;
-  font-weight: 600;
-}
-
-.parent-active > .nav-item-parent { /* Khi parent active (1 trong các con được chọn) */
-  background-color: #e3f2fd; /* Đồng bộ với nav-item active */
-  color: #1976d2; /* Đồng bộ với nav-item active */
-  border-left-color: #1976d2; /* Đồng bộ với nav-item active */
-  font-weight: 600; /* Đồng bộ với nav-item active */
-}
-
-/* Cần thêm điều chỉnh cho icon Chevron */
-.nav-item-parent .nav-icon {
-  min-width: 20px; /* Đồng bộ với nav-item */
-  flex-shrink: 0;
-}
-
-.nav-item-parent .nav-label {
-  white-space: nowrap; /* Đồng bộ với nav-item */
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.sidebar.closed .nav-item-parent .nav-label {
-  display: none;
-}
-
-.submenu {
-  padding-left: 20px; /* Điều chỉnh để icon và text thẳng hàng với nav-item */
-}
-
-.submenu-item {
-  display: flex;
-  align-items: center;
-  gap: 12px; /* Đồng bộ với nav-item */
-  padding: 12px 20px; /* Đồng bộ với nav-item */
-  border: none;
-  background-color: transparent; /* Đồng bộ với nav-item */
-  color: #666; /* Đồng bộ với nav-item */
-  cursor: pointer;
-  transition: all 0.2s;
-  text-decoration: none;
-  border-left: 3px solid transparent; /* Đồng bộ với nav-item */
-  font-size: 14px; /* Đồng bộ với nav-item */
-}
-
-.submenu-item:hover {
-  background-color: #f5f5f5; /* Đồng bộ với nav-item */
-}
-
-.submenu-item.active {
-  background-color: #e3f2fd; /* Đồng bộ với nav-item active */
-  color: #1976d2; /* Đồng bộ với nav-item active */
-  border-left-color: #1976d2; /* Đồng bộ với nav-item active */
-  font-weight: 600; /* Đồng bộ với nav-item active */
 }

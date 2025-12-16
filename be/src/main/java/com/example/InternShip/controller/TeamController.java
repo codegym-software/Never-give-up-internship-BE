@@ -8,6 +8,7 @@ import com.example.InternShip.service.TeamService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -18,11 +19,13 @@ import java.util.List;
 public class TeamController {
     private final TeamService teamService;
 
+    @PreAuthorize("hasAuthority('SCOPE_HR')")
     @PostMapping
     public ResponseEntity<TeamDetailResponse> createTeam(@RequestBody @Valid CreateTeamRequest request) {
         return ResponseEntity.ok(teamService.createTeam(request));
     }
 
+    @PreAuthorize("hasAuthority('SCOPE_HR')")
     @PostMapping("/{teamId}/members")
     public ResponseEntity<TeamDetailResponse> addMember(
             @PathVariable Integer teamId,
@@ -30,6 +33,7 @@ public class TeamController {
         return ResponseEntity.ok(teamService.addMember(teamId, request));
     }
 
+    @PreAuthorize("hasAuthority('SCOPE_HR')")
     @GetMapping // Hàm lấy ra danh sách đơn xin thực tập
     public ResponseEntity<?> getAllTeam(
             @RequestParam(required = false, defaultValue = "") Integer internshipProgram,
@@ -45,6 +49,7 @@ public class TeamController {
     }
 
     @GetMapping("/my-teams")
+    @PreAuthorize("hasAuthority('SCOPE_MENTOR')")
     public ResponseEntity<List<TeamDetailResponse>> getMyTeams() {
         return ResponseEntity.ok(teamService.getTeamsByCurrentMentor());
     }
@@ -55,6 +60,7 @@ public class TeamController {
     }
 
     @PatchMapping("/remove/{internId}")
+    @PreAuthorize("hasAuthority('SCOPE_HR')")
     public ResponseEntity<?> removeMember(@PathVariable Integer internId) {
         return ResponseEntity.ok(teamService.removeMember(internId));
     }
@@ -65,6 +71,7 @@ public class TeamController {
     }
 
     @PutMapping("/{id}")
+    @PreAuthorize("hasAuthority('SCOPE_HR')")
     public ResponseEntity<TeamDetailResponse> updateTeam(
             @PathVariable Integer id,
             @RequestBody @Valid UpdateTeamRequest request) {

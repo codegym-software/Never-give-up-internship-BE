@@ -134,7 +134,7 @@ const UserInfo = ({ user, onClose, setUser }) => {
           {isEditing ? (
             <>
               <button
-                className="cancel-btn"
+                className="save-btn"
                 onClick={handleSave}
                 disabled={loading} // disable khi loading
               >

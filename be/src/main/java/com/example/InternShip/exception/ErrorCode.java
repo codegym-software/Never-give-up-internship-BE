@@ -85,6 +85,9 @@ public enum ErrorCode {
     FILE_NOT_NULL("Tệp không được để trống"),
     SUPPORT_REQUEST_TITLE_NOT_NULL("Tiêu đề yêu cầu hỗ trợ không được để trống"),
     SUPPORT_REQUEST_DESCRIPTION_NOT_NULL("Nội dung yêu cầu hỗ trợ không được để trống"),
+    INTERNSHIP_PROGRAM_NOT_NULL("Kỳ thực tập không được để trống"),
+    EMAIL_NOT_NULL("Email không được để trống"),
+    FULL_NAME_NOT_NULL("Họ tên không được để trống"),
     
     //FAILED
     VERIFICATION_FAILED("Xác thực thất bại"),

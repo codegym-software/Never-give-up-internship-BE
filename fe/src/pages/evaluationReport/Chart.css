@@ -1,0 +1,15 @@
+.chart-container {
+  display: flex;
+  justify-content: center; /* căn giữa theo chiều ngang */
+  align-items: center; /* căn giữa theo chiều dọc */
+  gap: 20px; /* khoảng cách giữa 2 chart */
+  margin-bottom: 10px;
+}
+
+.chart-box {
+  display: flex;
+  justify-content: center;
+  text-align: center;
+  align-items: center;
+  padding: 20px;
+}

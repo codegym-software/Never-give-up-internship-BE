@@ -96,14 +96,12 @@ const SupportRequestList = () => {
       />
 
       {/* Component Phân trang (Tái sử dụng từ InternManagement) */}
-      {requests.length > 0 && (
         <Pagination
           pagination={pagination}
           filters={appliedFilters}
           changePage={handlePageChange}
           name="yêu cầu"
         />
-      )}
 
       {/* Modal Chi tiết */}
       {selected && (

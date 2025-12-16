@@ -22,6 +22,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -234,7 +235,7 @@ class TeamServiceImplTest {
         teamResponse.setName(team.getName());
         teamResponse.setInternshipProgramName(program.getName());
 
-        when(teamRepository.findAll()).thenReturn(List.of(team));
+        when(teamRepository.findAll(any(Sort.class))).thenReturn(List.of(team));
         when(modelMapper.map(team, GetAllTeamResponse.class)).thenReturn(teamResponse);
         
         // Act

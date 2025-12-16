@@ -35,6 +35,17 @@ export const getAll = async () => {
   }
 };
 
+export const getTeamsByIP = async (internshipProgramId) => {
+  try {
+    const res = await TeamApi.getTeamsByIP(internshipProgramId);
+    return res;
+  } catch (err) {
+    if (!err.response) {
+      toast.error("Không thể kết nối đến server");
+    }
+  }
+};
+
 export const createTeam = async ({ name, internshipProgramId, mentorId }) => {
   try {
     const mId = mentorId ? mentorId : null;
