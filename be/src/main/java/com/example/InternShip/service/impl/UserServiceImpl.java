@@ -20,6 +20,8 @@ import com.example.InternShip.repository.PendingUserRepository;
 import com.example.InternShip.repository.UserRepository;
 import com.example.InternShip.service.CloudinaryService;
 import com.example.InternShip.service.UserService;
+import com.google.api.client.util.Value;
+
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 
@@ -44,6 +46,9 @@ public class UserServiceImpl implements UserService {
     private final PendingUserRepository pendingUserRepository;
     private final PendingUserServiceImpl pendingUserService;
     private final CloudinaryService cloudinaryService;
+
+    @Value("${redirect.url}")
+    private String redirectUrl ;
 
     public PagedResponse<GetUserResponse> getAllUser(GetAllUserRequest request) {
         int page = Math.max(0, request.getPage() - 1);
@@ -149,7 +154,7 @@ public class UserServiceImpl implements UserService {
         pendingUser.setToken(token);
         pendingUser.setExpiryDate(LocalDateTime.now().plusMinutes(20));
         pendingUserRepository.save(pendingUser);
-        String verifyLink = "http://localhost:8082/api/v1/pendingUsers/verifyForgetPassword?token=" + token;
+        String verifyLink = "http://"+redirectUrl+":8082/api/v1/pendingUsers/verifyForgetPassword?token=" + token;
         pendingUserService.sendVerification(request.getEmail(), verifyLink);
 
     }
