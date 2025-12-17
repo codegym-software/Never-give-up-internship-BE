@@ -113,6 +113,7 @@
 
 .btn-primary {
   width: 100%;
+  justify-content: center;
   padding: 12px;
   background-color: #212529;
   color: white;
@@ -123,6 +124,27 @@
   cursor: pointer;
   transition: background-color 0.3s;
 }
+
+
+.btn-primary_allowance {
+  width: 13%;
+  justify-content: center;
+  padding: 12px;
+  background-color: #212529;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.btn-primary_allowance:hover {
+  background-color: #343a40;
+}
+
+
 
 .btn-primary:hover {
   background-color: #343a40;

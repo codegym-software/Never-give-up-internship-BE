@@ -5,6 +5,7 @@ import AllowancePackageFormModal from "./AllowancePackageFormModal"; // Will cre
 import Pagination from "~/components/Pagination";
 import { getInternshipProgram } from "~/services/InternshipProgramService";
 import Swal from "sweetalert2"; // For confirmation dialogs
+import { Weight } from "lucide-react";
 
 const AllowancePackageManagement = () => {
   const [allowancePackages, setAllowancePackages] = useState([]);
@@ -120,15 +121,16 @@ const AllowancePackageManagement = () => {
       <div className="page-title">Quản lý Gói Phụ Cấp</div>
 
       {/* Basic Search/Filter input */}
-      <div className="flex items-center gap-2 mb-4">
+      <div style={{ display: "flex",justifyContent:"center", marginBottom: "20px", gap: "10px" }}>
         <input
           type="text"
+        
           placeholder="Search by package name..."
           className="form-control"
           value={filters.keyword}
           onChange={(e) => setFilters(prev => ({ ...prev, keyword: e.target.value }))}
         />
-        <button className="btn btn-primary" onClick={() => handleSearch(filters.keyword)}>
+        <button className="btn btn-primary_allowance " onClick={() => handleSearch(filters.keyword)}>
           Search
         </button>
       </div>
@@ -139,6 +141,7 @@ const AllowancePackageManagement = () => {
         </button>
       </div>
 
+<div></div>
       <AllowancePackageTable
         data={allowancePackages}
         loading={loading}

@@ -19,7 +19,6 @@ const MyAllowanceHistoryTable = ({ data, loading }) => {
                         <th>Số tiền</th>
                         <th>Trạng thái</th>
                         <th>Ngày trả</th>
-                        <th>Người trả</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -43,7 +42,6 @@ const MyAllowanceHistoryTable = ({ data, loading }) => {
                                     </span>
                                 </td>
                                 <td><strong>{formatDateTime(item.paidAt)}</strong></td>
-                                <td>{item.remiter || 'N/A'}</td>
                             </tr>
                         ))
                     )}
