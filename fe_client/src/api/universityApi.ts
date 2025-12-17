@@ -1,6 +1,6 @@
 import axiosClient from "./axiosClient";
 
-const API_URL = '/api/v1/universities';
+const API_URL = '/universities';
 
 export const getAllUniversities = async () => {
   try {

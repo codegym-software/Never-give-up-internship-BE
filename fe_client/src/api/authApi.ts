@@ -1,6 +1,6 @@
 import axiosClient from './axiosClient';
 
-const API_URL = '/api/v1/auth';
+const API_URL = '/auth';
 
 /**
  * Gửi yêu cầu đăng ký đến backend.

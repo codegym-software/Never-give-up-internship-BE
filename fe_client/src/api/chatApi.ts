@@ -1,6 +1,6 @@
 import axiosClient from "./axiosClient";
 
-const API_URL = '/api/chat';
+const API_URL = '/chat';
 
 export const findOrCreateConversationApi = () => {
   return axiosClient.post(`${API_URL}/initiate`);

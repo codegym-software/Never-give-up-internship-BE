@@ -1,6 +1,6 @@
 import axiosClient from "./axiosClient";
 
-const API_URL = "/api/v1/applications";
+const API_URL = "/applications";
 
 export const submitApplication = async (formData: FormData) => {
   const response = await axiosClient.post(API_URL, formData, {

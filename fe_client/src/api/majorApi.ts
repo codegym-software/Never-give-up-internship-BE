@@ -1,6 +1,6 @@
 import axiosClient from "./axiosClient";
 
-const API_URL = '/api/v1/majors';
+const API_URL = '/majors';
 
 export const getAllMajors = async () => {
   try {

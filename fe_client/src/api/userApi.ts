@@ -1,6 +1,6 @@
 import axiosClient from './axiosClient';
 
-const USER_API_URL = '/api/v1/users';
+const USER_API_URL = '/users';
 
 /**
  * Lấy thông tin chi tiết của người dùng đang đăng nhập.
