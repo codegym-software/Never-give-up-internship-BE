@@ -15,8 +15,13 @@ services:
       # Các biến này được thay thế từ tệp .env ở thư mục gốc
       - DB_NAME=${DB_NAME}
       - DB_PASSWORD=${DB_PASSWORD}
+      - BACKUP_DIR=/app/backups
+   
+    volumes:
+      - backup-data:/app/backups
     networks:
       - internship-network
+    
 
   internship-app-frontend:
     image: namvu26112005/internship-frontend:dev
@@ -47,6 +52,9 @@ services:
       - internship-app-backend
     networks:
       - internship-network
+
+volumes:
+  backup-data:
 
 networks:
   internship-network:

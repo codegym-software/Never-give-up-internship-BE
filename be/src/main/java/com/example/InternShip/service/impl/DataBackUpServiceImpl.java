@@ -36,7 +36,7 @@ public class DataBackUpServiceImpl implements DataBackUpService {
 
     // Chạy mỗi ngày lúc 2 giờ sáng
     @Override
-    @Scheduled(cron = "0 0 2 * * ?")
+    @Scheduled(cron = "0 0 2 * * ?", zone = "Asia/Ho_Chi_Minh")
     public void backupDatabase() throws IOException, InterruptedException {
         deleteOldBackups(7); // xóa backup cũ > 7 ngày
 
@@ -49,12 +49,10 @@ public class DataBackUpServiceImpl implements DataBackUpService {
         if (!folder.exists())
             folder.mkdirs();
 
-        // Đường dẫn tuyệt đối tới mysqldump.exe
-        String mysqldumpPath = "C:\\Program Files\\MySQL\\MySQL Server 8.0\\bin\\mysqldump.exe";
-
+        
         // Sử dụng ProcessBuilder để xử lý khoảng trắng trong đường dẫn
         ProcessBuilder pb = new ProcessBuilder(
-                mysqldumpPath,
+                "mysqldump",
                 "-u" + dbUser,
                 "-p" + dbPass,
                 dbName,
