@@ -18,14 +18,11 @@ services:
     networks:
       - internship-network
 
-
   internship-app-frontend:
     image: namvu26112005/internship-frontend:dev
-    
-    
 
     env_file:
-      - ./.env          
+      - ./.env
 
     container_name: frontend-container
     restart: unless-stopped
@@ -36,10 +33,21 @@ services:
     networks:
       - internship-network
 
+  internship-app-frontend-client:
+    image: namvu26112005/internship-frontend-client:dev
+
+    env_file:
+      - ./.env
+
+    container_name: frontend-client-container
+    restart: unless-stopped
+    ports:
+      - "3000:80"
+    depends_on:
+      - internship-app-backend
+    networks:
+      - internship-network
+
 networks:
   internship-network:
     driver: bridge
-    
-
-
-
