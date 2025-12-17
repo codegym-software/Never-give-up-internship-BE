@@ -36,13 +36,6 @@ public class EvaluationServiceImpl implements EvaluationService {
     private final ExcelExportService excelExportService;
 
     @Override
-    @Transactional
-    @LogActivity(
-            action = Action.CREATE,
-            affected = Model.INTERN,
-            description = "Đánh giá quá trình thực tập cho TTS",
-            entityType = Intern.class
-    )
     public EvaluationResponse evaluateIntern(Integer internId, EvaluateInternRequest request) {
         User mentorUser = authService.getUserLogin();
         Mentor mentor = mentorRepository.findByUser(mentorUser)

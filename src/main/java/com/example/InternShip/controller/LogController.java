@@ -1,7 +1,6 @@
 package com.example.InternShip.controller;
 
 import com.example.InternShip.dto.log.response.LogResponse;
-import com.example.InternShip.dto.log.response.UserSearchResponse;
 import com.example.InternShip.dto.response.PagedResponse;
 import com.example.InternShip.entity.Log.Model;
 import com.example.InternShip.service.LogService;
@@ -45,11 +44,4 @@ public class LogController {
         return ResponseEntity.ok(response);
     }
 
-    @GetMapping("/performers")
-    public ResponseEntity<List<UserSearchResponse>> searchPerformers(
-            @RequestParam(defaultValue = "") String keyword) {
-
-        List<UserSearchResponse> users = logService.searchPerformers(keyword);
-        return ResponseEntity.ok(users);
-    }
 }

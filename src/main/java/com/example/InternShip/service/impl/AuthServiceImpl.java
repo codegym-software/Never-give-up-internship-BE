@@ -20,6 +20,7 @@ import com.nimbusds.jose.crypto.MACVerifier;
 import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.SignedJWT;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.context.SecurityContext;
@@ -39,6 +40,7 @@ import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class AuthServiceImpl implements AuthService {
     private final UserRepository userRepository;
     private final ModelMapper modelMapper;
@@ -120,7 +122,7 @@ public class AuthServiceImpl implements AuthService {
         pendingUserRepository.save(pendingUser);
 
         String verifyLink = "http://localhost:8082/api/v1/pendingUsers/verify?token=" + token;
-        pendingUserService.sendVerification(request.getEmail(), verifyLink);
+        pendingUserService.sendVerification(request.getEmail(), verifyLink,  "REGISTER");
     }
 
     public TokenResponse login(LoginRequest request) throws JOSEException {
@@ -146,6 +148,7 @@ public class AuthServiceImpl implements AuthService {
     public User getUserLogin() {
         SecurityContext context = SecurityContextHolder.getContext();
         String username = context.getAuthentication().getName();
+        log.info("username: {}", username);
         return userRepository.findByUsername(username)
                 .orElseThrow(() -> new RuntimeException(ErrorCode.USER_NOT_EXISTED.getMessage()));
     }

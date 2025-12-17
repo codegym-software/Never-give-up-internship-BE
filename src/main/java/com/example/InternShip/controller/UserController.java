@@ -1,10 +1,7 @@
 package com.example.InternShip.controller;
 
 import com.example.InternShip.dto.response.PagedResponse;
-import com.example.InternShip.dto.user.request.CreateUserRequest;
-import com.example.InternShip.dto.user.request.GetAllUserRequest;
-import com.example.InternShip.dto.user.request.UpdateInfoRequest;
-import com.example.InternShip.dto.user.request.UpdateUserRequest;
+import com.example.InternShip.dto.user.request.*;
 import com.example.InternShip.dto.user.response.GetUserResponse;
 import com.example.InternShip.service.UserService;
 import jakarta.validation.Valid;
@@ -55,5 +52,11 @@ public class UserController {
     @PutMapping(value = "/info", consumes = "multipart/form-data")
     public ResponseEntity<GetUserResponse> updateUserInfo(@ModelAttribute @Valid UpdateInfoRequest request) {
         return ResponseEntity.ok(userService.updateUserInfo(request));
+    }
+
+    @PutMapping("/changePassword")
+    public ResponseEntity<String> changePassword(@RequestBody ChangeMyPasswordRequest request) {
+        userService.changePassword(request);
+        return ResponseEntity.ok("Password changed successfully!");
     }
 }
