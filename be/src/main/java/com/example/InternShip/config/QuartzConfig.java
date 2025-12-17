@@ -58,7 +58,7 @@ public class QuartzConfig {
         return newTrigger()
                 .forJob(monthlyAllowanceCalculationJobDetail)
                 .withIdentity("monthlyAllowanceCalculationTrigger")
-                .withSchedule(cronSchedule("0 0 0 1 * ?") .inTimeZone(TimeZone.getTimeZone("Asia/Ho_Chi_Minh"))) // For testing: runs every 30 seconds
+                .withSchedule(cronSchedule("0 0 0 1 * ?").inTimeZone(TimeZone.getTimeZone("Asia/Ho_Chi_Minh"))) // For testing: runs every 30 seconds
                 .build();
     }
 }
