@@ -11,5 +11,5 @@ export const findOrCreateGuestConversationApi = (guestId: string) => {
 };
 
 export const getMessagesApi = (conversationId: number) => {
-    return axiosClient.get(`/api/v1/conversations/${conversationId}/messages`);
+    return axiosClient.get(`/conversations/${conversationId}/messages`);
 };
