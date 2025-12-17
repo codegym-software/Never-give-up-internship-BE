@@ -1,4 +1,4 @@
-import { Client } from '@stomp/stompjs';
+import { Client, StompHeaders } from '@stomp/stompjs';
 import SockJS from 'sockjs-client';
 
 const SOCKET_URL = import.meta.env.VITE_SOCKET_URL;
@@ -16,11 +16,14 @@ class WebSocketService {
         if (!this.connectionPromise) {
             this.connectionPromise = new Promise((resolve, reject) => {
                 const token = localStorage.getItem("accessToken");
-                const connectHeaders = token ? { Authorization: `Bearer ${token}` } : {};
+                const connectHeaders: StompHeaders = {};
+                if (token) {
+                    connectHeaders.Authorization = `Bearer ${token}`;
+                }
 
                 this.stompClient = new Client({
                     webSocketFactory: () => new SockJS(SOCKET_URL),
-                    connectHeaders: connectHeaders,
+                    connectHeaders,
                     reconnectDelay: 5000,
                     heartbeatIncoming: 4000,
                     heartbeatOutgoing: 4000,
