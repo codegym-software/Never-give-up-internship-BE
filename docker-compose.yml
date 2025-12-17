@@ -16,12 +16,11 @@ services:
       - DB_NAME=${DB_NAME}
       - DB_PASSWORD=${DB_PASSWORD}
       - BACKUP_DIR=/app/backups
-   
+
     volumes:
       - backup-data:/app/backups
     networks:
       - internship-network
-    
 
   internship-app-frontend:
     image: namvu26112005/internship-frontend:dev
