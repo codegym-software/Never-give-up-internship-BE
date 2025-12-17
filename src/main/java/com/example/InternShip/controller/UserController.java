@@ -9,7 +9,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.bind.annotation.GetMapping;
 
 import java.util.List;
 
@@ -19,7 +18,7 @@ import java.util.List;
 public class UserController {
     private final UserService userService;
 
-    @PreAuthorize("hasAuthority('SCOPE_ADMIN') or hasAuthority('SCOPE_HR')")
+    @PreAuthorize("hasAuthority('SCOPE_ADMIN')")
     @GetMapping
     public ResponseEntity<PagedResponse<GetUserResponse>> getAllUser(@ModelAttribute GetAllUserRequest request) {
         return ResponseEntity.ok(userService.getAllUser(request));
@@ -30,7 +29,7 @@ public class UserController {
         return ResponseEntity.ok(userService.getUserInfo());
     }
 
-    @PreAuthorize("hasAuthority('SCOPE_INTERN') or hasAuthority('SCOPE_HR')")
+    @PreAuthorize("hasAuthority('SCOPE_INTERN')")
     @GetMapping("/hr")
     public ResponseEntity<List<GetUserResponse>> getAllHr() {
         return ResponseEntity.ok(userService.getAllHr());
@@ -43,7 +42,7 @@ public class UserController {
     }
 
     @PutMapping("/{id}")
-    @PreAuthorize("hasAuthority('SCOPE_ADMIN') or hasAuthority('SCOPE_HR')")
+    @PreAuthorize("hasAuthority('SCOPE_ADMIN')")
     public ResponseEntity<GetUserResponse> updateUser(@RequestBody @Valid UpdateUserRequest request,
             @PathVariable int id) {
         return ResponseEntity.ok(userService.updateUser(request, id));

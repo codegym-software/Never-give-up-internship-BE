@@ -6,6 +6,7 @@ import com.example.InternShip.service.EvaluationService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.core.io.Resource;
@@ -22,7 +23,7 @@ public class EvaluationController {
     private final EvaluationService evaluationService;
 
     @PutMapping("/interns/{id}")
-    // @PreAuthorize("hasAuthority('SCOPE_MENTOR')")
+    @PreAuthorize("hasAuthority('SCOPE_MENTOR')")
     public ResponseEntity<EvaluationResponse> evaluateIntern(
             @PathVariable("id") Integer internId,
             @RequestBody @Valid EvaluateInternRequest request) {
@@ -32,32 +33,10 @@ public class EvaluationController {
     }
 
     @GetMapping("/interns/{id}")
-    // @PreAuthorize("hasAuthority('SCOPE_MENTOR') or hasAuthority('SCOPE_HR') or
-    // @authService.isSelf(authentication, #internId)")
     public ResponseEntity<EvaluationResponse> getEvaluation(
             @PathVariable("id") Integer internId) {
 
         EvaluationResponse response = evaluationService.getEvaluation(internId);
         return ResponseEntity.ok(response);
-    }
-
-    @GetMapping("/export")
-    // @PreAuthorize("hasAuthority('SCOPE_MENTOR') or hasAuthority('SCOPE_HR')")
-    public ResponseEntity<Resource> exportEvaluations(
-            @RequestParam(required = false) Integer teamId,
-            @RequestParam(required = false) Integer programId) {
-
-        ByteArrayInputStream data = evaluationService.exportEvaluations(teamId, programId);
-
-        String filename = "BaoCaoDanhGiaThucTapSinh.xlsx";
-
-        HttpHeaders headers = new HttpHeaders();
-        headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + filename);
-
-        return ResponseEntity
-                .ok()
-                .headers(headers)
-                .contentType(MediaType.APPLICATION_OCTET_STREAM)
-                .body(new InputStreamResource(data));
     }
 }

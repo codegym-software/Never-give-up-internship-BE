@@ -70,9 +70,9 @@ public class AuthServiceImpl implements AuthService {
         Optional<User> userOptional = userRepository.findByEmail(payload.getEmail());
 
         if (userOptional.isPresent()) {
-            
+
             //if (user.getGoogleId() == null || user.getGoogleId().isEmpty()) {
-               
+
             //    throw new AccountConflictException("Account with this email already exists. Please log in with your password to link your Google account.");
             //}
             return userOptional.get();
@@ -82,8 +82,8 @@ public class AuthServiceImpl implements AuthService {
             newUser.setEmail(payload.getEmail());
             newUser.setFullName((String) payload.get("name"));
             newUser.setAvatarUrl((String) payload.get("picture"));
-            newUser.setActive(true); 
-            newUser.setRole(Role.VISITOR); 
+            newUser.setActive(true);
+            newUser.setRole(Role.VISITOR);
 
             newUser.setPassword(null);
             String username = generateUniqueUsername(payload.getEmail());
@@ -92,7 +92,7 @@ public class AuthServiceImpl implements AuthService {
             return userRepository.save(newUser);
         }
     }
-    
+
     private String generateUniqueUsername(String email) {
         String baseUsername = email.split("@")[0];
         String username = baseUsername;
@@ -103,7 +103,7 @@ public class AuthServiceImpl implements AuthService {
         }
         return username;
     }
-    
+
 
     public void register(RegisterRequest request) {
         if (userRepository.existsByUsername(request.getUsername())) {
@@ -122,7 +122,7 @@ public class AuthServiceImpl implements AuthService {
         pendingUserRepository.save(pendingUser);
 
         String verifyLink = "http://localhost:8082/api/v1/pendingUsers/verify?token=" + token;
-        pendingUserService.sendVerification(request.getEmail(), verifyLink,  "REGISTER");
+        pendingUserService.sendVerification(request.getEmail(), verifyLink, "REGISTER");
     }
 
     public TokenResponse login(LoginRequest request) throws JOSEException {
@@ -148,7 +148,6 @@ public class AuthServiceImpl implements AuthService {
     public User getUserLogin() {
         SecurityContext context = SecurityContextHolder.getContext();
         String username = context.getAuthentication().getName();
-        log.info("username: {}", username);
         return userRepository.findByUsername(username)
                 .orElseThrow(() -> new RuntimeException(ErrorCode.USER_NOT_EXISTED.getMessage()));
     }

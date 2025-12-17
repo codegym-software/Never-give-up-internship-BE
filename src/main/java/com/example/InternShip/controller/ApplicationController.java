@@ -20,14 +20,14 @@ public class ApplicationController {
     private final ApplicationService applicationService;
 
     @PostMapping(consumes = "multipart/form-data")
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("hasAuthority('SCOPE_VISITOR')")
     public ResponseEntity<ApplicationResponse> submit(
             @ModelAttribute @Valid ApplicationRequest request) {
         return ResponseEntity.ok(applicationService.submitApplication(request));
     }
 
     @PutMapping(consumes = "multipart/form-data", value = "/submit-contract")
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("hasAuthority('SCOPE_VISITOR')")
     public ResponseEntity<String> submitApplicationContract(
             @ModelAttribute @Valid SubmitApplicationContractRequest request) {
         applicationService.submitApplicationContract(request);
@@ -35,7 +35,7 @@ public class ApplicationController {
     }
 
     @GetMapping("/me")
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("hasAuthority('SCOPE_VISITOR')")
     public ResponseEntity<List<ApplicationResponse>> getMyApplication() {
         List<ApplicationResponse> resp = applicationService.getMyApplication();
         if (resp == null) {
@@ -45,7 +45,7 @@ public class ApplicationController {
     }
 
     @GetMapping // Hàm lấy ra danh sách đơn xin thực tập
-    // @PreAuthorize("hasAuthority('SCOPE_HR', 'SCOPE_ADMIN')")
+    @PreAuthorize("hasAuthority('SCOPE_HR')")
     public ResponseEntity<?> getAllApplication(
             @RequestParam(required = false, defaultValue = "") Integer internshipTerm,
             @RequestParam(required = false, defaultValue = "") Integer university,
@@ -64,12 +64,13 @@ public class ApplicationController {
     }
 
     @PutMapping("/withdraw/{applicationId}")
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("hasAuthority('SCOPE_VISITOR')")
     public ResponseEntity<String> withdrawApplication(@PathVariable Integer applicationId) {
         applicationService.withdrawApplication(applicationId);
         return ResponseEntity.ok("Application withdrawn successfully");
     }
 
+    @PreAuthorize("hasAuthority('SCOPE_HR')")
     @PatchMapping("/status")
     public ResponseEntity<Void> handleApplicationAction(@RequestBody @Valid HandleApplicationRequest request) {
         applicationService.handleApplicationAction(request);

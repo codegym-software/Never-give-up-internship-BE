@@ -1,6 +1,5 @@
 package com.example.InternShip.service;
 
-import com.example.InternShip.dto.attendance.response.GetAllAttendanceResponse;
 import com.example.InternShip.dto.attendance.response.GetMyScheduleResponse;
 import com.example.InternShip.dto.attendance.response.GetTeamScheduleResponse;
 

@@ -19,7 +19,7 @@ public class PendingUserController {
     @GetMapping("/verify")
     public void verify(@RequestParam String token, HttpServletResponse response) throws IOException {
         pendingUserService.verify(token);
-        response.sendRedirect("http://localhost:3000");
+        response.sendRedirect("http://localhost:3000/callback/type=verify-account");
     }
 
     @GetMapping("/verifyForgetPassword")

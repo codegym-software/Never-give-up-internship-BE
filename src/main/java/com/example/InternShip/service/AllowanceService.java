@@ -4,8 +4,6 @@ package com.example.InternShip.service;
 import com.example.InternShip.dto.AllowanceResponse;
 import com.example.InternShip.dto.request.AllowanceRequest;
 import com.example.InternShip.dto.response.PagedResponse;
-import com.example.InternShip.entity.Allowance;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 public interface AllowanceService {

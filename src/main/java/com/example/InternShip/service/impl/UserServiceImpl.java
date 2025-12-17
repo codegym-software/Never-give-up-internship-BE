@@ -150,8 +150,7 @@ public class UserServiceImpl implements UserService {
         pendingUser.setExpiryDate(LocalDateTime.now().plusMinutes(20));
         pendingUserRepository.save(pendingUser);
         String verifyLink = "http://localhost:8082/api/v1/pendingUsers/verifyForgetPassword?token=" + token;
-        pendingUserService.sendVerification(request.getEmail(), verifyLink,  "FORGET_PASSWORD");
-
+        pendingUserService.sendVerification(request.getEmail(), verifyLink, "FORGET_PASSWORD");
     }
 
     @Override
@@ -172,5 +171,4 @@ public class UserServiceImpl implements UserService {
                 .map(user -> modelMapper.map(user, GetUserResponse.class))
                 .toList();
     }
-
 }

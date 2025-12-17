@@ -2,9 +2,6 @@ package com.example.InternShip.dto.report.response;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
-import org.apache.logging.log4j.CloseableThreadContext;
-
-import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;

@@ -30,6 +30,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import com.example.InternShip.service.TeamService;
@@ -104,6 +105,11 @@ public class InternServiceImpl implements InternService {
         intern.setMajor(major);
         internRepository.save(intern);
 
+        // Cập nhật update at
+        User user = intern.getUser();
+        user.setUpdatedAt(LocalDateTime.now());
+        userRepository.save(user);
+
         GetInternResponse response = modelMapper.map(intern.getUser(), GetInternResponse.class);
         response.setId(intern.getId());
         response.setUniversity(university.getName());
@@ -132,9 +138,11 @@ public class InternServiceImpl implements InternService {
                 .findById(request.getInternshipProgramId())
                 .orElseThrow(() -> new EntityNotFoundException(
                         ErrorCode.INTERNSHIP_PROGRAM_NOT_EXISTED.getMessage()));
-        if (internshipProgram.getStatus() != InternshipProgram.Status.PUBLISHED) {
-            throw new RuntimeException(ErrorCode.TIME_APPLY_INVALID.getMessage());
-        }
+
+        // Tạo thì k cần check                
+        // if (internshipProgram.getStatus() != InternshipProgram.Status.PUBLISHED) {
+        //     throw new RuntimeException(ErrorCode.TIME_APPLY_INVALID.getMessage());
+        // }
 
         University university = universityRepository.findById(request.getUniversityId())
                 .orElseThrow(() -> new EntityNotFoundException(
@@ -145,7 +153,7 @@ public class InternServiceImpl implements InternService {
 
         User user = modelMapper.map(request, User.class);
         user.setUsername(request.getEmail());
-        user.setPassword(passwordEncoder.encode("123456@Abc"));
+        user.setPassword(passwordEncoder.encode("12345678"));
         user.setRole(Role.INTERN);
         User savedUser = userRepository.save(user);
 

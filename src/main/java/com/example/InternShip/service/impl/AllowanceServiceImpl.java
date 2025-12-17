@@ -193,6 +193,7 @@ public class AllowanceServiceImpl implements AllowanceService {
                 allowance.getAmount(),
                 remitterName,
                 allowance.getPaidAt(),
+                allowance.getCreatedAt(),
                 allowance.getStatus().name());
     }
 }
