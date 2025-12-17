@@ -1,6 +1,8 @@
 package com.example.InternShip.controller;
 
 import com.example.InternShip.service.PendingUserService;
+import com.google.api.client.util.Value;
+
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -16,15 +18,18 @@ import java.io.IOException;
 public class PendingUserController {
     private final PendingUserService pendingUserService;
 
+   @Value("${redirect.url}")
+    private String redirectUrl  ;
+
     @GetMapping("/verify")
     public void verify(@RequestParam String token, HttpServletResponse response) throws IOException {
         pendingUserService.verify(token);
-        response.sendRedirect("http://localhost:3000/callback/type=verify-account");
+        response.sendRedirect(redirectUrl);
     }
 
     @GetMapping("/verifyForgetPassword")
     public void verifyForgetPassword(@RequestParam String token, HttpServletResponse response) throws IOException {
         pendingUserService.verifyForgetPassword(token);
-        response.sendRedirect("http://localhost:3000/callback/type=verify-password");
+        response.sendRedirect(redirectUrl);
     }
 }
