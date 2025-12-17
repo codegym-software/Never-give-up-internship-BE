@@ -18,6 +18,7 @@ import java.util.Map;
 
 @Controller
 @RequiredArgsConstructor
+@RequestMapping("/api/v1")
 public class ChatController {
 
     private final ChatService chatService;
@@ -41,7 +42,7 @@ public class ChatController {
         messagingTemplate.convertAndSend(destination, savedMessage);
     }
 
-    @PostMapping("/api/chat/initiate")
+    @PostMapping("/chat/initiate")
     public ResponseEntity<?> findOrCreateConversation(Principal principal) {
         if (principal == null) {
             return ResponseEntity.status(401).body("User not authenticated.");
@@ -50,7 +51,7 @@ public class ChatController {
         return ResponseEntity.ok(Map.of("conversationId", conversation.getId()));
     }
 
-    @PostMapping("/api/chat/guest/conversation")
+    @PostMapping("/chat/guest/conversation")
     public ResponseEntity<?> findOrCreateGuestConversation(@RequestBody Map<String, String> payload) {
         String guestId = payload.get("guestId");
         if (guestId == null || guestId.isBlank()) {
