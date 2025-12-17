@@ -13,7 +13,7 @@ public class Main {
 
 	public static void main(String[] args) {
 		// Load .env
-        Dotenv dotenv = Dotenv.load();
+        Dotenv dotenv = Dotenv.configure().ignoreIfMissing().load();
         
         // Set tất cả biến vào System properties để Spring đọc được
         dotenv.entries().forEach(entry -> System.setProperty(entry.getKey(), entry.getValue()));
