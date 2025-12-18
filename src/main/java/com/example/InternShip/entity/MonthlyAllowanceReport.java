@@ -17,7 +17,7 @@ public class MonthlyAllowanceReport {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @Column(name = "report_month", nullable = false, unique = true)
+    @Column(name = "report_month", nullable = false, unique = false)
     private LocalDate reportMonth;
 
     @Column(name = "file_name", nullable = false)

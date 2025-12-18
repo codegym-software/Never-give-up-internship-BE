@@ -2,17 +2,20 @@ package com.example.InternShip.config;
 
 import com.example.InternShip.config.scheduler.MonthlyAllowanceCalculationJob;
 import org.quartz.JobDetail;
+import org.quartz.Scheduler;
 import org.quartz.Trigger;
 import org.quartz.spi.JobFactory;
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.scheduling.quartz.SchedulerFactoryBean;
 
 import static org.quartz.CronScheduleBuilder.cronSchedule;
 import static org.quartz.JobBuilder.newJob;
 import static org.quartz.TriggerBuilder.newTrigger;
 
 import java.util.TimeZone;
+import javax.sql.DataSource;
 
 /**
  * Configuration for Quartz Scheduler.
@@ -36,29 +39,45 @@ public class QuartzConfig {
         return jobFactory;
     }
 
-    /**
-     * Defines the details of the monthly allowance calculation job.
-     * The job class is MonthlyAllowanceCalculationJob.
-     */
+    // /**
+    //  * Defines the details of the monthly allowance calculation job.
+    //  * The job class is MonthlyAllowanceCalculationJob.
+    //  */
+    // @Bean
+    // public JobDetail monthlyAllowanceCalculationJobDetail() {
+    //     return newJob(MonthlyAllowanceCalculationJob.class)
+    //             .withIdentity("monthlyAllowanceCalculationJob")
+    //             .storeDurably()
+    //             .build();
+    // }
+
+    // /**
+    //  * Defines the trigger for the allowance calculation job.
+    //  * It uses the monthlyAllowanceCalculationJobDetail and a cron schedule.
+    //  * The schedule is set to run every 30 seconds for testing purposes.
+    //  */
+    // @Bean
+    // public Trigger monthlyAllowanceCalculationJobTrigger(JobDetail monthlyAllowanceCalculationJobDetail) {
+    //     return newTrigger()
+    //             .forJob(monthlyAllowanceCalculationJobDetail)
+    //             .withIdentity("monthlyAllowanceCalculationTrigger")
+    //             .withSchedule(cronSchedule("0 33 14 * * ?").inTimeZone(TimeZone.getTimeZone("Asia/Ho_Chi_Minh"))) // For testing: runs every 30 seconds
+    //             .build();
+    // }
+
     @Bean
-    public JobDetail monthlyAllowanceCalculationJobDetail() {
-        return newJob(MonthlyAllowanceCalculationJob.class)
-                .withIdentity("monthlyAllowanceCalculationJob")
-                .storeDurably()
-                .build();
+    public SchedulerFactoryBean schedulerFactoryBean(JobFactory jobFactory, DataSource dataSource) {
+        SchedulerFactoryBean factory = new SchedulerFactoryBean();
+        factory.setJobFactory(jobFactory);
+        factory.setOverwriteExistingJobs(false);
+        factory.setWaitForJobsToCompleteOnShutdown(true);
+        return factory;
     }
 
-    /**
-     * Defines the trigger for the allowance calculation job.
-     * It uses the monthlyAllowanceCalculationJobDetail and a cron schedule.
-     * The schedule is set to run every 30 seconds for testing purposes.
-     */
     @Bean
-    public Trigger monthlyAllowanceCalculationJobTrigger(JobDetail monthlyAllowanceCalculationJobDetail) {
-        return newTrigger()
-                .forJob(monthlyAllowanceCalculationJobDetail)
-                .withIdentity("monthlyAllowanceCalculationTrigger")
-                .withSchedule(cronSchedule("0 0 0 1 * ?").inTimeZone(TimeZone.getTimeZone("Asia/Ho_Chi_Minh"))) // For testing: runs every 30 seconds
-                .build();
+    public Scheduler scheduler(SchedulerFactoryBean factory) throws Exception {
+        Scheduler scheduler = factory.getScheduler();
+        scheduler.start();
+        return scheduler;
     }
 }
