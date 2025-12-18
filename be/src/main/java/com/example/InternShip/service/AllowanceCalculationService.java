@@ -6,6 +6,6 @@ import org.springframework.scheduling.annotation.Scheduled;
 
 public interface AllowanceCalculationService {
     
-         void calculateMonthlyAllowances(YearMonth yearMonth) ;
+         void calculateMonthlyAllowances() ;
 
 }
