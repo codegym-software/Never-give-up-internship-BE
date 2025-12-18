@@ -23,7 +23,7 @@ File key .pem (ví dụ: internship-sysney.pem)
 
 Truy cập bằng SSH:
 
-ssh -i "internship-sysney.pem" ubuntu@3.106.250.157
+ssh -i "internship-sysney.pem" ubuntu@3.6.27.169
 
 
 Lưu ý quan trọng:
@@ -81,7 +81,7 @@ Chạy lệnh:
 
 ssh -i "internship-sysney.pem" \
     -L 3307:internshipv3.chm8gaams2xg.ap-southeast-2.rds.amazonaws.com:3307 \
-    ubuntu@3.106.250.157
+    ubuntu@3.6.27.169
 
 
 Lưu ý:
