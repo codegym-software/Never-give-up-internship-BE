@@ -23,14 +23,14 @@ File key .pem (ví dụ: internship-sysney.pem)
 
 Truy cập bằng SSH:
 
-ssh -i "internship-sysney.pem" ubuntu@3.6.27.169
+ssh -i "internship-sysney.pem" ubuntu@3.27.6.169
 
 
 Lưu ý quan trọng:
 
-IP của EC2 có thể thay đổi nếu server bị restart (không có Elastic IP).
+3.27.6.169 : IP của EC2 có thể thay đổi nếu server bị restart .
 
-Username mặc định cho Ubuntu EC2: ubuntu
+Username mặc định cho Ubuntu EC2: ubuntu 
 
 Lệnh SSH phải chạy ngay tại thư mục chứa file .pem
 
@@ -79,14 +79,13 @@ Yêu cầu: có file key .pem để SSH vào EC2.
 
 Chạy lệnh:
 
-ssh -i "internship-sysney.pem" \
-    -L 3307:internshipv3.chm8gaams2xg.ap-southeast-2.rds.amazonaws.com:3307 \
-    ubuntu@3.6.27.169
+ssh -i "internship-sysney.pem" -L 3307:internshipv3.chm8gaams2xg.ap-southeast-2.rds.amazonaws.com:3307 ubuntu@3.27.6.169
 
 
 Lưu ý:
 
-3.106.250.157 là Public IP của EC2 → có thể thay đổi sau mỗi lần restart.
+3.27.6.169 là Public IP của EC2 → có thể thay đổi sau mỗi lần restart.
+internshipv3.chm8gaams2xg.ap-southeast-2.rds.amazonaws.com : đây là endpoint của RDS 
 
 Cửa sổ SSH này phải giữ mở, vì đóng SSH → SSH tunnel mất.
 
