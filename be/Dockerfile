@@ -15,7 +15,6 @@ COPY src ./src
 RUN mvn clean package -DskipTests
 
 
-
 # Stage 2: Create the final lightweight image
 FROM eclipse-temurin:21-jre
 
