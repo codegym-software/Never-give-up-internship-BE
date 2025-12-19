@@ -1,6 +1,12 @@
 # Stage 1: Build the application with Maven
 FROM maven:3.9-eclipse-temurin-21 AS builder
 
+# Set timezone to Asia/Ho_Chi_Minh
+ENV TZ=Asia/Ho_Chi_Minh
+
+RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime \
+ && echo $TZ > /etc/timezone
+
 # Set the working directory
 WORKDIR /app
 
