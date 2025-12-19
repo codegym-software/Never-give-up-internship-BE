@@ -1,5 +1,18 @@
 import React from "react";
 
+const formatSoftSkill = (skill) => {
+    switch (skill) {
+      case "GOOD":
+        return "Tốt";
+      case "FAIR":
+        return "Khá";
+      case "AVERAGE":
+        return "Trung bình";
+      case "POOR":
+        return "Kém";      
+    }
+  };
+
 const Table = ({ reports, loading }) => (
   <div className="table-container">
     <table className="intern-table">
@@ -41,7 +54,7 @@ const Table = ({ reports, loading }) => (
               <td>{intern.problemSolvingScore || "-"}</td>
               <td>{intern.technologyLearningScore || "-"}</td>
               <td>{intern.averageScore || "-"}</td>
-              <td>{intern.softSkill || "-"}</td>
+              <td>{formatSoftSkill(intern.softSkill) || "-"}</td>
               <td>{intern.attendancePercent}%</td>
               <td>{intern.assessment || "-"}</td>
               <td>

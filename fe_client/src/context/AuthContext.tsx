@@ -52,7 +52,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     localStorage.setItem('accessToken', accessToken);
     localStorage.setItem('refreshToken', refreshToken);
     setToken(accessToken);
-    // Fetching user info will be handled by the useEffect hook
+    window.location.reload();
   };
 
   const logout = () => {

@@ -1,6 +1,5 @@
 import { Routes, Route, Navigate } from "react-router-dom";
 import Login from "~/pages/auth/Login";
-import Register from "~/pages/auth/Register";
 import ForgotPassword from "~/pages/auth/ForgotPassword";
 import Verify from "~/pages/auth/Verify";
 import AuthLayout from "~/components/authLayout/AuthLayout";
@@ -52,8 +51,7 @@ function App() {
       <Routes>
         {/* === AUTH === */}
         <Route path="/auth" element={<AuthLayout />}>
-          <Route path="login" element={<Login />} />
-          <Route path="register" element={<Register />} />
+          <Route path="login" element={<Login />} />          
           <Route path="forgot-password" element={<ForgotPassword />} />
           <Route index element={<Navigate to="/auth/login" />} />
         </Route>

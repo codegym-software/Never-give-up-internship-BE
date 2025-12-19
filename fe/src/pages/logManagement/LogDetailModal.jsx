@@ -1,13 +1,20 @@
 import React, { useMemo } from "react";
 import { X, ArrowRight } from "lucide-react";
 
-const LogDetailModal = ({ data, onClose }) => {
-  // Memoize việc format để tránh tính toán lại. Hooks phải được gọi ở top-level.
-  // Sử dụng optional chaining (?.) để tránh lỗi khi data ban đầu là null.
-  const oldDataFormatted = useMemo(() => formatJson(data?.dataOld), [data?.dataOld]);
-  const newDataFormatted = useMemo(() => formatJson(data?.dataNew), [data?.dataNew]);
+const formatJson = (jsonString) => {
+  if (!jsonString) return null;
+  try {
+    const parsed = JSON.parse(jsonString);
+    return JSON.stringify(parsed, null, 2);
+  } catch {
+    return jsonString;
+  }
+};
 
-  // return có điều kiện phải được đặt sau khi tất cả các hooks đã được gọi.
+const LogDetailModal = ({ data, onClose }) => {
+  const oldDataFormatted = useMemo(() => data ? formatJson(data.dataOld) : null, [data?.dataOld]);
+  const newDataFormatted = useMemo(() => data ? formatJson(data.dataNew) : null, [data?.dataNew]);
+
   if (!data) return null;
 
   const translateAction = (action) => {
@@ -17,6 +24,18 @@ const LogDetailModal = ({ data, onClose }) => {
       case "MODIFY": return "Cập nhật";
       case "DELETE": return "Xóa";
       default: return action;
+    }
+  };
+
+  const translateRole = (role) => {
+    if (!role) return "";
+    switch (role) {
+      case "ADMIN": return "Quản trị viên";
+      case "MENTOR": return "Giảng viên/Mentor";
+      case "INTERN": return "Thực tập sinh";
+      case "HR": return "Nhân sự";
+      case "VISITOR": return "Khách";
+      default: return role;
     }
   };
 
@@ -46,24 +65,11 @@ const LogDetailModal = ({ data, onClose }) => {
     }
   };
 
-  // Hàm format JSON an toàn
-  const formatJson = (jsonString) => {
-    if (!jsonString) return null;
-    try {
-      // Nếu là JSON object thì parse để format đẹp
-      const parsed = JSON.parse(jsonString);
-      return JSON.stringify(parsed, null, 2);
-    } catch {
-      // Nếu là string thường thì trả về nguyên bản
-      return jsonString;
-    }
-  };
-
   return (
     <div className="modal-overlay">
-      <div className="modal" style={{ maxWidth: "900px", width: "90%" }}> {/* Tăng chiều rộng để hiển thị 2 cột */}
+      <div className="modal" style={{ maxWidth: "900px", width: "90%" }}>
         <div className="modal-header">
-          <h3>Chi tiết nhật ký #{data.id}</h3>
+          <h3>Chi tiết nhật ký</h3>
           <button className="modal-close" onClick={onClose}>
             <X size={20} />
           </button>
@@ -74,7 +80,27 @@ const LogDetailModal = ({ data, onClose }) => {
           <div className="detail-grid" style={{ display: "grid", gap: "12px", fontSize: "14px", borderBottom: "1px solid #eee", paddingBottom: "15px", marginBottom: "15px" }}>
             <div style={{ display: "flex", justifyContent: "space-between" }}>
                 <div>
-                    <strong>Người thực hiện:</strong> {data.actionerName} <span className="text-gray">({data.actionerEmail})</span>
+                    <strong>Người thực hiện:</strong> {data.actionerName} 
+                    
+                    {/* --- 2. HIỂN THỊ ROLE (BADGE) --- */}
+                    {data.actionerRole && (
+                        <span style={{ 
+                            marginLeft: "8px", 
+                            padding: "2px 8px", 
+                            backgroundColor: "#e0e7ff",
+                            color: "#4338ca",           
+                            borderRadius: "4px", 
+                            fontSize: "12px", 
+                            fontWeight: "600",
+                            border: "1px solid #c7d2fe",
+                            display: "inline-block",
+                            verticalAlign: "middle"
+                        }}>
+                            {translateRole(data.actionerRole)}
+                        </span>
+                    )}
+
+                    <span className="text-gray" style={{ marginLeft: "6px" }}>({data.actionerEmail})</span>
                 </div>
                 <div>
                     <strong>Thời gian:</strong> {data.actionAt}
@@ -122,7 +148,9 @@ const LogDetailModal = ({ data, onClose }) => {
                     border: "1px solid #fda4af", 
                     borderRadius: "6px", 
                     padding: "10px",
-                    minHeight: "100px"
+                    minHeight: "100px",
+                    maxHeight: "300px",
+                    overflowY: "auto"
                 }}>
                     {oldDataFormatted ? (
                         <pre style={{ margin: 0, fontSize: "12px", whiteSpace: "pre-wrap", color: "#881337" }}>
@@ -147,7 +175,9 @@ const LogDetailModal = ({ data, onClose }) => {
                     border: "1px solid #86efac", 
                     borderRadius: "6px", 
                     padding: "10px",
-                    minHeight: "100px"
+                    minHeight: "100px",
+                    maxHeight: "300px",
+                    overflowY: "auto"
                 }}>
                     {newDataFormatted ? (
                         <pre style={{ margin: 0, fontSize: "12px", whiteSpace: "pre-wrap", color: "#14532d" }}>

@@ -19,7 +19,8 @@ export const updateTaskStatus = async (id, status) => {
     const res = await TaskApi.updateStatus(id, status);
     return res;
   } catch (err) {
-    toast.error( err);
+    console.log("error updating task status:"+err);
+    toast.error("Lỗi cập nhật trạng thái công việc");
   }
 };
 
@@ -28,7 +29,8 @@ export const addSubtask = async (taskId, subtask) => {
     const res = await TaskApi.addSubtask(taskId, subtask);
     return res;
   } catch (err) {
-    toast.error( err);
+console.error("Error adding subtask:", err);
+    toast.error("Thêm công việc con thất bại");
   }
 };
 
@@ -47,6 +49,7 @@ export const deleteSubtask = async (taskId, subId) => {
     const res = await TaskApi.deleteSubtask(taskId, subId);
     return res;
   } catch (err) {
-    toast.error( err);
+    console.error("Error deleting subtask:", err);
+    toast.error("Xóa công việc con thất bại");
   }
 };

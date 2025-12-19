@@ -10,14 +10,6 @@ const InternshipProgramTable = ({
   const [internshipProgram, setInternshipProgram] = useState(null);
   const [showEditForm, setShowEditForm] = useState(false);
 
-  const formatCurrency = (amount) => {
-    if (amount === null || amount === undefined) return "-";
-    return new Intl.NumberFormat("vi-VN", {
-      style: "currency",
-      currency: "VND",
-    }).format(amount);
-  };
-
   return (
     <>
       <div className="table-container">
@@ -31,7 +23,6 @@ const InternshipProgramTable = ({
               <th>Bắt đầu</th>
               <th>Kết thúc</th>
               <th>Trạng thái</th>
-              <th>Phụ cấp</th>  
               <th className="action-col"></th>
             </tr>
           </thead>
@@ -54,8 +45,6 @@ const InternshipProgramTable = ({
                   <td>{ip.timeStart}</td>
                   <td>{ip.timeEnd || "-"}</td>
                   <td>{ip.status}</td>
-                  <td>{formatCurrency(ip.allowance)}</td>   {/* ← hiển thị */}
-
                   <td className="action-col">
                     <button
                       className="icon-btn"

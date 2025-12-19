@@ -2,7 +2,6 @@ import React from "react";
 import { Search, RefreshCw } from "lucide-react";
 import Select from "react-select";
 
-// Danh sách ENUM khớp với Log.java
 const affectedOptions = [
   { value: "", label: "Tất cả đối tượng" },
   { value: "ALLOWANCE", label: "Phụ cấp" },

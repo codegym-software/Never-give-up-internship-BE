@@ -5,6 +5,7 @@ import { FaEye, FaEyeSlash } from "react-icons/fa";
 import { toast } from "react-toastify";
 import AuthApi from "../../api/AuthApi";
 import "../../components/authLayout/Auth.css";
+import backgroundImage from '../../assets/background.jpg';
 
 export default function ForgetPassword() {
   const navigate = useNavigate();
@@ -21,7 +22,7 @@ export default function ForgetPassword() {
 
     try {
       await AuthApi.forgetPassword(formData);
-      toast.success("Đặt lại mật khẩu thành công!");
+      toast.success("Vui lòng kiểm tra email để xác thực đặt lại mật khẩu mới!");
       navigate("/auth/login");
     } catch (error) {
       console.error("Lỗi quên mật khẩu:", error);
@@ -32,66 +33,71 @@ export default function ForgetPassword() {
   };
 
   return (
-    <div className="auth-form-container">
-      <h2>ĐẶT LẠI MẬT KHẨU</h2>
-      <p className="subtitle"></p>
+    <div className="auth-container">
+      {/* Phần ảnh nền bên trái */}
+      <div className="auth-background" style={{ backgroundImage: `url(${backgroundImage})` }}></div>
+      
+      {/* Phần form quên mật khẩu bên phải */}
+      <div className="auth-form-wrapper">
+        <div className="auth-form-container">
+          <h2>ĐẶT LẠI MẬT KHẨU</h2>
+          <form onSubmit={handleSubmit}>
+            {/* Email */}
+            <div className="input-group">
+              <label htmlFor="email">Email</label>
+              <input
+                id="email"
+                type="email"
+                name="email"
+                placeholder="Nhập email của bạn"
+                required
+                value={formData.email}
+                onChange={(e) =>
+                  setFormData({ ...formData, email: e.target.value })
+                }
+              />
+            </div>
 
-      <form onSubmit={handleSubmit}>
-        {/* Email */}
-        <div className="input-group">
-          <label htmlFor="email">Email</label>
-          <input
-            id="email"
-            type="email"
-            name="email"
-            placeholder="Nhập email của bạn"
-            required
-            value={formData.email}
-            onChange={(e) =>
-              setFormData({ ...formData, email: e.target.value })
-            }
-          />
-        </div>
+            {/* Mật khẩu mới */}
+            <div className="input-group">
+              <label htmlFor="password">Mật khẩu mới</label>
+              <div className="password-input">
+                <input
+                  id="password"
+                  type={showPassword ? "text" : "password"}
+                  name="password"
+                  placeholder="Nhập mật khẩu mới"
+                  required
+                  value={formData.password}
+                  onChange={(e) =>
+                    setFormData({ ...formData, password: e.target.value })
+                  }
+                />
+                <span
+                  className="eye-icon"
+                  onClick={() => setShowPassword(!showPassword)}
+                >
+                  {showPassword ? <FaEyeSlash /> : <FaEye />}
+                </span>
+              </div>
+            </div>
 
-        {/* Mật khẩu mới */}
-        <div className="input-group">
-          <label htmlFor="password">Mật khẩu mới</label>
-          <div className="password-input">
-            <input
-              id="password"
-              type={showPassword ? "text" : "password"}
-              name="password"
-              placeholder="Nhập mật khẩu mới"
-              required
-              value={formData.password}
-              onChange={(e) =>
-                setFormData({ ...formData, password: e.target.value })
-              }
-            />
-            <span
-              className="eye-icon"
-              onClick={() => setShowPassword(!showPassword)}
+            {/* Nút gửi */}
+            <button
+              type="submit"
+              className="btn-primary"
+              disabled={isSubmitting}
+              style={{ marginTop: "10px" }}
             >
-              {showPassword ? <FaEyeSlash /> : <FaEye />}
-            </span>
+              {isSubmitting ? "Đang gửi..." : "ĐẶT LẠI MẬT KHẨU"}
+            </button>
+          </form> 
+          <div className="options-container">
+            <Link to="/auth/login" className="auth-link" style ={{ marginTop: "16px" }}>
+              Quay lại đăng nhập
+            </Link>
           </div>
         </div>
-
-        {/* Nút gửi */}
-        <button
-          type="submit"
-          className="btn-primary"
-          disabled={isSubmitting}
-          style={{ marginTop: "10px" }}
-        >
-          {isSubmitting ? "Đang gửi..." : "ĐẶT LẠI MẬT KHẨU"}
-        </button>
-      </form> 
-      <p className="subtitle"></p>
-      <div className="options-container">
-        <Link to="/auth/login" className="auth-link">
-          Quay lại đăng nhập
-        </Link>
       </div>
     </div>
   );

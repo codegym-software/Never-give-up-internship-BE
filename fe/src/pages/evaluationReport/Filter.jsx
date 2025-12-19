@@ -1,8 +1,8 @@
-// src/components/evaluation/Filter.jsx
 import React from "react";
 import { Search, Download } from "lucide-react";
 import Select from "react-select";
 import * as XLSX from "xlsx";
+import { toast } from "react-toastify"; 
 
 const Filters = ({
   filters,
@@ -24,7 +24,7 @@ const Filters = ({
 
   const exportToExcel = () => {
     if (!reports || reports.length === 0) {
-      alert("Không có dữ liệu để xuất Excel!");
+      toast.error("Không có dữ liệu để xuất Excel!");
       return;
     }
 
@@ -51,10 +51,33 @@ const Filters = ({
     }));
 
     const worksheet = XLSX.utils.json_to_sheet(data);
+
+    const colWidths = [];
+    const headers = Object.keys(data[0]);
+    headers.forEach((header) => {
+      let maxLen = header.length; 
+      data.forEach((row) => {
+        const cellValue = row[header] ? row[header].toString() : "";
+        maxLen = Math.max(maxLen, cellValue.length);
+      });
+      colWidths.push({ wch: Math.min(maxLen * 1.2 + 2, 50) }); 
+    });
+    worksheet["!cols"] = colWidths;
+
     const workbook = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(workbook, worksheet, "Đánh giá TTS");
 
-    XLSX.writeFile(workbook, `Tong_hop_bao_cao.xlsx`);
+    let fileName = "Tong_hop_bao_cao.xlsx";
+    if (filters.universityId) {
+      const selectedUniversity = universityOptions.find(
+        (opt) => opt.value === filters.universityId
+      );
+      if (selectedUniversity) {
+        fileName = `Tong_hop_bao_cao_${selectedUniversity.label}.xlsx`;
+      }
+    }
+
+    XLSX.writeFile(workbook, fileName);
   };
 
   return (

@@ -58,8 +58,8 @@ function MentorFeedbackModal({
       onFeedbackSuccess?.();
       onClose();
     } catch (error) {
-      console.log(error);
-      toast.error("Lỗi khi gửi phản hồi!:");
+      console.error("Error submitting feedback:", error);
+      toast.error("Lỗi khi gửi phản hồi!");
     } finally {
       setIsSubmitting(false);
     }

@@ -168,10 +168,10 @@ const MentorEvaluation = () => {
           dataToUse.softSkill === "GOOD"
             ? "Tốt"
             : dataToUse.softSkill === "FAIR"
-            ? "Khá"
-            : dataToUse.softSkill === "AVERAGE"
-            ? "Trung bình"
-            : "Kém",
+              ? "Khá"
+              : dataToUse.softSkill === "AVERAGE"
+                ? "Trung bình"
+                : "Kém",
         assessment: dataToUse.assessment || "",
       });
     } else {
@@ -205,9 +205,10 @@ const MentorEvaluation = () => {
       } else {
         toast.info("Chưa có đánh giá cho thực tập sinh này.");
       }
-          } catch {
-            toast.info("Chưa có đánh giá cho thực tập sinh này.");
-          }  };
+    } catch {
+      toast.info("Chưa có đánh giá cho thực tập sinh này.");
+    }
+  };
 
   const handleEdit = () => {
     openForm(viewEval.intern, viewEval);
@@ -226,10 +227,10 @@ const MentorEvaluation = () => {
         form.softSkills === "Tốt"
           ? "GOOD"
           : form.softSkills === "Khá"
-          ? "FAIR"
-          : form.softSkills === "Trung bình"
-          ? "AVERAGE"
-          : "POOR",
+            ? "FAIR"
+            : form.softSkills === "Trung bình"
+              ? "AVERAGE"
+              : "POOR",
       assessment: form.assessment,
     };
 
@@ -249,7 +250,6 @@ const MentorEvaluation = () => {
       "Tên": i.name,
       "Email": i.email ?? "N/A",
       "Điểm trung bình": i.averageScore ?? "N/A",
-      "Trạng thái": i.evaluated ? "Đã đánh giá" : "Chưa đánh giá",
       "Hiểu biết chuyên môn": i.expertiseScore ?? "N/A",
       "Chất lượng công việc": i.qualityScore ?? "N/A",
       "Tư duy giải quyết vấn đề": i.problemSolvingScore ?? "N/A",
@@ -258,19 +258,51 @@ const MentorEvaluation = () => {
         i.softSkill === "GOOD"
           ? "Tốt"
           : i.softSkill === "FAIR"
-          ? "Khá"
-          : i.softSkill === "AVERAGE"
-          ? "Trung bình"
-          : i.softSkill === "POOR"
-          ? "Kém"
-          : "N/A",
+            ? "Khá"
+            : i.softSkill === "AVERAGE"
+              ? "Trung bình"
+              : i.softSkill === "POOR"
+                ? "Kém"
+                : "N/A",
       "Nhận xét": i.assessment || "N/A",
     }));
 
+    // Tạo worksheet từ data
     const worksheet = XLSX.utils.json_to_sheet(data);
+
+    // Lấy các header để biết số cột
+    const headers = Object.keys(data[0]);
+
+    // Tính chiều rộng tối đa cho từng cột (dựa trên độ dài chuỗi dài nhất)
+    const colWidths = headers.map((header) => {
+      let maxLen = header.length; // Bắt đầu với độ dài header
+      data.forEach((row) => {
+        const cellValue = row[header] ? row[header].toString() : "";
+        maxLen = Math.max(maxLen, cellValue.length);
+      });
+      return maxLen;
+    });
+
+    // Đặt chiều rộng cột (wch: width in characters, nhân hệ số để dư dả)
+    worksheet["!cols"] = colWidths.map((len) => ({ wch: Math.min(len * 1.2 + 2, 50) })); // Giới hạn max 50 để tránh quá rộng
+
+    // Bật wrap text cho tất cả các cell (để nội dung dài tự động xuống dòng)
+    const range = XLSX.utils.decode_range(worksheet["!ref"]);
+    for (let row = range.s.r; row <= range.e.r; row++) {
+      for (let col = range.s.c; col <= range.e.c; col++) {
+        const cellAddress = XLSX.utils.encode_cell({ r: row, c: col });
+        if (!worksheet[cellAddress]) continue; // Bỏ qua cell rỗng
+        if (!worksheet[cellAddress].s) worksheet[cellAddress].s = {};
+        worksheet[cellAddress].s.alignment = { wrapText: true };
+      }
+    }
+
+    // Đặt chiều cao dòng tự động (Excel sẽ tự điều chỉnh khi mở, nhưng đặt min height)
+    worksheet["!rows"] = Array(range.e.r + 1).fill({ hpt: 15 }); // Height in points, 15 là default, Excel sẽ auto nếu wrap
+
     const workbook = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(workbook, worksheet, "Đánh giá TTS");
-    XLSX.writeFile(workbook, `Danh_gia_${selectedTeam?.name || "Nhom"}.xlsx`);
+    XLSX.writeFile(workbook, `Danh_gia_nhom_${selectedTeam?.name}.xlsx`);
   };
 
   // Dữ liệu biểu đồ
@@ -306,7 +338,7 @@ const MentorEvaluation = () => {
   };
 
   // Bar Chart: Phân bố điểm trung bình
-  const scoreBins = { "1-3": 0, "4-6": 0, "7-8": 0, "9-10": 0 };
+  const scoreBins = { "1-4": 0, "4-6": 0, "6-8": 0, "8-10": 0 };
   interns.forEach((i) => {
     if (i.evaluated) {
       const scores = [
@@ -317,23 +349,23 @@ const MentorEvaluation = () => {
       ].filter((s) => s != null);
       const avg = scores.length > 0 ? scores.reduce((a, b) => a + b, 0) / scores.length : 0;
 
-      if (avg >= 1 && avg <= 3) scoreBins["1-3"]++;
+      if (avg >= 1 && avg <= 4) scoreBins["1-4"]++;
       else if (avg >= 4 && avg <= 6) scoreBins["4-6"]++;
-      else if (avg >= 7 && avg <= 8) scoreBins["7-8"]++;
-      else if (avg >= 9 && avg <= 10) scoreBins["9-10"]++;
+      else if (avg >= 6 && avg <= 8) scoreBins["6-8"]++;
+      else if (avg >= 8 && avg <= 10) scoreBins["8-10"]++;
     }
   });
 
   const barData = {
-    labels: ["1-3", "4-6", "7-8", "9-10"],
+    labels: ["1-4", "4-6", "6-8", "8-10"],
     datasets: [
       {
         label: "Số lượng sinh viên",
         data: [
-          scoreBins["1-3"],
+          scoreBins["1-4"],
           scoreBins["4-6"],
-          scoreBins["7-8"],
-          scoreBins["9-10"],
+          scoreBins["6-8"],
+          scoreBins["8-10"],
         ],
         backgroundColor: "#3b82f6",
       },
@@ -342,8 +374,6 @@ const MentorEvaluation = () => {
 
   return (
     <div className="evaluation-report">
-      <h1 className="page-title">Đánh Giá Thực Tập Sinh</h1>
-
       {selectedTeam && (
         <>
           {/* Thống kê nhanh */}
@@ -420,7 +450,7 @@ const MentorEvaluation = () => {
               </div>
 
               {/* Tìm kiếm */}
-              <div className="filter-item" style={{ flex: 1, minWidth: "200px" }}>
+              <div className="filter-item" style={{ flex: 1, minWidth: "200px", paddingLeft: "20px" }}>
                 <label className="filter-label">Tìm kiếm</label>
                 <div className="search-input-wrapper">
                   <input
@@ -432,13 +462,13 @@ const MentorEvaluation = () => {
                     style={{ paddingLeft: "40px" }}
                   />
                   <svg className="search-icon" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
-                    <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"/>
+                    <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z" />
                   </svg>
                 </div>
               </div>
 
               {/* Xuất Excel */}
-              <div className="filter-item" style={{ display: "flex", justifyContent: "flex-end" }}>
+              <div className="filter-item" style={{ paddingLeft: "30px " }}>
                 <button onClick={exportToExcel} className="btn btn-add" style={{ marginTop: "24px" }}>
                   <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
                     <path d="M8.5 6.5a.5.5 0 0 0-1 0v3.793L6.354 9.146a.5.5 0 1 0-.708.708l2 2a.5.5 0 0 0 .708 0l2-2a.5.5 0 0 0-.708-.708L8.5 10.293V6.5z" />
@@ -481,13 +511,14 @@ const MentorEvaluation = () => {
                       <td>
                         {i.evaluated ? (
                           <button
-                            className="btn"
+                            className="action-col"
                             style={{
                               background: "#17a2b8",
                               color: "white",
                               padding: "6px 12px",
                               fontSize: "13px",
                               borderRadius: "6px",
+                              border: "none",
                             }}
                             onClick={() => openView(i)}
                           >

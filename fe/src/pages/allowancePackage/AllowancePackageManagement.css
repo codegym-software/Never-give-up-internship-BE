@@ -1,0 +1,10 @@
+.search {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
+.form-control {
+    border-radius: 10px;
+    min-width: 300px;
+}

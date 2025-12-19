@@ -20,6 +20,21 @@ const Chart = ({ filters }) => {
     }
   };
 
+  const translateStatus = (key) => {
+    switch (key) {
+      case "COMPLETED":
+        return "Hoàn thành";
+      case "ACTIVE":
+        return "Đang thực tập";
+      case "DROPPED":
+        return "Dừng thực tập";
+      case "SUSPENDED":
+        return "Tạm ngưng";
+      default:
+        return key;
+    }
+  };
+
   const STATUS_COLORS = {
     COMPLETED: "#3b82f6", // xanh dương
     ACTIVE: "#10b981", // xanh lá
@@ -55,7 +70,7 @@ const Chart = ({ filters }) => {
   }));
 
   const statusArray = Object.entries(statusCounts).map(([key, value]) => ({
-    name: key.toLocaleLowerCase(),
+    name: translateStatus(key),
     value: value,
     color: STATUS_COLORS[key] || "#6b7280",
   }));

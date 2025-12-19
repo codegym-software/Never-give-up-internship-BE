@@ -35,7 +35,7 @@ export const getAllInternsForSelection = async () => {
     }
     return [];
   } catch (err) {
-    console.log(err);
+    console.error("Error fetching interns for selection:", err);
     toast.error("Không thể tải danh sách thực tập sinh.");
     return [];
   }

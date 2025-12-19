@@ -119,18 +119,6 @@ const AddInternshipProgramModal = ({
             />
           </div>
 
-          <div className="form-group">
-            <label>Phụ cấp (VND/tháng)</label>
-            <input
-              type="number"
-              min="0"
-              step="100000"
-              value={formData.allowance}
-              onChange={(e) => handleChange("allowance", e.target.value)}
-              placeholder="Nhập phụ cấp..."
-            />
-          </div>
-
           <div className="modal-actions">
             <button
               type="button"

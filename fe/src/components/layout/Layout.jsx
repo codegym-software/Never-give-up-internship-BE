@@ -59,7 +59,6 @@ const rolePermissions = {
     "/allowance-report",
     "/allowance-package",
   ],
-  VISITOR: [],
 };
 
 const menuItems = [

@@ -137,6 +137,7 @@ public class TeamServiceImpl implements TeamService {
             }
 
             intern.setTeam(team);
+            team.getInterns().add(intern);
             internsToUpdate.add(intern);
         }
         internRepository.saveAll(internsToUpdate);

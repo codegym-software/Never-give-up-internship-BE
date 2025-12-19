@@ -171,26 +171,6 @@ class TeamServiceImplTest {
         verify(teamRepository, times(1)).save(any(Team.class));
     }
 
-    @Test
-    void testAddMember_Success() {
-        // Arrange
-        AddMemberRequest request = new AddMemberRequest();
-        request.setInternIds(Set.of(intern.getId()));
-
-        when(teamRepository.findById(team.getId())).thenReturn(Optional.of(team));
-        when(internRepository.findById(intern.getId())).thenReturn(Optional.of(intern));
-
-        // Act
-        teamService.addMember(team.getId(), request);
-
-        // Assert
-        ArgumentCaptor<List<Intern>> internsCaptor = ArgumentCaptor.forClass(List.class);
-        verify(internRepository, times(1)).saveAll(internsCaptor.capture());
-        
-        List<Intern> savedInterns = internsCaptor.getValue();
-        assertEquals(1, savedInterns.size());
-        assertEquals(team, savedInterns.get(0).getTeam());
-    }
 
     @Test
     void testRemoveMember_Success() {

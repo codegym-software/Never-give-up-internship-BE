@@ -31,8 +31,8 @@ export const claimConversation = async (id) => {
     toast.success("Đã nhận cuộc trò chuyện!");
     return true;
   } catch (err) {
-    console.log(err);
-    toast.error("Không thể nhận cuộc trò chuyện này.:");
+    console.error("Error claiming conversation:", err);
+    toast.error("Không thể nhận cuộc trò chuyện này.");
     return false;
   }
 };
@@ -43,7 +43,7 @@ export const deleteConversation = async (id) => {
     toast.success("Đã xóa cuộc trò chuyện.");
     return true;
   } catch (err) {
-    console.log(err);
+    console.error("Error deleting conversation:", err);
     toast.error("Không thể xóa cuộc trò chuyện này.");
     return false;
   }

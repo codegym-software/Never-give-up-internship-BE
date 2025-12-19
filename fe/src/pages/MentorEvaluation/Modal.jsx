@@ -2,7 +2,6 @@ import React from 'react';
 
 const Modal = ({ title, onClose, children }) => {
   return (
-    // Modal Overlay (lớp mờ phía sau)
     <div 
       className="modal-overlay" 
       onClick={onClose}
@@ -16,18 +15,19 @@ const Modal = ({ title, onClose, children }) => {
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        zIndex: 1000, // Đảm bảo modal nằm trên cùng
+        zIndex: 1000,
       }}
     >
       {/* Modal Content (khung chứa nội dung) */}
       <div 
         className="modal-content" 
-        onClick={(e) => e.stopPropagation()} // Ngăn chặn sự kiện click lan ra overlay
+        onClick={(e) => e.stopPropagation()}
         style={{
           backgroundColor: 'white',
           padding: '25px',
           borderRadius: '8px',
           maxWidth: '550px',
+          maxHeight: 'auto',        
           width: '90%',
           boxShadow: '0 5px 15px rgba(0, 0, 0, 0.3)',
           position: 'relative',

@@ -1,8 +1,15 @@
 import React, { useState, useEffect } from "react";
 import Modal from "~/pages/MentorEvaluation/Modal.jsx";
 import { toast } from "react-toastify";
+import "./AllowancePackageFormModal.css";
 
-const AllowancePackageFormModal = ({ isOpen, onClose, onSubmit, initialData, internshipPrograms }) => {
+const AllowancePackageFormModal = ({
+  isOpen,
+  onClose,
+  onSubmit,
+  initialData,
+  internshipPrograms,
+}) => {
   const [formData, setFormData] = useState({
     name: "",
     amount: "",
@@ -28,7 +35,6 @@ const AllowancePackageFormModal = ({ isOpen, onClose, onSubmit, initialData, int
     }
   }, [initialData, isOpen]);
 
-
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
@@ -36,7 +42,12 @@ const AllowancePackageFormModal = ({ isOpen, onClose, onSubmit, initialData, int
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (!formData.name || !formData.amount || !formData.requiredWorkDays || !formData.internshipProgramId) {
+    if (
+      !formData.name ||
+      !formData.amount ||
+      !formData.requiredWorkDays ||
+      !formData.internshipProgramId
+    ) {
       toast.error("Vui lòng điền đầy đủ các trường bắt buộc.");
       return;
     }
@@ -45,67 +56,67 @@ const AllowancePackageFormModal = ({ isOpen, onClose, onSubmit, initialData, int
   };
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} title={initialData ? "Sửa Gói Phụ Cấp" : "Tạo Gói Phụ Cấp Mới"}>
-      <form onSubmit={handleSubmit}>
-        <div className="mb-3">
-          <label htmlFor="name" className="form-label">Tên gói phụ cấp</label>
+    <Modal
+      isOpen={isOpen}
+      onClose={onClose}
+      title={initialData ? "Sửa Gói Phụ Cấp" : "Tạo Gói Phụ Cấp Mới"}
+    >
+      <form className="ap-form" onSubmit={handleSubmit}>
+        <div className="ap-field">
+          <label>Tên gói phụ cấp</label>
           <input
             type="text"
-            className="form-control"
-            id="name"
             name="name"
             value={formData.name}
             onChange={handleChange}
             required
           />
         </div>
-        <div className="mb-3">
-          <label htmlFor="internshipProgramId" className="form-label">Chương trình thực tập</label>
+
+        <div className="ap-field">
+          <label>Chương trình thực tập</label>
           <select
-            className="form-select"
-            id="internshipProgramId"
             name="internshipProgramId"
             value={formData.internshipProgramId}
             onChange={handleChange}
             required
           >
             <option value="">Chọn chương trình thực tập</option>
-            {internshipPrograms.map(program => (
+            {internshipPrograms.map((program) => (
               <option key={program.id} value={program.id}>
                 {program.name}
               </option>
             ))}
           </select>
         </div>
-        <div className="mb-3">
-          <label htmlFor="amount" className="form-label">Số tiền (VND)</label>
+
+        <div className="ap-field">
+          <label>Số tiền (VND)</label>
           <input
             type="number"
-            className="form-control"
-            id="amount"
             name="amount"
             value={formData.amount}
             onChange={handleChange}
             required
           />
         </div>
-        <div className="mb-3">
-          <label htmlFor="requiredWorkDays" className="form-label">Số ngày làm việc tối thiểu</label>
+
+        <div className="ap-field">
+          <label>Số ngày làm việc tối thiểu</label>
           <input
             type="number"
-            className="form-control"
-            id="requiredWorkDays"
             name="requiredWorkDays"
             value={formData.requiredWorkDays}
             onChange={handleChange}
             required
           />
         </div>
-        <div className="d-flex justify-content-end">
-          <button type="button" className="btn btn-secondary me-2" onClick={onClose}>
+
+        <div className="ap-actions">
+          <button type="button" className="btn-cancell" onClick={onClose}>
             Hủy
           </button>
-          <button type="submit" className="btn btn-primary">
+          <button type="submit" className="btn-submit">
             {initialData ? "Cập nhật" : "Tạo mới"}
           </button>
         </div>

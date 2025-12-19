@@ -1,6 +1,7 @@
 import React from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEdit, faTrash } from "@fortawesome/free-solid-svg-icons";
+import "./AllowancePackageTable.css"
 
 const AllowancePackageTable = ({ data, loading, onEdit, onDelete }) => {
   if (loading) {
@@ -40,13 +41,13 @@ const AllowancePackageTable = ({ data, loading, onEdit, onDelete }) => {
                 <td>{getStatusBadge(item.status)}</td>
                 <td className="action-col">
                   <button
-                    className="btn btn-warning btn-sm me-2"
+                    className="btn-update"
                     onClick={() => onEdit(item)}
                   >
                     <FontAwesomeIcon icon={faEdit} /> Sửa
                   </button>
                   <button
-                    className="btn btn-danger btn-sm"
+                    className="btn-cancel"
                     onClick={() => onDelete(item.id)}
                   >
                     <FontAwesomeIcon icon={faTrash} /> Hủy gói phụ cấp
