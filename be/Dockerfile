@@ -1,18 +1,8 @@
 # Stage 1: Build the application with Maven
 FROM maven:3.9-eclipse-temurin-21 AS builder
 
-# Set timezone to Asia/Ho_Chi_Minh
-ENV TZ=Asia/Ho_Chi_Minh
-
-RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime \
- && echo $TZ > /etc/timezone
-
 # Set the working directory
 WORKDIR /app
-
-# Create a non-root user
-RUN addgroup --system spring && adduser --system --no-create-home --ingroup spring spring
-USER spring:spring
 
 RUN apt-get update && apt-get install -y default-mysql-client
 
@@ -28,6 +18,9 @@ RUN mvn clean package -DskipTests
 # Stage 2: Create the final lightweight image
 FROM eclipse-temurin:21-jre
 
+# Create a non-root user
+RUN addgroup --system spring && adduser --system --no-create-home --ingroup spring spring
+USER spring:spring
 
 # Set the working directory
 WORKDIR /app
