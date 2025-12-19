@@ -1,7 +1,7 @@
 package com.example.InternShip.controller;
 
 import com.example.InternShip.service.PendingUserService;
-import com.google.api.client.util.Value;
+import org.springframework.beans.factory.annotation.Value;
 
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -18,7 +18,7 @@ import java.io.IOException;
 public class PendingUserController {
     private final PendingUserService pendingUserService;
 
-   @Value("${redirect.url}")
+   @Value("${url.fe}")
     private String redirectUrl  ;
 
     @GetMapping("/verify")

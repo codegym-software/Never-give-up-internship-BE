@@ -53,7 +53,7 @@ public class AuthServiceImpl implements AuthService {
     private final PendingUserServiceImpl pendingUserService;
     private final GoogleAuthService googleAuthService;
 
-    @Value("${redirect.url}")
+    @Value("${url.be}")
     private String redirectUrl;
     @Value("${jwt.singerKey}")
     private String singerKey;
@@ -128,8 +128,7 @@ public class AuthServiceImpl implements AuthService {
         pendingUser.setExpiryDate(LocalDateTime.now().plusMinutes(20));
         pendingUserRepository.save(pendingUser);
 
-        String verifyLink = "http://"+redirectUrl+":8082/api/v1/pendingUsers/verify?token=" + token;
-        pendingUserService.sendVerification(request.getEmail(), verifyLink);
+        String verifyLink = redirectUrl+"/api/v1/pendingUsers/verify?token=" + token;        pendingUserService.sendVerification(request.getEmail(), verifyLink);
     }
 
     public TokenResponse login(LoginRequest request) throws JOSEException {

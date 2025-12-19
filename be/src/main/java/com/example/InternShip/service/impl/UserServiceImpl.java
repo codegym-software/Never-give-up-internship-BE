@@ -47,7 +47,7 @@ public class UserServiceImpl implements UserService {
     private final PendingUserServiceImpl pendingUserService;
     private final CloudinaryService cloudinaryService;
 
-    @Value("${redirect.url}")
+    @Value("${url.be}")
     private String redirectUrl ;
 
     public PagedResponse<GetUserResponse> getAllUser(GetAllUserRequest request) {
@@ -154,7 +154,7 @@ public class UserServiceImpl implements UserService {
         pendingUser.setToken(token);
         pendingUser.setExpiryDate(LocalDateTime.now().plusMinutes(20));
         pendingUserRepository.save(pendingUser);
-        String verifyLink = "http://"+redirectUrl+":8082/api/v1/pendingUsers/verifyForgetPassword?token=" + token;
+        String verifyLink = redirectUrl+"/api/v1/pendingUsers/verifyForgetPassword?token=" + token;
         pendingUserService.sendVerification(request.getEmail(), verifyLink);
 
     }
