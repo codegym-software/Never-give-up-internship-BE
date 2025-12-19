@@ -41,7 +41,7 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .cors(Customizer.withDefaults())
                 .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers("/ws/**", "/api/v1/auth/**", "/api/v1/pendingUsers/**", "/swagger-ui/**", "/v3/api-docs/**", "/api/v1/pendingUserForgetPassword/**","/api/chat/guest/**","/api/v1/conversations/**").permitAll()
+                        .requestMatchers("/ws/**", "/api/v1/auth/**", "/api/v1/pendingUsers/**", "/swagger-ui/**", "/v3/api-docs/**", "/api/v1/pendingUserForgetPassword/**","/api/v1/chat/guest/**","/api/v1/conversations/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .oauth2ResourceServer(oauth2 ->
