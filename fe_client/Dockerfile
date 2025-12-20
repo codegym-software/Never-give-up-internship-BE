@@ -4,6 +4,8 @@ FROM node:22-alpine AS build
 # Nhận các biến môi trường build-time từ docker-compose
 ARG VITE_API_URL
 ARG VITE_SOCKET_URL
+ARG VITE_REFESH_TOKEN_URL
+ARG VITE_GOOGLE_CLIENT_ID
 
 # Thiết lập các biến môi trường này cho các lệnh tiếp theo (quan trọng cho npm build)
 ENV VITE_API_URL=$VITE_API_URL
