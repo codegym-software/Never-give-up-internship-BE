@@ -8,6 +8,8 @@ interface User {
   email: string;
   username: string;
   avatarUrl?: string;
+  phone?: string;
+  address?: string;
   // Add other user properties as needed
 }
 
