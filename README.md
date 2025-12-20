@@ -1,114 +1,92 @@
-🏰 Tổng quan hệ thống khi triển khai các dịch vụ trên AWS
+🏰 Tổng quan hệ thống khi triển khai trên AWS
 
-Khi hệ thống được triển khai lên AWS, chúng ta sử dụng nhiều dịch vụ để vận hành backend. Dưới đây là các thành phần chính và vai trò của chúng:
+Hệ thống backend được triển khai trên AWS với các thành phần chính sau:
 
-🔹 EC2 — Máy chủ ứng dụng
+🔹 EC2 — Application Server
 
-EC2 là máy chủ chạy trên cloud (giống một VPS).
-EC2 được dùng để:
+EC2 là máy chủ cloud (tương tự VPS), được dùng để:
 
-Chạy backend (Spring Boot / NodeJS / Docker / Nginx…)
+Chạy backend (Spring Boot / NodeJS / Docker / Nginx)
 
-Làm trung gian để tạo SSH Tunnel đến RDS
+Làm trung gian tạo SSH Tunnel truy cập RDS
 
-Lưu file log, file cấu hình, chạy script CICD, v.v.
+Lưu log, file cấu hình, script CI/CD
 
-🔹 Cách truy cập vào máy chủ EC2
-
-Để truy cập EC2, bạn cần:
+🔹 Truy cập EC2 Server
+Yêu cầu
 
 File key .pem (ví dụ: internship-sysney.pem)
 
-Đúng địa chỉ Public IP của EC2
+Public IPv4 của EC2
 
-Truy cập bằng SSH:
+Lệnh SSH
+ssh -i "internship-sysney.pem" ubuntu@<EC2_PUBLIC_IP>
 
-ssh -i "internship-sysney.pem" ubuntu@3.27.6.169
+Lưu ý
 
+Public IP có thể thay đổi khi EC2 stop/start
 
-Lưu ý quan trọng:
+Username mặc định của Ubuntu EC2: ubuntu
 
-3.27.6.169 : IP của EC2 có thể thay đổi nếu server bị restart .
+Chạy lệnh tại thư mục chứa file .pem
 
-Username mặc định cho Ubuntu EC2: ubuntu 
+🔹 RDS — MySQL Database
 
-Lệnh SSH phải chạy ngay tại thư mục chứa file .pem
+RDS chứa database chính của hệ thống
 
-🔹 RDS — Database MySQL của AWS
+Không public access
 
-RDS chứa database chính của hệ thống.
-RDS không mở public access → chỉ EC2 mới có quyền truy cập trực tiếp.
+Chỉ EC2 được phép truy cập qua private network
 
-Laptop → EC2 → RDS (qua private network)
-
-🔹 Sơ đồ hoạt động tổng quan
+Sơ đồ kết nối
 Developer Laptop
         │
-        │  SSH / SSH Tunnel
         ▼
       EC2 Server
         │
-        │  (Private Connection)
         ▼
-        RDS MySQL
+      RDS MySQL
 
-Hướng dẫn truy cập Database RDS (AWS)
-
-RDS là nơi lưu trữ database chính của hệ thống.
-Hệ thống sử dụng port 3307 cho MySQL và truy cập thông qua SSH Tunnel từ EC2.
-
-🔧 1. Kiểm tra & giải phóng port 3307 trên máy local
-
-Kiểm tra chương trình nào đang chiếm cổng:
-
+🔹 Kết nối RDS qua SSH Tunnel
+1️⃣ Giải phóng port 3307 trên máy local
 sudo lsof -i :3307
-
-
-Nếu MySQL local đang chạy, tắt nó tạm thời:
-
 sudo systemctl stop mysql
-
-
-hoặc:
-
+# hoặc
 sudo systemctl stop mariadb
 
-🚀 2. Tạo SSH Tunnel đến RDS thông qua EC2
-
-Yêu cầu: có file key .pem để SSH vào EC2.
-
-Chạy lệnh:
-
-ssh -i "internship-sysney.pem" -L 3307:internshipv3.chm8gaams2xg.ap-southeast-2.rds.amazonaws.com:3307 ubuntu@3.27.6.169
+2️⃣ Tạo SSH Tunnel qua EC2
+ssh -i "internship-sysney.pem" \
+-L 3307:internshipv3.chm8gaams2xg.ap-southeast-2.rds.amazonaws.com:3307 \
+ubuntu@<EC2_PUBLIC_IP>
 
 
-Lưu ý:
+⚠️ Không được tắt terminal này, nếu không tunnel sẽ mất.
 
-3.27.6.169 là Public IP của EC2 → có thể thay đổi sau mỗi lần restart.
-internshipv3.chm8gaams2xg.ap-southeast-2.rds.amazonaws.com : đây là endpoint của RDS 
-
-Cửa sổ SSH này phải giữ mở, vì đóng SSH → SSH tunnel mất.
-
-🖥️ 3. Truy cập Database MySQL từ máy local
-
-Mở một terminal khác và chạy:
-
+3️⃣ Kết nối MySQL từ local
 mysql -h 127.0.0.1 -P 3307 -u admin -p
 
+🧩 Sơ đồ SSH Tunnel
+Localhost (127.0.0.1:3307)
+        │
+        ▼
+     SSH Tunnel
+        │
+        ▼
+      EC2 Server
+        │
+        ▼
+     AWS RDS
 
-Nhập password của RDS.
-Kết nối thành công → bạn đã truy cập RDS qua SSH Tunnel.
+🔧 Hướng dẫn dành cho AWS Owner
+Khi EC2 bị đổi Public IP (sau stop/start)
+1️⃣ Cập nhật biến môi trường backend (trên EC2)
+URL_FE=http://<EC2_PUBLIC_IP>:<PORT>
+URL_BE=http://<EC2_PUBLIC_IP>:<PORT>
 
-🧩 Sơ đồ kết nối (dễ hiểu)
-Your Laptop (127.0.0.1:3307)
-           │
-           ▼
-      SSH Tunnel
-           │
-           ▼
-       EC2 Server
-           │
-           ▼
-       AWS RDS (MySQL)
 
-🎉 DONE — Bạn đã kết nối thành công đến RDS qua SSH Tunnel!
+➡ Sau đó restart container backend:
+
+docker compose down
+docker compose up -d
+
+Hoặc tạo một commit nhỏ để trigger GitHub Actions, pipeline CI/CD sẽ tự động build, test và deploy container mới lên EC2.
