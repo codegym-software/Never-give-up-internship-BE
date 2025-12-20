@@ -88,5 +88,22 @@ URL_BE=http://<EC2_PUBLIC_IP>:<PORT>
 
 docker compose down
 docker compose up -d
+2️⃣ Cập nhật biến môi trường frontend (GitHub Actions)
+
+Vào repo → Settings → Secrets and variables
+
+Key	Value
+EC2_HOST	<EC2_PUBLIC_IP>
+VITE_API_URL	http://<EC2_PUBLIC_IP>:<PORT>/api/v1
+VITE_SOCKET_URL	http://<EC2_PUBLIC_IP>:<PORT>/ws
+VITE_REFRESH_TOKEN_URL	http://<EC2_PUBLIC_IP>:<PORT>/api/v1/auth/refresh
+
+➡ Sau đó build & push lại frontend image
+
+3️⃣ (Khuyến nghị) Dùng Elastic IP
+
+Tránh phải cập nhật IP mỗi lần EC2 restart
+
+Phù hợp cho môi trường staging / production
 
 Hoặc tạo một commit nhỏ để trigger GitHub Actions, pipeline CI/CD sẽ tự động build, test và deploy container mới lên EC2.
