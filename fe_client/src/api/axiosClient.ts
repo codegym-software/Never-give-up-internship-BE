@@ -54,7 +54,7 @@ axiosClient.interceptors.request.use(
         if (!refreshToken) {
           // No refresh token available, logout user
           localStorage.removeItem('accessToken');
-          window.location.href = '/'; // Or to a login page
+          window.location.href = '/client/'; // Or to a login page
           return Promise.reject(new Error('No refresh token available.'));
         }
 
@@ -77,7 +77,7 @@ axiosClient.interceptors.request.use(
           localStorage.removeItem('accessToken');
           localStorage.removeItem('refreshToken');
           processQueue(error, null);
-          window.location.href = '/'; // Or to a login page
+          window.location.href = '/client/'; // Or to a login page
           return Promise.reject(error);
         } finally {
           isRefreshing = false;

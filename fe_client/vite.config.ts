@@ -4,6 +4,7 @@
   import path from 'path';
 
   export default defineConfig({
+    base: '/client/',
     plugins: [react()],
     define: {
       global: 'window',
