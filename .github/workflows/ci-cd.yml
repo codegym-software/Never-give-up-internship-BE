@@ -140,15 +140,15 @@ jobs:
         working-directory: ./fe
         run: |
           docker build \
-            --build-arg VITE_API_URL=${{ secrets.VITE_API_URL }} \
-            --build-arg VITE_SOCKET_URL=${{ secrets.VITE_SOCKET_URL }} \
-            --build-arg VITE_GOOGLE_CLIENT_ID=${{ secrets.VITE_GOOGLE_CLIENT_ID }} \
-            --build-arg VITE_REFESH_TOKEN_URL=${{ secrets.VITE_REFESH_TOKEN_URL }} \
-            -t ${{ secrets.DOCKER_HUB_USERNAME }}/internship-frontend:dev .
+            --build-arg VITE_API_URL="${{ secrets.VITE_API_URL }}" \
+            --build-arg VITE_SOCKET_URL="${{ secrets.VITE_SOCKET_URL }}" \
+            --build-arg VITE_GOOGLE_CLIENT_ID="${{ secrets.VITE_GOOGLE_CLIENT_ID }}" \
+            --build-arg VITE_REFESH_TOKEN_URL="${{ secrets.VITE_REFESH_TOKEN_URL }}" \
+            -t "${{ secrets.DOCKER_HUB_USERNAME }}"/internship-frontend:dev .
 
-          docker tag ${{ secrets.DOCKER_HUB_USERNAME }}/internship-frontend:dev ${{ secrets.DOCKER_HUB_USERNAME }}/internship-frontend:${{ env.SHORT_SHA }}
-          docker push ${{ secrets.DOCKER_HUB_USERNAME }}/internship-frontend:dev
-          docker push ${{ secrets.DOCKER_HUB_USERNAME }}/internship-frontend:${{ env.SHORT_SHA }}
+          docker tag "${{ secrets.DOCKER_HUB_USERNAME }}"/internship-frontend:dev "${{ secrets.DOCKER_HUB_USERNAME }}"/internship-frontend:"${{ env.SHORT_SHA }}"
+          docker push "${{ secrets.DOCKER_HUB_USERNAME }}"/internship-frontend:dev
+          docker push "${{ secrets.DOCKER_HUB_USERNAME }}"/internship-frontend:"${{ env.SHORT_SHA }}"
       # ===== Build & Push Frontend Client Image =====
       - name: Build and push frontend client Docker image
         working-directory: ./fe_client
