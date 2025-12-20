@@ -154,15 +154,15 @@ jobs:
         working-directory: ./fe_client
         run: |
           docker build \
-            --build-arg VITE_API_URL=${{ secrets.VITE_API_URL }} \
-            --build-arg VITE_SOCKET_URL=${{ secrets.VITE_SOCKET_URL }} \
-            --build-arg VITE_GOOGLE_CLIENT_ID=${{ secrets.VITE_GOOGLE_CLIENT_ID }} \
-            --build-arg VITE_REFESH_TOKEN_URL=${{ secrets.VITE_REFESH_TOKEN_URL }} \
-            -t ${{ secrets.DOCKER_HUB_USERNAME }}/internship-frontend-client:dev .
+            --build-arg VITE_API_URL="${{ secrets.VITE_API_URL }}" \
+            --build-arg VITE_SOCKET_URL="${{ secrets.VITE_SOCKET_URL }}" \
+            --build-arg VITE_GOOGLE_CLIENT_ID="${{ secrets.VITE_GOOGLE_CLIENT_ID }}" \
+            --build-arg VITE_REFESH_TOKEN_URL="${{ secrets.VITE_REFESH_TOKEN_URL }}" \
+            -t "${{ secrets.DOCKER_HUB_USERNAME }}"/internship-frontend-client:dev .
 
-          docker tag ${{ secrets.DOCKER_HUB_USERNAME }}/internship-frontend-client:dev ${{ secrets.DOCKER_HUB_USERNAME }}/internship-frontend-client:${{ env.SHORT_SHA }}
-          docker push ${{ secrets.DOCKER_HUB_USERNAME }}/internship-frontend-client:dev
-          docker push ${{ secrets.DOCKER_HUB_USERNAME }}/internship-frontend-client:${{ env.SHORT_SHA }}
+          docker tag "${{ secrets.DOCKER_HUB_USERNAME }}"/internship-frontend-client:dev "${{ secrets.DOCKER_HUB_USERNAME }}"/internship-frontend-client:"${{ env.SHORT_SHA }}"
+          docker push "${{ secrets.DOCKER_HUB_USERNAME }}"/internship-frontend-client:dev
+          docker push "${{ secrets.DOCKER_HUB_USERNAME }}"/internship-frontend-client:"${{ env.SHORT_SHA }}"
 
   # ========================
   # DEPLOY TO EC2
