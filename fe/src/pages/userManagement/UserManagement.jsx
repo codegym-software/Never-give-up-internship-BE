@@ -76,8 +76,6 @@ const UserManagement = () => {
     { value: "", label: "Tất cả" },
     { value: "ADMIN", label: "ADMIN" },
     { value: "HR", label: "HR" },
-    { value: "MENTOR", label: "MENTOR" },
-    { value: "INTERN", label: "INTERN" },
     { value: "VISITOR", label: "VISITOR" },
   ];
   return (
