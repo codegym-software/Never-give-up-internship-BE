@@ -15,7 +15,7 @@ public class ReportController {
 
     private final ReportService reportService;
 
-    @PreAuthorize("hasAuthority('SCOPE_HR')")
+    @PreAuthorize("hasAuthority('SCOPE_HR') or hasAuthority('SCOPE_ADMIN')")
     @GetMapping("/attendance-summary")
     public ResponseEntity<?> getAttendanceSummaryReport(
             @RequestParam(required = false) Integer teamId,
@@ -24,13 +24,13 @@ public class ReportController {
         return ResponseEntity.ok(reportService.getAttendanceSummaryReport(teamId, internshipProgramId, page));
     }
 
-    @PreAuthorize("hasAuthority('SCOPE_HR')")
+    @PreAuthorize("hasAuthority('SCOPE_HR') or hasAuthority('SCOPE_ADMIN')")
     @GetMapping("/interns/{internId}/attendance")
     public ResponseEntity<?> getInternAttendanceDetail(@PathVariable Integer internId) {
         return ResponseEntity.ok(reportService.getInternAttendanceDetail(internId));
     }
 
-    @PreAuthorize("hasAuthority('SCOPE_HR')")
+    @PreAuthorize("hasAuthority('SCOPE_HR') or hasAuthority('SCOPE_ADMIN')")
     @GetMapping("/final-report")
     public ResponseEntity<PagedResponse<FinalReportResponse>> getFinalReport(
             @RequestParam(required = false) Integer internshipProgramId,
@@ -39,7 +39,7 @@ public class ReportController {
         return ResponseEntity.ok(reportService.getFinalReport(internshipProgramId,universityId,page));
     }
 
-    @PreAuthorize("hasAuthority('SCOPE_HR')")
+    @PreAuthorize("hasAuthority('SCOPE_HR') or hasAuthority('SCOPE_ADMIN')")
     @GetMapping("/chart")
     public ResponseEntity<ChartResponse> chart(
             @RequestParam(required = false) Integer internshipProgramId,
