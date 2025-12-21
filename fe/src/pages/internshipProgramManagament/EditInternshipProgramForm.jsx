@@ -65,17 +65,6 @@ const EditInternshipProgramModal = ({
           </div>
 
           <div className="form-group">
-            <label>Phụ cấp (VND/tháng)</label>
-            <input
-              type="number"
-              min="0"
-              step="100000"
-              value={formData.allowance}
-              onChange={(e) => handleChange("allowance", e.target.value)}
-            />
-          </div>
-
-          <div className="form-group">
             <label>Hạn nộp hồ sơ</label>
             <input
               type="datetime-local"
