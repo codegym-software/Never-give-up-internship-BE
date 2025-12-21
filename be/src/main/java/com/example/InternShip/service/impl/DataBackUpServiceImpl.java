@@ -1,7 +1,9 @@
 package com.example.InternShip.service.impl;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
@@ -36,11 +38,13 @@ public class DataBackUpServiceImpl implements DataBackUpService {
 
     // Chạy mỗi ngày lúc 2 giờ sáng
     @Override
-    @Scheduled(cron = "0 45 17 * * ?", zone = "Asia/Ho_Chi_Minh")
+    @Scheduled(cron = "0 25 18 * * ?", zone = "Asia/Ho_Chi_Minh")
     public void backupDatabase() throws IOException, InterruptedException {
         deleteOldBackups(7); // xóa backup cũ > 7 ngày
 
         String dbName = extractDbName(dbUrl);
+        String host = extractHost(dbUrl);
+        String port = extractPort(dbUrl);
         String timestamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd_HH-mm"));
         String backupFile = backupFolder + File.separator + "backup_" + timestamp + ".sql";
 
@@ -49,25 +53,37 @@ public class DataBackUpServiceImpl implements DataBackUpService {
         if (!folder.exists())
             folder.mkdirs();
 
-        
-        // Sử dụng ProcessBuilder để xử lý khoảng trắng trong đường dẫn
+        // Sử dụng ProcessBuilder với các tham số tối ưu cho RDS
         ProcessBuilder pb = new ProcessBuilder(
                 "mysqldump",
                 "-u" + dbUser,
                 "-p" + dbPass,
+                "-h" + host,
+                "-P" + port,
+                "--single-transaction",      // Đảm bảo tính nhất quán (consistent backup)
+                "--set-gtid-purged=OFF",     // Quan trọng cho RDS/GTID
                 dbName,
                 "-r", backupFile);
 
-        // Thêm environment nếu cần
-        pb.redirectErrorStream(true); // gom stdout + stderr
+        pb.redirectErrorStream(true); 
 
         Process process = pb.start();
+
+        StringBuilder output = new StringBuilder();
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                output.append(line).append(System.lineSeparator());
+            }
+        }
+
         int exitCode = process.waitFor();
 
         if (exitCode == 0) {
             log.info("Backup created successfully: " + backupFile);
         } else {
             log.error("Could not create backup. Exit code: " + exitCode);
+            log.error("Mysqldump error details:\n" + output.toString());
         }
     }
 
@@ -91,7 +107,8 @@ public class DataBackUpServiceImpl implements DataBackUpService {
                 if (fileAgeDays > daysThreshold) {
                     if (file.delete()) {
                         log.info("Deleted old backup: " + file.getName());
-                    } else {
+                    }
+                    else {
                         log.error("Failed to delete old backup: " + file.getName());
                     }
                 }
@@ -105,5 +122,35 @@ public class DataBackUpServiceImpl implements DataBackUpService {
     // Utils
     private String extractDbName(String url) {
         return url.substring(url.lastIndexOf("/") + 1, url.contains("?") ? url.indexOf("?") : url.length());
+    }
+
+    private String extractHost(String url) {
+        try {
+            // jdbc:mysql://hostname:port/dbName
+            String cleanUrl = url.replace("jdbc:mysql://", "");
+            int slashIndex = cleanUrl.indexOf("/");
+            String hostPort = cleanUrl.substring(0, slashIndex);
+            if (hostPort.contains(":")) {
+                return hostPort.split(":")[0];
+            }
+            return hostPort;
+        } catch (Exception e) {
+            log.warn("Could not extract host, defaulting to localhost");
+            return "localhost";
+        }
+    }
+
+    private String extractPort(String url) {
+        try {
+            String cleanUrl = url.replace("jdbc:mysql://", "");
+            int slashIndex = cleanUrl.indexOf("/");
+            String hostPort = cleanUrl.substring(0, slashIndex);
+            if (hostPort.contains(":")) {
+                return hostPort.split(":")[1];
+            }
+        } catch (Exception e) {
+            log.warn("Could not extract port, defaulting to 3306");
+        }
+        return "3306";
     }
 }
