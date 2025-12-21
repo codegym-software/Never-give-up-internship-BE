@@ -168,7 +168,7 @@ public class AuthServiceImpl implements AuthService {
                 .claim("scope", user.getRole())
                 .claim("isActive", user.isActive())
                 .claim("isRefreshToken", false)
-                .expirationTime(Date.from(Instant.now().plus(100, ChronoUnit.MINUTES)))
+                .expirationTime(Date.from(Instant.now().plus(3, ChronoUnit.HOURS)))
                 .build();
 
         Payload payload = new Payload(jwtClaimsSet.toJSONObject());
