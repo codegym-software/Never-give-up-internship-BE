@@ -18,7 +18,7 @@ services:
       - BACKUP_DIR=/app/backups
 
     volumes:
-      - backup-data:/app/backups
+      - ./backups:/app/backups
     networks:
       - internship-network
 

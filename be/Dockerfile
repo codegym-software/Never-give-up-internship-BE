@@ -23,6 +23,10 @@ RUN apt-get update && apt-get install -y default-mysql-client && rm -rf /var/lib
 
 # Create a non-root user
 RUN addgroup --system spring && adduser --system --no-create-home --ingroup spring spring
+
+# Tạo thư mục backup và cấp quyền cho user spring
+RUN mkdir -p /app/backups && chown -R spring:spring /app/backups && chmod -R 775 /app/backups
+
 USER spring:spring
 
 WORKDIR /app
