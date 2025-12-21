@@ -18,6 +18,9 @@ FROM eclipse-temurin:21-jre
 # 1. Cài đặt múi giờ cho hệ thống (OS Level)
 ENV TZ=Asia/Ho_Chi_Minh
 
+# Cài đặt mysql-client cho runtime environment
+RUN apt-get update && apt-get install -y default-mysql-client && rm -rf /var/lib/apt/lists/*
+
 # Create a non-root user
 RUN addgroup --system spring && adduser --system --no-create-home --ingroup spring spring
 USER spring:spring
