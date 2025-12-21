@@ -36,7 +36,7 @@ public class DataBackUpServiceImpl implements DataBackUpService {
 
     // Chạy mỗi ngày lúc 2 giờ sáng
     @Override
-    @Scheduled(cron = "0 50 16 * * ?", zone = "Asia/Ho_Chi_Minh")
+    @Scheduled(cron = "0 0 17 * * ?", zone = "Asia/Ho_Chi_Minh")
     public void backupDatabase() throws IOException, InterruptedException {
         deleteOldBackups(7); // xóa backup cũ > 7 ngày
 
