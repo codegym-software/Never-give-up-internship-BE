@@ -1,3 +1,7 @@
+🔗 Link / URL: 🌐 FE manager : https://internship113.duckdns.org/
+               🌐 FE client  : https://internship113.duckdns.org/client/
+
+
 🏰 Tổng quan hệ thống khi triển khai trên AWS
 
 Hệ thống backend được triển khai trên AWS với các thành phần chính sau:
@@ -107,3 +111,6 @@ Tránh phải cập nhật IP mỗi lần EC2 restart
 Phù hợp cho môi trường staging / production
 
 Hoặc tạo một commit nhỏ để trigger GitHub Actions, pipeline CI/CD sẽ tự động build, test và deploy container mới lên EC2.
+
+
+
