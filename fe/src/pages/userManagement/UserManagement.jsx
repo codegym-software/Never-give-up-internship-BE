@@ -78,6 +78,15 @@ const UserManagement = () => {
     { value: "HR", label: "HR" },
     { value: "VISITOR", label: "VISITOR" },
   ];
+
+  const roleOptions2 = [
+    { value: "", label: "Tất cả" },
+    { value: "ADMIN", label: "ADMIN" },
+    { value: "HR", label: "HR" },
+    { value: "MENTOR", label: "MENTOR" },
+    { value: "INTERN", label: "INTERN" },
+    { value: "VISITOR", label: "VISITOR" },
+  ];
   return (
     <>
       <UserFilter
@@ -97,7 +106,7 @@ const UserManagement = () => {
         users={users}
         loading={loading}
         editUser={updateUser}
-        roleOptions={roleOptions.filter((opt) => opt.value !== "")}
+        roleOptions={roleOptions2.filter((opt) => opt.value !== "")}
       />
 
       <Pagination
