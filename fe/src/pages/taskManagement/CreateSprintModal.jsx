@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import SprintApi from "../../api/SprintApi";
-import "./CreateSprintModal.css";
+import "./SprintModal.css";
 
 const Modal = ({ children, onClose, title }) => (
   <div className="modal-overlay" onClick={(e) => {

@@ -168,6 +168,18 @@ textarea.form-input {
   transform: none;
 }
 
+.btn-danger {
+  background-color: #fef2f2;
+  color: #ef4444;
+  border: 1px solid #fee2e2;
+}
+
+.btn-danger:hover {
+  background-color: #fee2e2;
+  color: #dc2626;
+  border-color: #fca5a5;
+}
+
 /* Animations */
 @keyframes fadeIn {
   from { opacity: 0; }

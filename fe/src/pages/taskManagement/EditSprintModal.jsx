@@ -1,39 +1,19 @@
 import React, { useState, useEffect } from "react";
 import SprintApi from "../../api/SprintApi";
+import "./SprintModal.css";
 
-// Re-using the simple modal structure
+// Re-using the simple modal structure (or better yet, extract Modal to a common component, but keeping it local as per instruction context)
 const Modal = ({ children, onClose, title }) => (
-  <div
-    style={{
-      position: "fixed",
-      top: 0,
-      left: 0,
-      right: 0,
-      bottom: 0,
-      backgroundColor: "rgba(0, 0, 0, 0.5)",
-      display: "flex",
-      alignItems: "center",
-      justifyContent: "center",
-      zIndex: 1000,
-    }}
-  >
-    <div
-      style={{
-        background: "white",
-        padding: "25px",
-        borderRadius: "5px",
-        width: "90%",
-        maxWidth: "500px",
-        position: "relative",
-      }}
-    >
-      <button
-        onClick={onClose}
-        style={{ position: "absolute", top: "10px", right: "10px" }}
-      >
-        &times;
-      </button>
-      <h2>{title}</h2>
+  <div className="modal-overlay" onClick={(e) => {
+    if (e.target.className === 'modal-overlay') onClose();
+  }}>
+    <div className="modal-content">
+      <div className="modal-header">
+        <h2>{title}</h2>
+        <button onClick={onClose} className="close-button">
+          &times;
+        </button>
+      </div>
       {children}
     </div>
   </div>
@@ -81,75 +61,85 @@ function EditSprintModal({ isOpen, onClose, sprint, onSprintUpdated, onDeleteReq
   };
 
   const handleDelete = () => {
-    onDeleteRequest(sprint.id);
+    if (window.confirm("Bạn có chắc chắn muốn xóa Sprint này không? Hành động này không thể hoàn tác.")) {
+        onDeleteRequest(sprint.id);
+    }
   };
 
   return (
     <Modal onClose={onClose} title={`Chỉnh sửa Sprint: ${sprint?.name}`}>
-      <form onSubmit={handleSubmit}>
-        <div style={{ marginBottom: "15px" }}>
-          <label>Tên Sprint</label>
+      <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+        <div className="form-group">
+          <label htmlFor="sprintName">Tên Sprint</label>
           <input
+            id="sprintName"
             type="text"
+            className="form-input"
             value={name}
             onChange={(e) => setName(e.target.value)}
-            style={{ width: "100%", padding: "8px" }}
+            placeholder="Tên của sprint"
           />
         </div>
-        <div style={{ marginBottom: "15px" }}>
-          <label>Mục tiêu</label>
+
+        <div className="form-group">
+          <label htmlFor="sprintGoal">Mục tiêu</label>
           <textarea
+            id="sprintGoal"
+            className="form-input"
             value={goal}
             onChange={(e) => setGoal(e.target.value)}
-            style={{ width: "100%", padding: "8px", minHeight: "80px" }}
+            placeholder="Mục tiêu của sprint"
           />
         </div>
-        <div style={{ display: "flex", gap: "15px", marginBottom: "15px" }}>
-          <div style={{ flex: 1 }}>
-            <label>Ngày bắt đầu</label>
+
+        <div className="form-row">
+          <div className="form-group" style={{ flex: 1 }}>
+            <label htmlFor="startDate">Ngày bắt đầu</label>
             <input
+              id="startDate"
               type="date"
+              className="form-input"
               value={startDate}
               onChange={(e) => setStartDate(e.target.value)}
-              style={{ width: "100%", padding: "8px" }}
             />
           </div>
-          <div style={{ flex: 1 }}>
-            <label>Ngày kết thúc</label>
+          <div className="form-group" style={{ flex: 1 }}>
+            <label htmlFor="endDate">Ngày kết thúc</label>
             <input
+              id="endDate"
               type="date"
+              className="form-input"
               value={endDate}
               onChange={(e) => setEndDate(e.target.value)}
-              style={{ width: "100%", padding: "8px" }}
             />
           </div>
         </div>
-        {error && <p style={{ color: "red" }}>{error}</p>}
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+
+        {error && <div className="error-message">{error}</div>}
+
+        <div className="modal-actions" style={{ justifyContent: 'space-between' }}>
           <button
             type="button"
+            className="btn btn-danger"
             onClick={handleDelete}
             disabled={isSubmitting}
-            style={{
-              padding: "10px 20px",
-              border: "none",
-              borderRadius: "5px",
-              cursor: "pointer",
-              backgroundColor: "#fef2f2",
-              color: "#ef4444",
-              fontWeight: "bold",
-            }}
           >
             Xóa Sprint
           </button>
-          <div>
-            <button type="button" onClick={onClose} disabled={isSubmitting}>
+          
+          <div style={{ display: 'flex', gap: '10px' }}>
+            <button 
+              type="button" 
+              className="btn btn-secondary" 
+              onClick={onClose} 
+              disabled={isSubmitting}
+            >
               Đóng
             </button>
             <button
               type="submit"
+              className="btn btn-primary"
               disabled={isSubmitting}
-              style={{ marginLeft: "10px" }}
             >
               {isSubmitting ? "Đang lưu..." : "Lưu thay đổi"}
             </button>
