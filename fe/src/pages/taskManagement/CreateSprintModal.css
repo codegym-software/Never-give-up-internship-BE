@@ -126,6 +126,10 @@ textarea.form-input {
 
 /* Buttons */
 .btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
   padding: 10px 24px;
   border-radius: 8px;
   font-weight: 600;
@@ -133,6 +137,7 @@ textarea.form-input {
   cursor: pointer;
   transition: all 0.2s;
   border: none;
+  min-width: 110px;
 }
 
 .btn-secondary {
