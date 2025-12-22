@@ -1,39 +1,18 @@
 import React, { useState } from "react";
 import SprintApi from "../../api/SprintApi";
+import "./CreateSprintModal.css";
 
-// Re-using the simple modal structure
 const Modal = ({ children, onClose, title }) => (
-  <div
-    style={{
-      position: "fixed",
-      top: 0,
-      left: 0,
-      right: 0,
-      bottom: 0,
-      backgroundColor: "rgba(0, 0, 0, 0.5)",
-      display: "flex",
-      alignItems: "center",
-      justifyContent: "center",
-      zIndex: 1000,
-    }}
-  >
-    <div
-      style={{
-        background: "white",
-        padding: "25px",
-        borderRadius: "5px",
-        width: "90%",
-        maxWidth: "500px",
-        position: "relative",
-      }}
-    >
-      <button
-        onClick={onClose}
-        style={{ position: "absolute", top: "10px", right: "10px" }}
-      >
-        &times;
-      </button>
-      <h2>{title}</h2>
+  <div className="modal-overlay" onClick={(e) => {
+    if (e.target.className === 'modal-overlay') onClose();
+  }}>
+    <div className="modal-content">
+      <div className="modal-header">
+        <h2>{title}</h2>
+        <button onClick={onClose} className="close-button">
+          &times;
+        </button>
+      </div>
       {children}
     </div>
   </div>
@@ -54,7 +33,7 @@ function CreateSprintModal({ isOpen, onClose, teamId, onSprintCreated }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!name || !startDate || !endDate) {
-      setError("Không để trống Tên, Ngày bắt đầu và Ngày kết thúc.");
+      setError("Vui lòng nhập đầy đủ Tên sprint, Ngày bắt đầu và Ngày kết thúc.");
       return;
     }
     setIsSubmitting(true);
@@ -64,10 +43,10 @@ function CreateSprintModal({ isOpen, onClose, teamId, onSprintCreated }) {
 
     try {
       await SprintApi.create(teamId, sprintData);
-      onSprintCreated(); // Notify parent to refresh
+      onSprintCreated();
       handleClose();
     } catch (err) {
-      const errorMessage = err.response?.data?.message || "Không thể tạo sprint. Vui lòng kiểm tra ngày tạo.";
+      const errorMessage = err.response?.data?.message || "Không thể tạo sprint. Vui lòng kiểm tra lại thông tin.";
       setError(errorMessage);
       console.error(err);
     } finally {
@@ -76,7 +55,6 @@ function CreateSprintModal({ isOpen, onClose, teamId, onSprintCreated }) {
   };
 
   const handleClose = () => {
-    // Reset form
     setName("");
     setGoal("");
     setStartDate("");
@@ -87,55 +65,71 @@ function CreateSprintModal({ isOpen, onClose, teamId, onSprintCreated }) {
 
   return (
     <Modal onClose={handleClose} title="Tạo Sprint Mới">
-      <form onSubmit={handleSubmit}>
-        <div style={{ marginBottom: "15px" }}>
-          <label>Tên Sprint*</label>
+      <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+        <div className="form-group">
+          <label htmlFor="sprintName">Tên Sprint <span style={{ color: 'red' }}>*</span></label>
           <input
+            id="sprintName"
             type="text"
+            className="form-input"
             value={name}
             onChange={(e) => setName(e.target.value)}
-            style={{ width: "100%", padding: "8px" }}
+            placeholder="Ví dụ: Sprint 1 - Khởi tạo dự án"
+            autoFocus
           />
         </div>
-        <div style={{ marginBottom: "15px" }}>
-          <label>Mục tiêu</label>
+
+        <div className="form-group">
+          <label htmlFor="sprintGoal">Mục tiêu Sprint</label>
           <textarea
+            id="sprintGoal"
+            className="form-input"
             value={goal}
             onChange={(e) => setGoal(e.target.value)}
-            style={{ width: "100%", padding: "8px", minHeight: "80px" }}
+            placeholder="Mô tả ngắn gọn mục tiêu cần đạt được trong sprint này..."
           />
         </div>
-        <div style={{ display: "flex", gap: "15px", marginBottom: "15px" }}>
-          <div style={{ flex: 1 }}>
-            <label>Ngày bắt đầu*</label>
+
+        <div className="form-row">
+          <div className="form-group" style={{ flex: 1 }}>
+            <label htmlFor="startDate">Ngày bắt đầu <span style={{ color: 'red' }}>*</span></label>
             <input
+              id="startDate"
               type="date"
+              className="form-input"
               value={startDate}
               onChange={(e) => setStartDate(e.target.value)}
-              style={{ width: "100%", padding: "8px" }}
             />
           </div>
-          <div style={{ flex: 1 }}>
-            <label>Ngày kết thúc*</label>
+          <div className="form-group" style={{ flex: 1 }}>
+            <label htmlFor="endDate">Ngày kết thúc <span style={{ color: 'red' }}>*</span></label>
             <input
+              id="endDate"
               type="date"
+              className="form-input"
               value={endDate}
               onChange={(e) => setEndDate(e.target.value)}
-              style={{ width: "100%", padding: "8px" }}
             />
           </div>
         </div>
-        {error && <p style={{ color: "red" }}>{error}</p>}
-        <div style={{ textAlign: "right" }}>
-          <button type="button" onClick={handleClose} disabled={isSubmitting}>
-            Đóng
+
+        {error && <div className="error-message">{error}</div>}
+
+        <div className="modal-actions">
+          <button 
+            type="button" 
+            className="btn btn-secondary" 
+            onClick={handleClose} 
+            disabled={isSubmitting}
+          >
+            Hủy bỏ
           </button>
           <button
             type="submit"
+            className="btn btn-primary"
             disabled={isSubmitting}
-            style={{ marginLeft: "10px" }}
           >
-            {isSubmitting ? "Đang tạo..." : "Tạo Sprint"}
+            {isSubmitting ? "Đang xử lý..." : "Tạo Sprint"}
           </button>
         </div>
       </form>
