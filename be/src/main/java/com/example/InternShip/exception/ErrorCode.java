@@ -39,6 +39,7 @@ public enum ErrorCode {
     TYPE_LEAVE_APPLICATION_INVALID("Loại đơn nghỉ phép không hợp lệ"),
     SPRINT_INVALID("Sprint không hợp lệ"),
     FILE_INVALID("Tệp quá lớn! Kích thước tối đa: 10MB"),
+    FILE_AVATAR_INVALID("Tệp ảnh quá lớn! Kích thước tối đa: 2MB"),
     TYPE_FILE_INVALID("Chỉ chấp nhận file .pdf, .docx, .doc, png, jpg, jpeg"),
     TYPE_AVATAR_FILE_INVALID("Chỉ chấp nhận file ảnh (PNG, JPG, GIF)!"),
     SUPPORT_REQUEST_STATUS_INVALID("Trạng thái không hợp lệ để thực hiện!"),

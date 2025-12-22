@@ -47,6 +47,8 @@ public class UserServiceImpl implements UserService {
     private final PendingUserRepository pendingUserRepository;
     private final PendingUserServiceImpl pendingUserService;
     private final CloudinaryService cloudinaryService;
+    private static final long MAX_AVATAR_FILE_SIZE = 2 * 1024 * 1024; // 2MB
+
 
     @Value("${url.be}")
     private String redirectUrl ;
@@ -137,6 +139,10 @@ public class UserServiceImpl implements UserService {
         User user = authService.getUserLogin();
         modelMapper.map(request, user);
         if (request.getAvatarFile() != null && !request.getAvatarFile().isEmpty()) {
+            if (request.getAvatarFile().getSize() > MAX_AVATAR_FILE_SIZE) {
+                throw new RuntimeException(ErrorCode.FILE_AVATAR_INVALID.getMessage());
+            }
+
             FileResponse fileResponse = cloudinaryService.uploadFile(request.getAvatarFile(), "avatars");
             user.setAvatarUrl(fileResponse.getFileUrl());
         }
