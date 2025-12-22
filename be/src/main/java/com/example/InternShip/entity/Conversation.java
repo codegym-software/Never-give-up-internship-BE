@@ -21,7 +21,7 @@ public class Conversation {
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "candidate_id")
+    @JoinColumn(name = "candidate_id", nullable = true)
     private User candidate; // Can be null for guest users
 
     @Column(name = "guest_id")
