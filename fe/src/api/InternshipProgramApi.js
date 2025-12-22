@@ -21,6 +21,24 @@ const InternshipProgramApi = {
       withAuth: true,
     });
   },
+
+  cancel: (id) => {
+    return AxiosClient.patch(`/internship-programs/cancel/${id}`, null, {
+      withAuth: true,
+    });
+  },
+
+  publish: (id) => {
+    return AxiosClient.patch(`/internship-programs/publish/${id}`, null, {
+      withAuth: true,
+    });
+  },
+
+  complete: (id) => {
+    return AxiosClient.patch(`/internship-programs/complete/${id}`, null, {
+      withAuth: true,
+    });
+  },
 };
 
 export default InternshipProgramApi;

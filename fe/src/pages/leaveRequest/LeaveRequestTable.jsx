@@ -43,8 +43,8 @@ const LeaveRequestTable = ({
     // Kiểm tra xác nhận
     if (!result.isConfirmed) return;
 
-    await cancelLeaveRequest(id);
-    onDeleteLeaveRequest(id);
+    const success = await cancelLeaveRequest(id);
+    if (success) onDeleteLeaveRequest(id);
   };
 
   return (

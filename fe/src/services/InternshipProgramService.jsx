@@ -80,3 +80,45 @@ export const editInternshipProgram = async ({
     }
   }
 };
+
+export const cancelInternshipProgram = async (id) => {
+  try {
+    const res = await InternshipProgramApi.cancel(id);
+    toast.success("Hủy kì thực tập thành công.");
+    return res;
+  } catch (err) {
+    if (err.response) {
+      toast.error(err.response.data);
+    } else {
+      toast.error("Không thể kết nối đến server");
+    }
+  }
+};
+
+export const publishInternshipProgram = async (id) => {
+  try {
+    const res = await InternshipProgramApi.publish(id);
+    toast.success("Xuất bản kì thực tập thành công.");
+    return res;
+  } catch (err) {
+    if (err.response) {
+      toast.error(err.response.data);
+    } else {
+      toast.error("Không thể kết nối đến server");
+    }
+  }
+};
+
+export const completeInternshipProgram = async (id) => {
+  try {
+    const res = await InternshipProgramApi.complete(id);
+    toast.success("Kết thúc kì thực tập thành công.");
+    return res;
+  } catch (err) {
+    if (err.response) {
+      toast.error(err.response.data);
+    } else {
+      toast.error("Không thể kết nối đến server");
+    }
+  }
+};

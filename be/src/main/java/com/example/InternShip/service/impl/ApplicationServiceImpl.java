@@ -21,10 +21,12 @@ import lombok.RequiredArgsConstructor;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Objects;
 
 import org.modelmapper.ModelMapper;
 
@@ -48,9 +50,9 @@ public class ApplicationServiceImpl implements ApplicationService {
         User user = authService.getUserLogin();
         List<InternshipApplication> liststatus = applicationRepository.findAllByUserId(user.getId());
         boolean hasActiveApplication = liststatus.stream()
-                .anyMatch(app -> app.getStatus().equals("SUBMITTED") ||
-                        app.getStatus().equals("APPROVED") ||
-                        app.getStatus().equals("CONFIRM"));
+                .anyMatch(app -> app.getStatus().equals(InternshipApplication.Status.SUBMITTED) ||
+                        app.getStatus().equals(InternshipApplication.Status.APPROVED) ||
+                        app.getStatus().equals(InternshipApplication.Status.CONFIRM));
 
         if (hasActiveApplication) {
             throw new RuntimeException(
@@ -111,9 +113,9 @@ public class ApplicationServiceImpl implements ApplicationService {
     @Override
     @Transactional(readOnly = true)
     public PagedResponse<ApplicationResponse> getAllApplication(Integer internshipTerm, Integer university,
-                                                                Integer major, String keyword, String status, int page) {
+            Integer major, String keyword, String status, int page) {
         page = Math.max(0, page - 1);
-        PageRequest pageable = PageRequest.of(page, 10);
+        PageRequest pageable = PageRequest.of(page, 10, Sort.by("createdAt").descending());
         InternshipApplication.Status iStatus = parseInternshipApplicationStatus(status);
         Page<InternshipApplication> applications = applicationRepository.searchApplications(internshipTerm,
                 university, major, keyword, iStatus, pageable);
@@ -147,7 +149,7 @@ public class ApplicationServiceImpl implements ApplicationService {
     public void submitApplicationContract(SubmitApplicationContractRequest request) { // Gửi hdtt
         User user = authService.getUserLogin();
         InternshipApplication application = applicationRepository.findByUserIdAndStatus(user.getId(),
-                        InternshipApplication.Status.APPROVED)
+                InternshipApplication.Status.APPROVED)
                 .orElseThrow(() -> new EntityNotFoundException(
                         ErrorCode.INTERNSHIP_APPLICATION_NOT_EXISTED.getMessage()));
 
@@ -184,7 +186,7 @@ public class ApplicationServiceImpl implements ApplicationService {
         ApplicationResponse res = modelMapper.map(user, ApplicationResponse.class);
         modelMapper.map(app, res);
         res.setInternshipApplicationStatus(app.getStatus().name());
-        res.setInternshipProgram(app.getInternshipProgram().getName().toString());
+        res.setInternshipProgram(app.getInternshipProgram().getName());
         res.setUniversityName(app.getUniversity().getName());
         res.setMajorName(app.getMajor().getName());
         return res;
@@ -198,7 +200,7 @@ public class ApplicationServiceImpl implements ApplicationService {
             InternshipApplication application = applicationRepository.findById(applicationId)
                     .orElseThrow(() -> new EntityNotFoundException(
                             ErrorCode.INTERNSHIP_APPLICATION_NOT_EXISTED.getMessage()));
-            if (user.getId() != application.getUser().getId()) {
+            if (!Objects.equals(user.getId(), application.getUser().getId())) {
                 throw new IllegalArgumentException(ErrorCode.UNAUTHORIZED_ACTION.getMessage());
             }
             application.setStatus(InternshipApplication.Status.WITHDRAWN);
@@ -209,12 +211,7 @@ public class ApplicationServiceImpl implements ApplicationService {
     }
 
     @Transactional
-    @LogActivity(
-            action = Action.MODIFY,
-            affected = Model.INTERNSHIP_APPLICATION,
-            description = "Duyệt/từ chối hồ sơ thực tập",
-            entityType = InternshipApplication.class
-    )
+    @LogActivity(action = Action.MODIFY, affected = Model.INTERNSHIP_APPLICATION, description = "Duyệt/từ chối hồ sơ thực tập", entityType = InternshipApplication.class)
     public void handleApplicationAction(HandleApplicationRequest request) {
         List<InternshipApplication> applications = applicationRepository.findAllById(request.getApplicationIds());
 
@@ -226,8 +223,7 @@ public class ApplicationServiceImpl implements ApplicationService {
                     currentStatus == InternshipApplication.Status.REJECTED) ||
                     app.getInternshipProgram().getStatus() != InternshipProgram.Status.REVIEWING) {
                 throw new IllegalArgumentException(
-                        ErrorCode.STATUS_APPLICATION_INVALID.getMessage() + app.getUser().getEmail()
-                );
+                        ErrorCode.STATUS_APPLICATION_INVALID.getMessage() + app.getUser().getEmail());
             }
 
             switch (request.getAction()) {

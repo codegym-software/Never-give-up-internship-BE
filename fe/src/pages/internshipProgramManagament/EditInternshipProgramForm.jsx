@@ -6,6 +6,7 @@ const EditInternshipProgramModal = ({
   onClose,
   internshipProgram,
   convertToISO,
+  setInternshipPrograms,
 }) => {
   const convertToDatetimeLocal = (dateString) => {
     if (!dateString) return "";
@@ -17,9 +18,12 @@ const EditInternshipProgramModal = ({
   const [formData, setFormData] = useState({
     id: internshipProgram.id,
     name: internshipProgram.name,
-    allowance: internshipProgram.allowance || "", // ← mới
-    endPublishedTime: convertToDatetimeLocal(internshipProgram.endPublishedTime),
-    endReviewingTime: convertToDatetimeLocal(internshipProgram.endReviewingTime),
+   endPublishedTime: convertToDatetimeLocal(
+      internshipProgram.endPublishedTime
+    ),
+    endReviewingTime: convertToDatetimeLocal(
+      internshipProgram.endReviewingTime
+    ),
     timeStart: convertToDatetimeLocal(internshipProgram.timeStart),
   });
 
@@ -39,6 +43,11 @@ const EditInternshipProgramModal = ({
 
     const data = await editInternshipProgram(submitData);
     if (data) {
+     setInternshipPrograms((prev) =>
+        prev.map((internshipProgram) =>
+          internshipProgram.id === data.id ? data : internshipProgram
+        )
+      );
       onClose();
     }
   };
@@ -71,7 +80,11 @@ const EditInternshipProgramModal = ({
               value={formData.endPublishedTime}
               onChange={(e) => handleChange("endPublishedTime", e.target.value)}
               required
-              disabled={new Date(formData.endPublishedTime) < new Date()}
+           disabled={
+                internshipProgram.status === "CANCELLED" ||
+                (new Date(internshipProgram.endPublishedTime) < new Date() &&
+                  internshipProgram.status !== "DRAFT")
+              }
             />
           </div>
 
@@ -82,8 +95,11 @@ const EditInternshipProgramModal = ({
               value={formData.endReviewingTime}
               onChange={(e) => handleChange("endReviewingTime", e.target.value)}
               required
-              disabled={new Date(formData.endReviewingTime) < new Date()}
-            />
+  disabled={
+                internshipProgram.status === "CANCELLED" ||
+                (new Date(internshipProgram.endPublishedTime) < new Date() &&
+                  internshipProgram.status !== "DRAFT")
+              }            />
           </div>
 
           <div className="form-group">
@@ -93,8 +109,11 @@ const EditInternshipProgramModal = ({
               value={formData.timeStart}
               onChange={(e) => handleChange("timeStart", e.target.value)}
               required
-              disabled={new Date(formData.timeStart) < new Date()}
-            />
+  disabled={
+                internshipProgram.status === "CANCELLED" ||
+                (new Date(internshipProgram.endPublishedTime) < new Date() &&
+                  internshipProgram.status !== "DRAFT")
+              }            />
           </div>
 
           <div className="modal-actions">

@@ -18,6 +18,7 @@ public interface InternshipProgramService {
     public void endPublish (int programId);
     public void endReviewing (int programId);
     public void startInternship(int programId);
+    public GetInternProgramResponse completeInternProgram(int id);
     public GetInternProgramResponse cancelInternProgram(int id) throws SchedulerException;
     public GetInternProgramResponse publishInternProgram(int id) throws SchedulerException;
     public Object createInternProgram(CreateInternProgramRequest request) throws SchedulerException;

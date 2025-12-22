@@ -115,6 +115,7 @@ const InternshipProgramManagament = () => {
       />
 
       <InternshipProgramTable
+        setInternshipPrograms={setInternshipPrograms}
         internshipPrograms={internshipPrograms}
         loading={loading}
         convertToISO={convertToISO}

@@ -62,4 +62,9 @@ public class InternshipProgramController {
     public ResponseEntity<?> publishInternProgram(@PathVariable int id) throws SchedulerException {
         return ResponseEntity.ok(internshipProgramService.publishInternProgram(id));
     }
+     @PatchMapping("/complete/{id}")
+    @PreAuthorize("hasAuthority('SCOPE_HR')")
+    public ResponseEntity<?> completeInternProgram(@PathVariable int id) {
+        return ResponseEntity.ok(internshipProgramService.completeInternProgram(id));
+    }
 }
