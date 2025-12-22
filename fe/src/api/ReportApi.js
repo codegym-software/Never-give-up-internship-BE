@@ -6,7 +6,7 @@ const ReportApi = {
     const formData = new FormData();
     formData.append("file", file);
 
-    return AxiosClient.post(`/sprints/${sprintId}/report`, formData, {
+    return AxiosClient.post(`${sprintId}/report`, formData, {
       withAuth: true,
       headers: {
         "Content-Type": "multipart/form-data",
