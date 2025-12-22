@@ -1,7 +1,6 @@
 package com.example.InternShip.service;
 
 import com.example.InternShip.dto.log.response.LogResponse;
-import com.example.InternShip.dto.log.response.UserSearchResponse;
 import com.example.InternShip.dto.response.PagedResponse;
 import com.example.InternShip.entity.Log.Model;
 
@@ -17,6 +16,4 @@ public interface LogService {
             int page,
             int size
     );
-
-    List<UserSearchResponse> searchPerformers(String keyword);
 }

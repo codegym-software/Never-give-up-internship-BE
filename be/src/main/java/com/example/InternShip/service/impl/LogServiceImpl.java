@@ -1,11 +1,9 @@
 package com.example.InternShip.service.impl;
 
 import com.example.InternShip.dto.log.response.LogResponse;
-import com.example.InternShip.dto.log.response.UserSearchResponse;
 import com.example.InternShip.dto.response.PagedResponse;
 import com.example.InternShip.entity.Log;
 import com.example.InternShip.entity.Log.Model;
-import com.example.InternShip.entity.User;
 import com.example.InternShip.repository.LogRepository;
 import com.example.InternShip.repository.UserRepository;
 import com.example.InternShip.service.LogService;
@@ -18,8 +16,6 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -48,15 +44,6 @@ public class LogServiceImpl implements LogService {
         );
     }
 
-    @Override
-    public List<UserSearchResponse> searchPerformers(String keyword) {
-        List<User> users = userRepository.searchUsersByNameOrEmail(keyword);
-        return users.stream()
-                .map(u -> new UserSearchResponse(u.getId(), u.getFullName(), u.getEmail()))
-                .limit(10)
-                .collect(Collectors.toList());
-    }
-
     private LogResponse mapToLogResponse(Log log) {
         LogResponse res = new LogResponse();
         res.setId(log.getId());
@@ -73,6 +60,10 @@ public class LogServiceImpl implements LogService {
             res.setActionerId(log.getAction().getId());
             res.setActionerName(log.getAction().getFullName());
             res.setActionerEmail(log.getAction().getEmail());
+
+            if(log.getAction().getRole() != null) {
+                res.setActionerRole(log.getAction().getRole().name());
+            }
         }
         return res;
     }

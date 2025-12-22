@@ -12,6 +12,7 @@ public class LogResponse {
     private Integer actionerId;
     private String actionerName;
     private String actionerEmail;
+    private String actionerRole;
 
     // Thông tin hành động
     private String actionType; // CREATE, MODIFY, DELETE
