@@ -20,6 +20,7 @@ public interface InternshipProgramService {
     public void startInternship(int programId);
     public GetInternProgramResponse cancelInternProgram(int id) throws SchedulerException;
     public GetInternProgramResponse publishInternProgram(int id) throws SchedulerException;
+    public GetInternProgramResponse completeInternProgram(int id);
     public Object createInternProgram(CreateInternProgramRequest request) throws SchedulerException;
     public Object updateInternProgram(UpdateInternProgramRequest request, int id) throws SchedulerException;
 

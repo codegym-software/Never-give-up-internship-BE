@@ -178,7 +178,7 @@ public class InternshipProgramServiceImpl implements InternshipProgramService {
     @LogActivity(
             action = Action.DELETE,
             affected = Model.INTERNSHIP_PROGRAM,
-            description = "Xoá chương trình thực tập",
+            description = "Hủy chương trình thực tập",
             entityType = InternshipProgram.class
     )
     public GetInternProgramResponse cancelInternProgram(int id) throws SchedulerException {
@@ -198,7 +198,9 @@ public class InternshipProgramServiceImpl implements InternshipProgramService {
 
         deleteAllJobsForProgram(id);
 
-        return modelMapper.map(internshipProgram, GetInternProgramResponse.class);
+        GetInternProgramResponse response = modelMapper.map(internshipProgram, GetInternProgramResponse.class);
+        response.setDepartment(internshipProgram.getDepartment().getName());
+        return response;
     }
 
     public GetInternProgramResponse publishInternProgram(int id) throws SchedulerException {
@@ -223,7 +225,30 @@ public class InternshipProgramServiceImpl implements InternshipProgramService {
             throw new SchedulerException(ErrorCode.SCHEDULER_FAILED.getMessage());
         }
 
-        return modelMapper.map(internshipProgram, GetInternProgramResponse.class);
+        GetInternProgramResponse response = modelMapper.map(internshipProgram, GetInternProgramResponse.class);
+        response.setDepartment(internshipProgram.getDepartment().getName());
+        return response;
+    }
+
+    public GetInternProgramResponse completeInternProgram(int id){
+        InternshipProgram internshipProgram = internshipProgramRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException(ErrorCode.INTERNSHIP_PROGRAM_NOT_EXISTED.getMessage()));
+
+        if (internshipProgram.getStatus() != InternshipProgram.Status.ONGOING) {
+            throw new IllegalArgumentException(ErrorCode.STATUS_INVALID.getMessage());
+        }
+
+        internshipProgram.setTimeEnd(LocalDateTime.now());
+        internshipProgram.setStatus(InternshipProgram.Status.COMPLETED);
+        internshipProgram.getInterns().forEach(intern -> {
+            intern.setStatus(Intern.Status.COMPLETED);
+        });
+
+        internshipProgramRepository.save(internshipProgram);
+
+        GetInternProgramResponse response = modelMapper.map(internshipProgram, GetInternProgramResponse.class);
+        response.setDepartment(internshipProgram.getDepartment().getName());
+        return response;
     }
 
     @Transactional
