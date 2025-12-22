@@ -111,7 +111,7 @@ const UserManagement = () => {
 
       <Pagination
         pagination={pagination}
-        filters={appliedFilters}
+        currentPage={appliedFilters.page}
         changePage={(newPage) =>
           setAppliedFilters({ ...appliedFilters, page: newPage })
         }

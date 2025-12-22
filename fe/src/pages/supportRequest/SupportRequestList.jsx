@@ -98,7 +98,7 @@ const SupportRequestList = () => {
       {/* Component Phân trang (Tái sử dụng từ InternManagement) */}
         <Pagination
           pagination={pagination}
-          filters={appliedFilters}
+  currentPage={appliedFilters.page}
           changePage={handlePageChange}
           name="yêu cầu"
         />

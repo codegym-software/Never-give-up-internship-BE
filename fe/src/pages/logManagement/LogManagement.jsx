@@ -113,7 +113,7 @@ const LogManagement = () => {
             {/* Component Phân trang */}
                 <Pagination
                     pagination={pagination}
-                    filters={appliedFilters} // Truyền filters để Pagination component dùng nếu cần
+  currentPage={appliedFilters.page}
                     changePage={handlePageChange}
                     name="bản ghi"
                 />
