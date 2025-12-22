@@ -26,17 +26,17 @@ function MentorFeedbackModal({
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  useEffect(() => {
-    if (!isOpen) return;
-    // Nếu bạn có API lấy feedback trước đó, gọi ở đây để setFeedback
-    // Ví dụ:
-    ReportApi.getMentorFeedback(sprintId).then(data => setFeedback(data));
+ useEffect(() => {
+  if (!isOpen) return;
+
+  ReportApi.getMentorFeedback(sprintId).then(data => {
     setFeedback({
-      feedbackGood: "",
-      feedbackBad: "",
-      feedbackImprove: ""
+      feedbackGood: data?.feedbackGood ?? "",
+      feedbackBad: data?.feedbackBad ?? "",
+      feedbackImprove: data?.feedbackImprove ?? ""
     });
-  }, [isOpen, sprintId]);
+  });
+}, [isOpen, sprintId]);
 
   if (!isOpen) return null;
 
