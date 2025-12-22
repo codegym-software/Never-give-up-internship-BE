@@ -110,6 +110,7 @@ public class ChatServiceImpl implements ChatService {
                     Conversation newConversation = new Conversation();
                     newConversation.setGuestId(guestId);
                     newConversation.setHr(null); // HR is null until claimed
+                    newConversation.setCandidate(null);
                     Conversation savedConversation = conversationRepository.save(newConversation);
 
                     // Notify all HRs about the new unassigned conversation
