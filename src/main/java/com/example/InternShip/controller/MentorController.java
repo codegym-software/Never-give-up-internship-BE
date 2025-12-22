@@ -25,7 +25,7 @@ public class MentorController {
         return ResponseEntity.ok(mentorService.createMentor(request));
     }
 
-    @PreAuthorize("hasAuthority('SCOPE_HR')")
+    @PreAuthorize("hasAuthority('SCOPE_HR') or hasAuthority('SCOPE_ADMIN')")
     @PutMapping("/{id}")
     public ResponseEntity<GetMentorResponse> updateMentorDepartment(
             @PathVariable("id") Integer id,

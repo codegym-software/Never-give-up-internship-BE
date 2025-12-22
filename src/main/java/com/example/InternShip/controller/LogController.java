@@ -1,7 +1,6 @@
 package com.example.InternShip.controller;
 
 import com.example.InternShip.dto.log.response.LogResponse;
-import com.example.InternShip.dto.log.response.UserSearchResponse;
 import com.example.InternShip.dto.response.PagedResponse;
 import com.example.InternShip.entity.Log.Model;
 import com.example.InternShip.service.LogService;
@@ -15,7 +14,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.time.LocalDate;
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/logs")
@@ -43,13 +41,5 @@ public class LogController {
                 size
         );
         return ResponseEntity.ok(response);
-    }
-
-    @GetMapping("/performers")
-    public ResponseEntity<List<UserSearchResponse>> searchPerformers(
-            @RequestParam(defaultValue = "") String keyword) {
-
-        List<UserSearchResponse> users = logService.searchPerformers(keyword);
-        return ResponseEntity.ok(users);
     }
 }
