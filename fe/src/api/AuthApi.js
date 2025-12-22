@@ -14,7 +14,7 @@ const authApi = {
     return AxiosClient.post("/auth/forgetPassword", data);
   },
   changePassword: (data) => {
-    return AxiosClient.put("/users/changePassword", data, { withAuth: true });
+    return AxiosClient.put("/auth/changePassword", data, { withAuth: true });
   },
 }
 export default authApi;

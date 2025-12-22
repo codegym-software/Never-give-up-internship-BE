@@ -20,7 +20,7 @@ import com.example.InternShip.repository.PendingUserRepository;
 import com.example.InternShip.repository.UserRepository;
 import com.example.InternShip.service.CloudinaryService;
 import com.example.InternShip.service.UserService;
-import com.google.api.client.util.Value;
+
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -31,6 +31,7 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
