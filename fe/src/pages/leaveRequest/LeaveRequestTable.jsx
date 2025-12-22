@@ -47,7 +47,6 @@ const LeaveRequestTable = ({
     if (success) onDeleteLeaveRequest(id);
   };
 
-  
   return (
     <div className="table-container">
       <table className="intern-table">
