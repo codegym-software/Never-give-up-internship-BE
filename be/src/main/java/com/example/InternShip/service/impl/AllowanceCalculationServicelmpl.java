@@ -49,7 +49,7 @@ public class AllowanceCalculationServicelmpl implements AllowanceCalculationServ
     @Autowired
     private MonthlyAllowanceReportRepository monthlyAllowanceReportRepository;
 
-    @Scheduled(cron = "0 0 4 * * ?", zone = "Asia/Ho_Chi_Minh")
+    @Scheduled(cron = "0 0 0 1 * ?", zone = "Asia/Ho_Chi_Minh")
     @Transactional
     public void calculateMonthlyAllowances() {
         YearMonth yearMonth = YearMonth.now().minusMonths(1);
