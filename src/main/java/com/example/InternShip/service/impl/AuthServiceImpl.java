@@ -1,25 +1,13 @@
 package com.example.InternShip.service.impl;
 
-import com.example.InternShip.dto.auth.request.GoogleLoginRequest;
-import com.example.InternShip.dto.auth.request.LoginRequest;
-import com.example.InternShip.dto.auth.request.RegisterRequest;
-import com.example.InternShip.dto.auth.response.TokenResponse;
-import com.example.InternShip.dto.auth.request.RefreshTokenRequest;
-import com.example.InternShip.entity.PendingUser;
-import com.example.InternShip.entity.User;
-import com.example.InternShip.entity.enums.Role;
-import com.example.InternShip.exception.ErrorCode;
-import com.example.InternShip.repository.PendingUserRepository;
-import com.example.InternShip.repository.UserRepository;
-import com.example.InternShip.service.AuthService;
-import com.example.InternShip.service.GoogleAuthService;
-import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
-import com.nimbusds.jose.*;
-import com.nimbusds.jose.crypto.MACSigner;
-import com.nimbusds.jose.crypto.MACVerifier;
-import com.nimbusds.jwt.JWTClaimsSet;
-import com.nimbusds.jwt.SignedJWT;
-import lombok.RequiredArgsConstructor;
+import java.text.ParseException;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
+import java.util.Date;
+import java.util.Optional;
+import java.util.UUID;
+
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.context.SecurityContext;
@@ -29,13 +17,32 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.text.ParseException;
-import java.time.Instant;
-import java.time.LocalDateTime;
-import java.time.temporal.ChronoUnit;
-import java.util.Date;
-import java.util.Optional;
-import java.util.UUID;
+import com.example.InternShip.dto.auth.request.GoogleLoginRequest;
+import com.example.InternShip.dto.auth.request.LoginRequest;
+import com.example.InternShip.dto.auth.request.RefreshTokenRequest;
+import com.example.InternShip.dto.auth.request.RegisterRequest;
+import com.example.InternShip.dto.auth.response.TokenResponse;
+import com.example.InternShip.entity.PendingUser;
+import com.example.InternShip.entity.User;
+import com.example.InternShip.entity.enums.Role;
+import com.example.InternShip.exception.ErrorCode;
+import com.example.InternShip.repository.PendingUserRepository;
+import com.example.InternShip.repository.UserRepository;
+import com.example.InternShip.service.AuthService;
+import com.example.InternShip.service.GoogleAuthService;
+import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
+import com.nimbusds.jose.JOSEException;
+import com.nimbusds.jose.JWSAlgorithm;
+import com.nimbusds.jose.JWSHeader;
+import com.nimbusds.jose.JWSObject;
+import com.nimbusds.jose.JWSVerifier;
+import com.nimbusds.jose.Payload;
+import com.nimbusds.jose.crypto.MACSigner;
+import com.nimbusds.jose.crypto.MACVerifier;
+import com.nimbusds.jwt.JWTClaimsSet;
+import com.nimbusds.jwt.SignedJWT;
+
+import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
@@ -46,6 +53,8 @@ public class AuthServiceImpl implements AuthService {
     private final PendingUserServiceImpl pendingUserService;
     private final GoogleAuthService googleAuthService;
 
+    @Value("${redirect.url}")
+    private String redirectUrl;
     @Value("${jwt.singerKey}")
     private String singerKey;
 
@@ -119,7 +128,7 @@ public class AuthServiceImpl implements AuthService {
         pendingUser.setExpiryDate(LocalDateTime.now().plusMinutes(20));
         pendingUserRepository.save(pendingUser);
 
-        String verifyLink = "http://localhost:8082/api/v1/pendingUsers/verify?token=" + token;
+        String verifyLink = "http://"+redirectUrl+":8082/api/v1/pendingUsers/verify?token=" + token;
         pendingUserService.sendVerification(request.getEmail(), verifyLink);
     }
 

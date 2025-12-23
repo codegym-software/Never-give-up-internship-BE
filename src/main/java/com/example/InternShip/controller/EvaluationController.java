@@ -6,6 +6,7 @@ import com.example.InternShip.service.EvaluationService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.core.io.Resource;
@@ -22,7 +23,7 @@ public class EvaluationController {
     private final EvaluationService evaluationService;
 
     @PutMapping("/interns/{id}")
-    // @PreAuthorize("hasAuthority('SCOPE_MENTOR')")
+    @PreAuthorize("hasAuthority('SCOPE_MENTOR')")
     public ResponseEntity<EvaluationResponse> evaluateIntern(
             @PathVariable("id") Integer internId,
             @RequestBody @Valid EvaluateInternRequest request) {
@@ -32,8 +33,6 @@ public class EvaluationController {
     }
 
     @GetMapping("/interns/{id}")
-    // @PreAuthorize("hasAuthority('SCOPE_MENTOR') or hasAuthority('SCOPE_HR') or
-    // @authService.isSelf(authentication, #internId)")
     public ResponseEntity<EvaluationResponse> getEvaluation(
             @PathVariable("id") Integer internId) {
 
@@ -41,7 +40,7 @@ public class EvaluationController {
         return ResponseEntity.ok(response);
     }
 
-    @GetMapping("/export")
+    @GetMapping("/export") // api này đang k dùng tới
     // @PreAuthorize("hasAuthority('SCOPE_MENTOR') or hasAuthority('SCOPE_HR')")
     public ResponseEntity<Resource> exportEvaluations(
             @RequestParam(required = false) Integer teamId,

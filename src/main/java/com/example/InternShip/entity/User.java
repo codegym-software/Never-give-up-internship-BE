@@ -10,6 +10,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
+@Table(name = "`user`")
 @Getter
 @Setter
 public class User {
@@ -43,8 +44,6 @@ public class User {
     @OneToMany(mappedBy = "hr")
     private List<Conversation> hrConversations;
 
-    @OneToMany(mappedBy = "remitter")
-    private List<Allowance> allowances;
 
     @OneToMany(mappedBy = "handler")
     private List<SupportRequest> supportRequests;

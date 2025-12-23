@@ -9,6 +9,7 @@ import com.example.InternShip.service.InternshipProgramService;
 import lombok.RequiredArgsConstructor;
 import java.util.List;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -24,6 +25,7 @@ public class InternshipProgramController {
     }
 
     @GetMapping("/get") // Hàm lấy ra các chương trình thực tập (Cái này cho bên Manager)
+    @PreAuthorize("hasAuthority('SCOPE_HR')")
     public ResponseEntity<?> getAllInternshipPrograms(
             @RequestParam(required = false, defaultValue = "") List<Integer> department,
             @RequestParam(required = false, defaultValue = "") String keyword,
@@ -36,24 +38,34 @@ public class InternshipProgramController {
     }
 
     @PostMapping
+    @PreAuthorize("hasAuthority('SCOPE_HR')")
     public ResponseEntity<?> createInternProgram(@RequestBody @Valid CreateInternProgramRequest request)
             throws SchedulerException {
         return ResponseEntity.ok(internshipProgramService.createInternProgram(request));
     }
 
     @PutMapping("/{id}")
+    @PreAuthorize("hasAuthority('SCOPE_HR')")
     public ResponseEntity<?> updateInternProgram(@RequestBody @Valid UpdateInternProgramRequest request,
             @PathVariable int id) throws SchedulerException {
         return ResponseEntity.ok(internshipProgramService.updateInternProgram(request, id));
     }
 
     @PatchMapping("/cancel/{id}")
+    @PreAuthorize("hasAuthority('SCOPE_HR')")
     public ResponseEntity<?> cancelInternProgram(@PathVariable int id) throws SchedulerException {
         return ResponseEntity.ok(internshipProgramService.cancelInternProgram(id));
     }
 
     @PatchMapping("/publish/{id}")
+    @PreAuthorize("hasAuthority('SCOPE_HR')")
     public ResponseEntity<?> publishInternProgram(@PathVariable int id) throws SchedulerException {
         return ResponseEntity.ok(internshipProgramService.publishInternProgram(id));
+    }
+
+    @PatchMapping("/complete/{id}")
+    @PreAuthorize("hasAuthority('SCOPE_HR')")
+    public ResponseEntity<?> completeInternProgram(@PathVariable int id) {
+        return ResponseEntity.ok(internshipProgramService.completeInternProgram(id));
     }
 }

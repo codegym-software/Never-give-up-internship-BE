@@ -28,6 +28,7 @@ public class CloudinaryServiceImpl implements CloudinaryService {
 
     private static final long MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
 
+    // xem xet co 2 cai upload file
     @Override
     public FileResponse uploadFile(MultipartFile file, String folder) {
         User user = authService.getUserLogin();
@@ -46,8 +47,7 @@ public class CloudinaryServiceImpl implements CloudinaryService {
                             "folder", folder,
                             "public_id", fileName,
                             "overwrite", true,
-                            "unique_filename", false
-                    ));
+                            "unique_filename", false));
 
             String publicId = (String) uploadResult.get("public_id");
             String secureUrl = (String) uploadResult.get("secure_url");
@@ -64,6 +64,48 @@ public class CloudinaryServiceImpl implements CloudinaryService {
 
         } catch (IOException e) {
             log.error("Error uploading file: ", e);
+            throw new RuntimeException(ErrorCode.UPLOAD_FILE_FAILED.getMessage());
+        }
+    }
+
+    @Override
+    public FileResponse uploadFile_Month_allowance_report(byte[] fileBytes, String fileName, String folder) {
+        if (fileBytes == null || fileBytes.length == 0) {
+            throw new RuntimeException(ErrorCode.FILE_NOT_NULL.getMessage());
+        }
+        if (fileBytes.length > MAX_FILE_SIZE) {
+            throw new RuntimeException(ErrorCode.FILE_INVALID.getMessage());
+        }
+
+        try {
+            String publicIdWithoutExtension = fileName.contains(".") ? fileName.substring(0, fileName.lastIndexOf("."))
+                    : fileName;
+
+            @SuppressWarnings("rawtypes")
+            Map uploadResult = cloudinary.uploader().upload(fileBytes,
+                    ObjectUtils.asMap(
+                            "resource_type", "auto",
+                            "folder", folder,
+                            "public_id", fileName,
+                            "overwrite", true,
+                            "unique_filename", false));
+
+            String publicId = (String) uploadResult.get("public_id");
+            String secureUrl = (String) uploadResult.get("secure_url");
+            String fileType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"; // Assuming Excel
+
+            return FileResponse.builder()
+                    .fileName(fileName)
+                    .fileUrl(secureUrl)
+                    .publicId(publicId)
+                    .fileSize((long) fileBytes.length)
+                    .fileType(fileType)
+                    .uploadDate(LocalDateTime.now())
+                    .message("Upload thành công!")
+                    .build();
+
+        } catch (IOException e) {
+            log.error("Error uploading byte array: ", e);
             throw new RuntimeException(ErrorCode.UPLOAD_FILE_FAILED.getMessage());
         }
     }
@@ -87,7 +129,7 @@ public class CloudinaryServiceImpl implements CloudinaryService {
             }
         } else {
             // Assuming other folders are for documents like CVs
-            List<String> allowedDocumentExtensions = List.of("pdf", "docx", "doc", "png", "jpg", "jpeg");
+            List<String> allowedDocumentExtensions = List.of("pdf", "docx", "doc", "png", "jpg", "jpeg", "xlsx");
             if (!allowedDocumentExtensions.contains(extension)) {
                 throw new IllegalArgumentException(ErrorCode.TYPE_FILE_INVALID.getMessage());
             }

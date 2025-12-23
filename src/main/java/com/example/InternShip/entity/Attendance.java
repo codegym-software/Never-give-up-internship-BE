@@ -37,9 +37,8 @@ public class Attendance {
     public enum Status {
         CHECKED_IN,  // Mới check-in
         PRESENT,     // Hiện diện (check-out đúng giờ)
-        LATE,        // Đi muộn
-        EARLY_LEAVE, // Về sớm
-        LATE_AND_EARLY_LEAVE, // Muộn và sớm
+        TIME_VIOLATION, // Vi phạm thời gian
+        EXCUSED_TIME,      // Đi muộn/về sớm có phép
         ON_LEAVE,    // Nghỉ có phép (từ bảng LeaveRequest)
         ABSENT       // Vắng (sẽ được set bởi service tự động)
     }

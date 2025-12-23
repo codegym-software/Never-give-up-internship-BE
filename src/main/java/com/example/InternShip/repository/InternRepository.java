@@ -39,19 +39,18 @@ public interface InternRepository extends JpaRepository<Intern, Integer> {
 
     List<Intern> findAllByStatus(Intern.Status status);
 
-    List<Intern> findAllByStatusAndTeam_id(Intern.Status status, Integer teamId);
-
     @Query("SELECT i FROM Intern i " +
             "WHERE (:programId IS NULL OR i.internshipProgram.id = :programId) " +
             "AND (:teamId IS NULL OR i.team.id = :teamId)")
-    List<Intern> findForEvaluationReport(
+    Page<Intern> findForEvaluationReport(
             @Param("programId") Integer programId,
-            @Param("teamId") Integer teamId);
+            @Param("teamId") Integer teamId,
+            Pageable pageable);
 
     @Query("SELECT i FROM Intern i " +
             "WHERE (:programId IS NULL OR i.internshipProgram.id = :programId) " +
             "AND (:universityId IS NULL OR i.university.id = :universityId)")
-    Page<Intern> findFinalReport(
+    Page<Intern> findByInternshipProgramAndUniversity(
             @Param("programId") Integer programId,
             @Param("universityId") Integer universityId,
             Pageable pageable);

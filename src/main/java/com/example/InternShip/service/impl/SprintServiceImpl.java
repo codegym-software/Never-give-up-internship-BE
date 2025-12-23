@@ -1,5 +1,6 @@
 package com.example.InternShip.service.impl;
 
+import com.example.InternShip.annotation.LogActivity;
 import com.example.InternShip.dto.cloudinary.response.FileResponse;
 import com.example.InternShip.dto.sprint.request.CreateSprintRequest;
 import com.example.InternShip.dto.sprint.request.EvaluateSprintRequest;
@@ -7,8 +8,9 @@ import com.example.InternShip.dto.sprint.request.UpdateSprintRequest;
 import com.example.InternShip.dto.sprint.response.GetEvaluateSprintResponse;
 import com.example.InternShip.dto.sprint.response.SprintReportResponse;
 import com.example.InternShip.dto.sprint.response.SprintResponse;
-import com.example.InternShip.entity.Team;
-import com.example.InternShip.entity.Sprint;
+import com.example.InternShip.entity.*;
+import com.example.InternShip.entity.Log.Model;
+import com.example.InternShip.entity.Log.Action;
 import com.example.InternShip.exception.ErrorCode;
 import com.example.InternShip.repository.TeamRepository;
 import com.example.InternShip.repository.SprintRepository;
@@ -29,12 +31,10 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import com.example.InternShip.entity.User;
 import com.example.InternShip.entity.enums.Role;
 import com.example.InternShip.service.AuthService;
 
 import com.example.InternShip.repository.InternRepository;
-import com.example.InternShip.entity.Intern;
 import org.springframework.web.multipart.MultipartFile;
 
 @Service
@@ -52,6 +52,13 @@ public class SprintServiceImpl implements SprintService {
 
 
     @Override
+    @Transactional
+    @LogActivity(
+            action = Action.CREATE,
+            affected = Model.SPRINT,
+            description = "Tạo sprint mới",
+            entityType = Sprint.class
+    )
     public SprintResponse createSprint(Integer teamId, CreateSprintRequest request) {
         // Validate new sprint dates
         LocalDate today = LocalDate.now();
@@ -133,6 +140,13 @@ public class SprintServiceImpl implements SprintService {
     }
 
     @Override
+    @Transactional
+    @LogActivity(
+            action = Action.MODIFY,
+            affected = Model.SPRINT,
+            description = "Sửa thông tin sprint",
+            entityType = Sprint.class
+    )
     public SprintResponse updateSprint(Long sprintId, UpdateSprintRequest request) {
         User user = authService.getUserLogin();
         Sprint sprint = sprintRepository.findById(sprintId)
@@ -203,6 +217,13 @@ public class SprintServiceImpl implements SprintService {
     }
 
     @Override
+    @Transactional
+    @LogActivity(
+            action = Action.DELETE,
+            affected = Model.SPRINT,
+            description = "Xoá sprint",
+            entityType = Sprint.class
+    )
     public void deleteSprint(Long sprintId) {
         User user = authService.getUserLogin();
         Sprint sprint = sprintRepository.findById(sprintId)
@@ -247,6 +268,12 @@ public class SprintServiceImpl implements SprintService {
 
     @Override
     @Transactional
+    @LogActivity(
+            action = Action.MODIFY,
+            affected = Model.SPRINT,
+            description = "Nộp báo cáo",
+            entityType = Sprint.class
+    )
     public SprintReportResponse submitReport(Long sprintId, MultipartFile file) {
         User user = authService.getUserLogin();
         Intern intern = internRepository.findByUser(user)
@@ -277,6 +304,12 @@ public class SprintServiceImpl implements SprintService {
 
     @Override
     @Transactional
+    @LogActivity(
+            action = Action.MODIFY,
+            affected = Model.SPRINT,
+            description = "Đánh giá sprint",
+            entityType = Sprint.class
+    )
     public void evaluateSprint(Long sprintId, EvaluateSprintRequest request) {
         Sprint sprint = sprintRepository.findById(sprintId)
                 .orElseThrow(() -> new EntityNotFoundException(ErrorCode.SPRINT_NOT_EXISTS.getMessage()));
