@@ -37,4 +37,7 @@ public interface UserRepository extends JpaRepository<User, Integer> {
     Optional<User> findByGoogleId(String googleId);
 
     List<User> findByRole(Role role);
+
+    @Query("SELECT u FROM User u WHERE lower(u.fullName) LIKE lower(concat('%', :keyword, '%')) OR lower(u.email) LIKE lower(concat('%', :keyword, '%'))")
+    List<User> searchUsersByNameOrEmail(@Param("keyword") String keyword);
 }

@@ -16,7 +16,6 @@ public class AllowanceResponse {
     private String email;
     private String internshipProgramName;
     private BigDecimal amount;
-    private String remiter;
     private LocalDateTime paidAt;
     private String status;
 }

@@ -1,14 +1,13 @@
 package com.example.InternShip.service.impl;
 
+import com.example.InternShip.annotation.LogActivity;
 import com.example.InternShip.dto.task.request.BatchTaskUpdateRequest;
 import com.example.InternShip.dto.task.request.CreateTaskRequest;
 import com.example.InternShip.dto.task.request.UpdateTaskRequest;
 import com.example.InternShip.dto.task.response.TaskResponse;
-import com.example.InternShip.entity.Intern;
-import com.example.InternShip.entity.Mentor;
-import com.example.InternShip.entity.Sprint;
-import com.example.InternShip.entity.Task;
-import com.example.InternShip.entity.User;
+import com.example.InternShip.entity.*;
+import com.example.InternShip.entity.Log.Action;
+import com.example.InternShip.entity.Log.Model;
 import com.example.InternShip.entity.enums.Role;
 import com.example.InternShip.entity.enums.TaskStatus;
 import com.example.InternShip.exception.ErrorCode;
@@ -88,6 +87,13 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
+    @Transactional
+    @LogActivity(
+            action = Action.CREATE,
+            affected = Model.TASK,
+            description = "Tạo task mới",
+            entityType = Task.class
+    )
     public TaskResponse createTask(CreateTaskRequest request) {
         User creator = authService.getUserLogin();
 
@@ -158,6 +164,13 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
+    @Transactional
+    @LogActivity(
+            action = Action.MODIFY,
+            affected = Model.TASK,
+            description = "Sửa thông tin task ",
+            entityType = Task.class
+    )
     public TaskResponse updateTask(Long taskId, UpdateTaskRequest request) {
         User user = authService.getUserLogin();
 
@@ -222,6 +235,13 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
+    @Transactional
+    @LogActivity(
+            action = Action.DELETE,
+            affected = Model.TASK,
+            description = "Xoá task",
+            entityType = Task.class
+    )
     public void deleteTask(Long taskId) {
         User user = authService.getUserLogin();
 

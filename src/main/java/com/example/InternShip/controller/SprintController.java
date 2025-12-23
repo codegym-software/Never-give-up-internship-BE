@@ -9,6 +9,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -18,6 +19,7 @@ import org.springframework.web.multipart.MultipartFile;
 public class SprintController {
     private final SprintService sprintService;
 
+    @PreAuthorize("hasAuthority('SCOPE_MENTOR')")
     @PostMapping("/teams/{teamId}/sprints")
     public ResponseEntity<?> createSprint(@PathVariable Integer teamId, @RequestBody CreateSprintRequest request) {
         return ResponseEntity.ok(sprintService.createSprint(teamId, request));
@@ -33,17 +35,20 @@ public class SprintController {
         return ResponseEntity.ok(sprintService.getSprintById(sprintId));
     }
 
+    @PreAuthorize("hasAuthority('SCOPE_MENTOR')")
     @PutMapping("/sprints/{sprintId}")
     public ResponseEntity<?> updateSprint(@PathVariable Long sprintId, @RequestBody UpdateSprintRequest request) {
         return ResponseEntity.ok(sprintService.updateSprint(sprintId, request));
     }
 
+    @PreAuthorize("hasAuthority('SCOPE_MENTOR')")
     @DeleteMapping("/sprints/{sprintId}")
     public ResponseEntity<?> deleteSprint(@PathVariable Long sprintId) {
         sprintService.deleteSprint(sprintId);
         return ResponseEntity.ok().build();
     }
 
+    @PreAuthorize("hasAuthority('SCOPE_INTERN')")
     @PostMapping(value = "/{id}/report", consumes = "multipart/form-data")
     public ResponseEntity<SprintReportResponse> submitSprintReport(
             @PathVariable("id") Long id,
@@ -53,6 +58,7 @@ public class SprintController {
         return ResponseEntity.ok(response);
     }
 
+    @PreAuthorize("hasAuthority('SCOPE_MENTOR')")
     @PutMapping("/sprints/evaluate/{sprintId}")
     public ResponseEntity<Void> evaluateSprint(
             @PathVariable Long sprintId,
